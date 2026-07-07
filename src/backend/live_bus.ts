@@ -17,6 +17,12 @@ export type ReceiverState = {
   lastWarning?: ReceiverWarning;
 };
 
+export type LiveBusCadence = {
+  minIntervalMs: number;
+  lastPublishedAtMs?: number;
+  lastSummary?: LiveTelemetrySummary;
+};
+
 export function buildReceiverState(startedAtMs = Date.now()): ReceiverState {
   return {
     startedAtMs,
@@ -94,4 +100,26 @@ export function buildLiveTelemetrySummary(
     },
     warnings,
   };
+}
+
+export function createLiveBusCadence(minIntervalMs = 250): LiveBusCadence {
+  return { minIntervalMs };
+}
+
+export function maybeBuildLiveTelemetrySummary(
+  state: ReceiverState,
+  cadence: LiveBusCadence,
+  observedAtMs = Date.now(),
+): LiveTelemetrySummary | undefined {
+  if (
+    cadence.lastPublishedAtMs !== undefined &&
+    observedAtMs - cadence.lastPublishedAtMs < cadence.minIntervalMs
+  ) {
+    return undefined;
+  }
+
+  const summary = buildLiveTelemetrySummary(state, observedAtMs);
+  cadence.lastPublishedAtMs = observedAtMs;
+  cadence.lastSummary = summary;
+  return summary;
 }
