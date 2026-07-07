@@ -46,6 +46,7 @@ function isHttpRequestCount(point: MetricPoint): boolean {
 
 function isHttpDurationHistogram(point: MetricPoint): boolean {
   return point.metric.type === "histogram" &&
+    point.metric.temporality === "delta" &&
     point.derivationStatus === "usable" &&
     point.buckets !== undefined &&
     (point.metric.name === "http.server.duration" || point.metric.name === "http.server.request.duration");

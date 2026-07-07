@@ -73,6 +73,28 @@ Deno.test("deriveLiveTelemetrySummary estimates p95 from usable HTTP histogram b
   assertEquals(summary.warnings, []);
 });
 
+Deno.test("deriveLiveTelemetrySummary ignores cumulative HTTP histograms for p95", () => {
+  const summary = deriveLiveTelemetrySummary(
+    snapshot([
+      {
+        ...basePoint("http.server.request.duration", 2_000),
+        metric: { name: "http.server.request.duration", type: "histogram", unit: "ms", temporality: "cumulative" },
+        count: 10,
+        sum: 120,
+        buckets: [
+          { upperBound: 50, count: 5 },
+          { upperBound: 100, count: 4 },
+          { upperBound: Number.POSITIVE_INFINITY, count: 1 },
+        ],
+      },
+    ], { totalExports: 1, totalBytes: 64, totalPoints: 1, droppedPoints: 0 }),
+    1_000,
+    3_000,
+  );
+
+  assertEquals(summary.overview.p95Ms, undefined);
+});
+
 Deno.test("deriveLiveTelemetrySummary converts second-based HTTP duration histograms to milliseconds", () => {
   const summary = deriveLiveTelemetrySummary(
     snapshot([
