@@ -4,7 +4,7 @@ title: "Telemetry Normalization Store"
 type: runtime-spec
 status: proposed-draft
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-07
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -44,6 +44,8 @@ type MetricPoint = {
 };
 ```
 
+Implemented in `src/backend/metric_model.ts`, where `MetricPoint` keeps OTLP timestamps as string-safe nanosecond values and derives a deterministic `seriesKey`.
+
 ## Derived summaries
 
 - latest value
@@ -59,5 +61,7 @@ type MetricPoint = {
 ## Retention
 
 P0: in-memory bounded retention.
+
+Implemented by `src/backend/telemetry_store.ts` for bounded point/export retention and `src/backend/metric_derivations.ts` for dashboard-ready summaries over retained points.
 
 P1: optional SQLite session history with explicit retention and clear/delete controls.

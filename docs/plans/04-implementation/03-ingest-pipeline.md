@@ -4,7 +4,7 @@ title: "Ingest Pipeline"
 type: implementation-plan
 status: proposed-draft
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-07
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -24,6 +24,8 @@ HTTP request
 → emit live summary
 → persist export metadata if enabled
 ```
+
+Valid decoded exports append normalized points and export metadata to `TelemetryStore`.
 
 ## Failure classes
 

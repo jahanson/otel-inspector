@@ -4,7 +4,7 @@ title: "Reactive Live Bus"
 type: runtime-spec
 status: proposed-draft
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-07
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -24,6 +24,8 @@ receiver ingest event
 → live bus emits summary every 250–1000ms
 → UI updates charts/cards/tables
 ```
+
+The initial cadence helper is `maybeBuildLiveTelemetrySummary` in `src/backend/live_bus.ts`, with a default `250ms` minimum summary interval.
 
 ## Controls
 
