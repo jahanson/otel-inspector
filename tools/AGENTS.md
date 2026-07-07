@@ -14,6 +14,7 @@
 
 - Tool permissions must be explicit in `deno.json`.
 - Proto generation runs through `deno task proto:gen` and must use local files under `tools/proto/`.
+- Proto generation must not use broad `-A` or network permissions.
 - Fixture sender requires `--allow-read=fixtures` and `--allow-net=127.0.0.1:4318`.
 - Tools must not send telemetry to external services.
 

@@ -36,6 +36,7 @@ export function recordReceiverFailure(
 export function recordReceiverExport(state: ReceiverState, bytesReceived: number): void {
   state.totalExports += 1;
   state.totalBytes += bytesReceived;
+  delete state.lastWarning;
 }
 
 export function buildLiveTelemetrySummary(

@@ -96,6 +96,10 @@ export async function handleReceiverRequest(
   }
 
   try {
+    if (payloadRead.payload.byteLength === 0) {
+      throw new Error("empty protobuf payload");
+    }
+
     decodeMetricsExportRequest(payloadRead.payload);
   } catch {
     return failureResponse(

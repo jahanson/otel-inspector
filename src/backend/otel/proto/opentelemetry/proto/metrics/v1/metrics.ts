@@ -194,7 +194,7 @@ export interface HistogramDataPoint {
    */
   timeUnixNano: bigint;
   /**
-   * @generated from protobuf field: uint64 count = 4
+   * @generated from protobuf field: fixed64 count = 4
    */
   count: bigint;
   /**
@@ -202,7 +202,7 @@ export interface HistogramDataPoint {
    */
   sum: number;
   /**
-   * @generated from protobuf field: repeated uint64 bucket_counts = 6
+   * @generated from protobuf field: repeated fixed64 bucket_counts = 6
    */
   bucketCounts: bigint[];
   /**
@@ -227,7 +227,7 @@ export interface SummaryDataPoint {
    */
   timeUnixNano: bigint;
   /**
-   * @generated from protobuf field: uint64 count = 4
+   * @generated from protobuf field: fixed64 count = 4
    */
   count: bigint;
   /**
@@ -950,14 +950,14 @@ class HistogramDataPoint$Type extends MessageType<HistogramDataPoint> {
       { no: 9, name: "attributes", kind: "message", repeat: 2, /*RepeatType.UNPACKED*/ T: () => KeyValue },
       { no: 2, name: "start_time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
       { no: 3, name: "time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
-      { no: 4, name: "count", kind: "scalar", T: 4, /*ScalarType.UINT64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 4, name: "count", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
       { no: 5, name: "sum", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
       {
         no: 6,
         name: "bucket_counts",
         kind: "scalar",
         repeat: 1, /*RepeatType.PACKED*/
-        T: 4, /*ScalarType.UINT64*/
+        T: 6, /*ScalarType.FIXED64*/
         L: 0, /*LongType.BIGINT*/
       },
       { no: 7, name: "explicit_bounds", kind: "scalar", repeat: 1, /*RepeatType.PACKED*/ T: 1 /*ScalarType.DOUBLE*/ },
@@ -996,19 +996,19 @@ class HistogramDataPoint$Type extends MessageType<HistogramDataPoint> {
         case /* fixed64 time_unix_nano */ 3:
           message.timeUnixNano = reader.fixed64().toBigInt();
           break;
-        case /* uint64 count */ 4:
-          message.count = reader.uint64().toBigInt();
+        case /* fixed64 count */ 4:
+          message.count = reader.fixed64().toBigInt();
           break;
         case /* double sum */ 5:
           message.sum = reader.double();
           break;
-        case /* repeated uint64 bucket_counts */ 6:
+        case /* repeated fixed64 bucket_counts */ 6:
           if (wireType === WireType.LengthDelimited) {
             for (let e = reader.int32() + reader.pos; reader.pos < e;) {
-              message.bucketCounts.push(reader.uint64().toBigInt());
+              message.bucketCounts.push(reader.fixed64().toBigInt());
             }
           } else {
-            message.bucketCounts.push(reader.uint64().toBigInt());
+            message.bucketCounts.push(reader.fixed64().toBigInt());
           }
           break;
         case /* repeated double explicit_bounds */ 7:
@@ -1046,19 +1046,19 @@ class HistogramDataPoint$Type extends MessageType<HistogramDataPoint> {
     if (message.timeUnixNano !== 0n) {
       writer.tag(3, WireType.Bit64).fixed64(message.timeUnixNano);
     }
-    /* uint64 count = 4; */
+    /* fixed64 count = 4; */
     if (message.count !== 0n) {
-      writer.tag(4, WireType.Varint).uint64(message.count);
+      writer.tag(4, WireType.Bit64).fixed64(message.count);
     }
     /* double sum = 5; */
     if (message.sum !== 0) {
       writer.tag(5, WireType.Bit64).double(message.sum);
     }
-    /* repeated uint64 bucket_counts = 6; */
+    /* repeated fixed64 bucket_counts = 6; */
     if (message.bucketCounts.length) {
       writer.tag(6, WireType.LengthDelimited).fork();
       for (let i = 0; i < message.bucketCounts.length; i++) {
-        writer.uint64(message.bucketCounts[i]);
+        writer.fixed64(message.bucketCounts[i]);
       }
       writer.join();
     }
@@ -1093,7 +1093,7 @@ class SummaryDataPoint$Type extends MessageType<SummaryDataPoint> {
       { no: 7, name: "attributes", kind: "message", repeat: 2, /*RepeatType.UNPACKED*/ T: () => KeyValue },
       { no: 2, name: "start_time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
       { no: 3, name: "time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
-      { no: 4, name: "count", kind: "scalar", T: 4, /*ScalarType.UINT64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 4, name: "count", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
       { no: 5, name: "sum", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
       { no: 6, name: "quantile_values", kind: "message", repeat: 2, /*RepeatType.UNPACKED*/ T: () => ValueAtQuantile },
     ]);
@@ -1130,8 +1130,8 @@ class SummaryDataPoint$Type extends MessageType<SummaryDataPoint> {
         case /* fixed64 time_unix_nano */ 3:
           message.timeUnixNano = reader.fixed64().toBigInt();
           break;
-        case /* uint64 count */ 4:
-          message.count = reader.uint64().toBigInt();
+        case /* fixed64 count */ 4:
+          message.count = reader.fixed64().toBigInt();
           break;
         case /* double sum */ 5:
           message.sum = reader.double();
@@ -1165,9 +1165,9 @@ class SummaryDataPoint$Type extends MessageType<SummaryDataPoint> {
     if (message.timeUnixNano !== 0n) {
       writer.tag(3, WireType.Bit64).fixed64(message.timeUnixNano);
     }
-    /* uint64 count = 4; */
+    /* fixed64 count = 4; */
     if (message.count !== 0n) {
-      writer.tag(4, WireType.Varint).uint64(message.count);
+      writer.tag(4, WireType.Bit64).fixed64(message.count);
     }
     /* double sum = 5; */
     if (message.sum !== 0) {

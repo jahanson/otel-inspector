@@ -17,6 +17,7 @@
 - Receiver listens on `127.0.0.1:4318` and accepts only `POST /v1/metrics` with `application/x-protobuf`.
 - Dashboard app server listens on `127.0.0.1:4319`.
 - Payload size limit is `4 MiB`; enforce it before buffering beyond the cap.
+- Empty metrics protobuf bodies are decode failures, not successful empty exports.
 - Decode failures are failures, not successful exports.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 
