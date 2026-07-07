@@ -1,6 +1,8 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { buildReceiverState, handleReceiverRequest, RECEIVER_CONTRACT } from "../../src/backend/receiver.ts";
 import { buildLiveTelemetrySummary } from "../../src/backend/live_bus.ts";
+import { ExportMetricsServiceRequest } from "../../src/backend/otel/proto/opentelemetry/proto/collector/metrics/v1/metrics_service.ts";
+import { AggregationTemporality } from "../../src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts";
 
 function request(path: string, init: RequestInit = {}): Request {
   return new Request(`http://${RECEIVER_CONTRACT.host}:${RECEIVER_CONTRACT.port}${path}`, init);
@@ -128,7 +130,10 @@ Deno.test("POST /v1/metrics with valid protobuf records successful export", asyn
   assertEquals(response.headers.get("content-type"), RECEIVER_CONTRACT.contentType);
   assertEquals(body.byteLength, 0);
   assertEquals(summary.ingest.exportsPerSec, 1);
+  assertEquals(summary.ingest.datapointsPerSec, 0);
   assertEquals(summary.ingest.bytesPerSec, payload.byteLength);
+  assertEquals(summary.ingest.dropped, 0);
+  assertEquals(summary.overview.topServices, []);
   assertEquals(summary.warnings, []);
 });
 
@@ -221,6 +226,56 @@ Deno.test("POST /v1/metrics with malformed protobuf returns safe decode failure"
   assertEquals(summary.ingest.bytesPerSec, 0);
 });
 
+Deno.test("POST /v1/metrics normalization failures stay safe", async () => {
+  const payload = await Deno.readFile("fixtures/otlp/valid-minimal-metrics.bin");
+  const state = buildReceiverState(1_000);
+  const originalRecordExport = state.store.recordExport.bind(state.store);
+  state.store.recordExport = () => {
+    throw new Error("secret raw normalization failure");
+  };
+
+  try {
+    const response = await handleReceiverRequest(
+      request("/v1/metrics", {
+        method: "POST",
+        headers: { "content-type": RECEIVER_CONTRACT.contentType },
+        body: toBody(payload),
+      }),
+      state,
+    );
+    const body = await readFailure(response);
+
+    assertEquals(response.status, 400);
+    assertEquals(body["category"], "normalize-failed");
+    assertEquals(body["message"], "OTLP metrics payload could not be normalized safely.");
+    assertEquals(JSON.stringify(body).includes("secret"), false);
+  } finally {
+    state.store.recordExport = originalRecordExport;
+  }
+});
+
+Deno.test("POST /v1/metrics with HTTP metrics updates datapoints and overview", async () => {
+  const payload = httpMetricsExport();
+  const state = buildReceiverState(1_000);
+  const response = await handleReceiverRequest(
+    request("/v1/metrics", {
+      method: "POST",
+      headers: { "content-type": RECEIVER_CONTRACT.contentType },
+      body: toBody(payload),
+    }),
+    state,
+  );
+  const summary = buildLiveTelemetrySummary(state, 3_000);
+
+  assertEquals(response.status, 200);
+  assertEquals(summary.ingest.exportsPerSec, 0.5);
+  assertEquals(summary.ingest.datapointsPerSec, 1.5);
+  assertEquals(summary.overview.requestRate, 5);
+  assertEquals(summary.overview.errorRate, 0.2);
+  assertEquals(summary.overview.p95Ms, 100);
+  assertEquals(summary.overview.topServices, ["checkout"]);
+});
+
 function metricExportWithHistogramFixed64Count(): Uint8Array {
   const histogramDataPoint = fixed64Field(0x21, 1n);
   const histogram = bytes(0x0a, histogramDataPoint);
@@ -231,8 +286,119 @@ function metricExportWithHistogramFixed64Count(): Uint8Array {
   return bytes(0x0a, resourceMetrics);
 }
 
+function httpMetricsExport(): Uint8Array {
+  return ExportMetricsServiceRequest.toBinary({
+    resourceMetrics: [
+      {
+        resource: {
+          attributes: [stringAttribute("service.name", "checkout")],
+          droppedAttributesCount: 0,
+        },
+        scopeMetrics: [
+          {
+            metrics: [
+              {
+                name: "http.server.request.count",
+                description: "",
+                unit: "1",
+                data: {
+                  oneofKind: "sum",
+                  sum: {
+                    dataPoints: [
+                      numberDataPoint(10n, 20n, 8n, [
+                        stringAttribute("http.request.method", "GET"),
+                        stringAttribute("http.route", "/cart"),
+                        intAttribute("http.response.status_code", 200n),
+                      ]),
+                      numberDataPoint(10n, 20n, 2n, [
+                        stringAttribute("http.request.method", "GET"),
+                        stringAttribute("http.route", "/cart"),
+                        intAttribute("http.response.status_code", 500n),
+                      ]),
+                    ],
+                    aggregationTemporality: AggregationTemporality.DELTA,
+                    isMonotonic: true,
+                  },
+                },
+              },
+              {
+                name: "http.server.duration",
+                description: "",
+                unit: "ms",
+                data: {
+                  oneofKind: "histogram",
+                  histogram: {
+                    dataPoints: [histogramDataPoint()],
+                    aggregationTemporality: AggregationTemporality.DELTA,
+                  },
+                },
+              },
+            ],
+            schemaUrl: "",
+          },
+        ],
+        schemaUrl: "",
+      },
+    ],
+  });
+}
+
+function numberDataPoint(
+  startTimeUnixNano: bigint,
+  timeUnixNano: bigint,
+  value: bigint,
+  attributes: Array<ReturnType<typeof stringAttribute> | ReturnType<typeof intAttribute>>,
+) {
+  return {
+    attributes,
+    startTimeUnixNano,
+    timeUnixNano,
+    value: { oneofKind: "asInt" as const, asInt: value },
+  };
+}
+
+function histogramDataPoint() {
+  return {
+    attributes: [
+      stringAttribute("http.request.method", "GET"),
+      stringAttribute("http.route", "/cart"),
+    ],
+    startTimeUnixNano: 10n,
+    timeUnixNano: 20n,
+    count: 10n,
+    sum: 120,
+    bucketCounts: [5n, 4n, 1n],
+    explicitBounds: [50, 100],
+  };
+}
+
+function stringAttribute(key: string, value: string) {
+  return {
+    key,
+    value: {
+      value: {
+        oneofKind: "stringValue" as const,
+        stringValue: value,
+      },
+    },
+  };
+}
+
+function intAttribute(key: string, value: bigint) {
+  return {
+    key,
+    value: {
+      value: {
+        oneofKind: "intValue" as const,
+        intValue: value,
+      },
+    },
+  };
+}
+
 function bytes(tag: number, payload: Uint8Array): Uint8Array {
-  return new Uint8Array([tag, payload.byteLength, ...payload]);
+  const length = encodeVarint(BigInt(payload.byteLength));
+  return new Uint8Array([tag, ...length, ...payload]);
 }
 
 function fixed64Field(tag: number, value: bigint): Uint8Array {
@@ -248,4 +414,15 @@ function fixed64(value: bigint): Uint8Array {
 
 function toBody(payload: Uint8Array): ArrayBuffer {
   return payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength) as ArrayBuffer;
+}
+
+function encodeVarint(value: bigint): number[] {
+  const encoded = [];
+  let current = value;
+  while (current >= 0x80n) {
+    encoded.push(Number((current & 0x7fn) | 0x80n));
+    current >>= 7n;
+  }
+  encoded.push(Number(current));
+  return encoded;
 }

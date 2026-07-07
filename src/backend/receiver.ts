@@ -95,12 +95,13 @@ export async function handleReceiverRequest(
     );
   }
 
+  let exportRequest;
   try {
     if (payloadRead.payload.byteLength === 0) {
       throw new Error("empty protobuf payload");
     }
 
-    decodeMetricsExportRequest(payloadRead.payload);
+    exportRequest = decodeMetricsExportRequest(payloadRead.payload);
   } catch {
     return failureResponse(
       state,
@@ -113,7 +114,20 @@ export async function handleReceiverRequest(
     );
   }
 
-  recordReceiverExport(state, payloadRead.payload.byteLength);
+  try {
+    recordReceiverExport(state, { exportRequest, bytesReceived: payloadRead.payload.byteLength });
+  } catch {
+    return failureResponse(
+      state,
+      400,
+      "normalize-failed",
+      request,
+      path,
+      payloadRead.payload.byteLength,
+      "Send a valid metrics export with normalizable metric datapoints.",
+    );
+  }
+
   return new Response(toResponseBody(encodeMetricsExportResponse()), {
     status: 200,
     headers: {
