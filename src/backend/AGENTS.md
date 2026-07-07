@@ -23,7 +23,7 @@
 ## Work Guidance
 
 - Add tests before changing receiver behavior.
-- Count successful exports only after a future successful decode/normalize path exists.
+- Count successful exports only after protobuf decode succeeds.
 - Keep worker messages minimal and typed locally.
 
 ## Verification
@@ -33,4 +33,4 @@
 
 ## Child DOX Index
 
-- No child AGENTS.md files.
+- `otel/AGENTS.md` — backend-only OTLP decode wrappers and generated protobuf bindings.

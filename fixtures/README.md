@@ -3,10 +3,13 @@
 Fixture files under `fixtures/otlp/` are local dogfood inputs for receiver,
 decode, normalization, redaction, and chart tests.
 
-The first slice only includes `malformed-protobuf.bin`, which drives the safe
-`decode-failed` receiver path until OTLP TypeScript bindings land in `OI-004`.
+Current receiver fixtures:
 
-Future generated OTLP bindings must stay backend-only:
+- `malformed-protobuf.bin` drives the safe `decode-failed` receiver path.
+- `valid-minimal-metrics.bin` is a deterministic `ExportMetricsServiceRequest`
+  with one empty `ResourceMetrics` entry and drives the successful decode path.
+
+Generated OTLP bindings must stay backend-only:
 
 ```text
 src/backend/otel/proto/

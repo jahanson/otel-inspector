@@ -27,3 +27,4 @@
 ## Child DOX Index
 
 - `plans/` — project planning packet organized by Linear, product, runtime architecture, UI dashboard, implementation, issue, evidence, and ADR folders.
+- `superpowers/AGENTS.md` — Superpowers implementation plans and execution handoff artifacts.

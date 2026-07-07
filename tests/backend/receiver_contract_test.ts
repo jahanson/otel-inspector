@@ -110,6 +110,28 @@ Deno.test("POST /v1/metrics rejects oversize streamed payload without buffering 
   assertEquals(Math.abs(chunksPulled), RECEIVER_CONTRACT.maxPayloadBytes / chunk.byteLength + 1);
 });
 
+Deno.test("POST /v1/metrics with valid protobuf records successful export", async () => {
+  const payload = await Deno.readFile("fixtures/otlp/valid-minimal-metrics.bin");
+  const state = buildReceiverState(1_000);
+  const response = await handleReceiverRequest(
+    request("/v1/metrics", {
+      method: "POST",
+      headers: { "content-type": RECEIVER_CONTRACT.contentType },
+      body: payload,
+    }),
+    state,
+  );
+  const body = new Uint8Array(await response.arrayBuffer());
+  const summary = buildLiveTelemetrySummary(state, 2_000);
+
+  assertEquals(response.status, 200);
+  assertEquals(response.headers.get("content-type"), RECEIVER_CONTRACT.contentType);
+  assertEquals(body.byteLength, 0);
+  assertEquals(summary.ingest.exportsPerSec, 1);
+  assertEquals(summary.ingest.bytesPerSec, payload.byteLength);
+  assertEquals(summary.warnings, []);
+});
+
 Deno.test("POST /v1/metrics with malformed protobuf returns safe decode failure", async () => {
   const state = buildReceiverState(1_000);
   const response = await handleReceiverRequest(
