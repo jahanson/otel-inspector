@@ -80,3 +80,18 @@ Result:
 - 6 tests passed
 - 0 failed
 - formatting check passed
+
+## Review Follow-up
+
+I fixed the remaining review finding by removing the local `MetricPoint` and
+`MetricWarning` definitions from `src/backend/telemetry_store.ts` and importing
+the canonical types from `src/backend/metric_model.ts` instead.
+
+I also updated `tests/backend/telemetry_store_test.ts` to import the type-only
+aliases from `metric_model.ts`, since the store no longer re-exports those
+shapes.
+
+Verification for this follow-up:
+
+- `deno test tests/backend/telemetry_store_test.ts`
+- `deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts`

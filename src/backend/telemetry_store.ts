@@ -1,24 +1,4 @@
-export type MetricWarning = {
-  code: string;
-  message: string;
-  [key: string]: unknown;
-};
-
-export type MetricPoint = {
-  seriesKey: string;
-  observedAtMs: number;
-  resource: Record<string, unknown>;
-  scope: Record<string, unknown>;
-  metric: {
-    name: string;
-    type: string;
-    unit?: string;
-  };
-  attributes: Record<string, unknown>;
-  value: number;
-  derivationStatus: string;
-  warnings: MetricWarning[];
-};
+import type { MetricPoint, MetricWarning } from "./metric_model.ts";
 
 export type TelemetryStoreOptions = {
   maxPoints: number;

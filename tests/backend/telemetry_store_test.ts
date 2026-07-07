@@ -1,5 +1,6 @@
 import { assertEquals } from "@std/assert";
-import { createTelemetryStore, type MetricPoint, type MetricWarning } from "../../src/backend/telemetry_store.ts";
+import { createTelemetryStore } from "../../src/backend/telemetry_store.ts";
+import type { MetricPoint, MetricWarning } from "../../src/backend/metric_model.ts";
 
 Deno.test("TelemetryStore appends export metadata and retained points", () => {
   const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
