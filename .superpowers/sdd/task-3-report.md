@@ -104,3 +104,16 @@ I fixed the final Task 3 contract review findings in `src/backend/telemetry_stor
 - typed `SeriesSummary.resource` and `SeriesSummary.attributes` as `MetricPoint["resource"]` and `MetricPoint["attributes"]`
 
 I left tests unchanged because the existing telemetry store tests already cover the affected behavior and no compile or test adjustments were needed for this contract tightening.
+
+## Series Timestamp Fix
+
+I fixed the remaining review finding for `seriesList()` in
+`src/backend/telemetry_store.ts`:
+
+- `lastObservedAtMs` now tracks the maximum observed timestamp seen for each series
+- added a regression test with out-of-order points for the same series to prove the latest timestamp wins
+
+Verification for this follow-up:
+
+- `deno test tests/backend/telemetry_store_test.ts`
+- `deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts`

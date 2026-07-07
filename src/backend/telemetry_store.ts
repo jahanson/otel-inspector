@@ -80,6 +80,13 @@ export class TelemetryStore {
     const bySeries = new Map<string, SeriesSummary>();
 
     for (const point of this.#points) {
+      const existing = bySeries.get(point.seriesKey);
+
+      if (existing) {
+        existing.lastObservedAtMs = Math.max(existing.lastObservedAtMs, point.observedAtMs);
+        continue;
+      }
+
       bySeries.set(point.seriesKey, {
         seriesKey: point.seriesKey,
         metricName: point.metric.name,

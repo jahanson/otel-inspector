@@ -49,6 +49,23 @@ Deno.test("TelemetryStore exposes deterministic series list and selected series 
   assertEquals(store.pointsForSeries("series:duration", 1_500, 2_500), [second]);
 });
 
+Deno.test("TelemetryStore series list uses the latest observed time across out-of-order points", () => {
+  const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
+
+  store.recordExport({
+    observedAtMs: 3_000,
+    bytesReceived: 10,
+    points: [
+      point("cpu.usage", 3_000, 3, "series:cpu"),
+      point("cpu.usage", 1_000, 1, "series:cpu"),
+      point("cpu.usage", 2_000, 2, "series:cpu"),
+    ],
+    warnings: [],
+  });
+
+  assertEquals(store.seriesList()[0].lastObservedAtMs, 3_000);
+});
+
 Deno.test("TelemetryStore sorts equal metric names by series key", () => {
   const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
 
