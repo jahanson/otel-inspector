@@ -1,18 +1,32 @@
-import { LiveTelemetrySummary, RECEIVER_CONTRACT, receiverEndpoint, ReceiverFailureCategory } from "./contracts.ts";
+import {
+  LiveTelemetrySummary,
+  RECEIVER_CONTRACT,
+  receiverEndpoint,
+  ReceiverFailureCategory,
+  ReceiverWarning,
+} from "./contracts.ts";
+import type { ExportMetricsServiceRequestMessage } from "./otel/decode.ts";
+import { deriveLiveTelemetrySummary } from "./metric_derivations.ts";
+import { normalizeMetricsExport } from "./normalize_metrics.ts";
+import { createTelemetryStore, TelemetryStore } from "./telemetry_store.ts";
 
 export type ReceiverState = {
   startedAtMs: number;
-  totalExports: number;
-  totalBytes: number;
+  store: TelemetryStore;
   failureCounts: Record<ReceiverFailureCategory, number>;
-  lastWarning?: { code: string; message: string };
+  lastWarning?: ReceiverWarning;
+};
+
+export type LiveBusCadence = {
+  minIntervalMs: number;
+  lastPublishedAtMs?: number;
+  lastSummary?: LiveTelemetrySummary;
 };
 
 export function buildReceiverState(startedAtMs = Date.now()): ReceiverState {
   return {
     startedAtMs,
-    totalExports: 0,
-    totalBytes: 0,
+    store: createTelemetryStore(),
     failureCounts: {
       "method-not-allowed": 0,
       "endpoint-unsupported": 0,
@@ -20,6 +34,7 @@ export function buildReceiverState(startedAtMs = Date.now()): ReceiverState {
       "content-type-unsupported": 0,
       "payload-too-large": 0,
       "decode-failed": 0,
+      "normalize-failed": 0,
     },
   };
 }
@@ -33,9 +48,35 @@ export function recordReceiverFailure(
   state.lastWarning = { code: category, message };
 }
 
-export function recordReceiverExport(state: ReceiverState, bytesReceived: number): void {
-  state.totalExports += 1;
-  state.totalBytes += bytesReceived;
+export function recordReceiverExport(
+  state: ReceiverState,
+  input:
+    | number
+    | {
+      exportRequest: ExportMetricsServiceRequestMessage;
+      bytesReceived: number;
+      observedAtMs?: number;
+    },
+): void {
+  if (typeof input === "number") {
+    state.store.recordExport({
+      observedAtMs: Date.now(),
+      bytesReceived: input,
+      points: [],
+      warnings: [],
+    });
+    delete state.lastWarning;
+    return;
+  }
+
+  const observedAtMs = input.observedAtMs ?? Date.now();
+  const normalized = normalizeMetricsExport(input.exportRequest, observedAtMs);
+  state.store.recordExport({
+    observedAtMs,
+    bytesReceived: input.bytesReceived,
+    points: normalized.points,
+    warnings: normalized.warnings,
+  });
   delete state.lastWarning;
 }
 
@@ -43,29 +84,42 @@ export function buildLiveTelemetrySummary(
   state: ReceiverState,
   observedAtMs = Date.now(),
 ): LiveTelemetrySummary {
-  const elapsedSeconds = Math.max((observedAtMs - state.startedAtMs) / 1000, 1);
-  const warnings = state.lastWarning ? [state.lastWarning] : [];
+  const summary = deriveLiveTelemetrySummary(
+    state.store.snapshot(),
+    state.startedAtMs,
+    observedAtMs,
+  );
+  const warnings = state.lastWarning ? [state.lastWarning, ...summary.warnings] : summary.warnings;
 
   return {
-    observedAtMs,
+    ...summary,
     receiver: {
       endpoint: receiverEndpoint(RECEIVER_CONTRACT),
       live: true,
       paused: false,
     },
-    ingest: {
-      exportsPerSec: roundRate(state.totalExports / elapsedSeconds),
-      datapointsPerSec: 0,
-      bytesPerSec: roundRate(state.totalBytes / elapsedSeconds),
-      dropped: 0,
-    },
-    overview: {
-      requestRate: roundRate(state.totalExports / elapsedSeconds),
-    },
     warnings,
   };
 }
 
-function roundRate(value: number): number {
-  return Math.round(value * 100) / 100;
+export function createLiveBusCadence(minIntervalMs = 250): LiveBusCadence {
+  return { minIntervalMs };
+}
+
+export function maybeBuildLiveTelemetrySummary(
+  state: ReceiverState,
+  cadence: LiveBusCadence,
+  observedAtMs = Date.now(),
+): LiveTelemetrySummary | undefined {
+  if (
+    cadence.lastPublishedAtMs !== undefined &&
+    observedAtMs - cadence.lastPublishedAtMs < cadence.minIntervalMs
+  ) {
+    return undefined;
+  }
+
+  const summary = buildLiveTelemetrySummary(state, observedAtMs);
+  cadence.lastPublishedAtMs = observedAtMs;
+  cadence.lastSummary = summary;
+  return summary;
 }

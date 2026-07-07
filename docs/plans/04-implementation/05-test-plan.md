@@ -23,13 +23,13 @@ owner: user
 
 - Resource attributes preserved/redacted.
 - Scope metadata preserved.
-- Gauge/sum/histogram/exponential histogram shapes normalized.
+- Gauge/sum/histogram shapes normalized; exponential histogram coverage is a follow-up after proto/codegen support exposes that OTLP oneof arm.
 - Unknown metric type labels unknown.
 
 ## Derivation tests
 
 - Rate/delta math from fixture windows.
-- Histogram percentile estimates from buckets.
+- Histogram percentile estimates from internally consistent buckets.
 - Missing temporality/unit labels unavailable.
 - Dropped point accounting.
 

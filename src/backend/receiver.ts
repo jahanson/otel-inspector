@@ -1,4 +1,5 @@
 import { RECEIVER_CONTRACT, ReceiverContract, receiverEndpoint, ReceiverFailureCategory } from "./contracts.ts";
+import type { ExportMetricsServiceRequestMessage } from "./otel/decode.ts";
 import { decodeMetricsExportRequest, encodeMetricsExportResponse } from "./otel/decode.ts";
 import {
   buildLiveTelemetrySummary,
@@ -95,12 +96,13 @@ export async function handleReceiverRequest(
     );
   }
 
+  let exportRequest: ExportMetricsServiceRequestMessage;
   try {
     if (payloadRead.payload.byteLength === 0) {
       throw new Error("empty protobuf payload");
     }
 
-    decodeMetricsExportRequest(payloadRead.payload);
+    exportRequest = decodeMetricsExportRequest(payloadRead.payload);
   } catch {
     return failureResponse(
       state,
@@ -113,7 +115,20 @@ export async function handleReceiverRequest(
     );
   }
 
-  recordReceiverExport(state, payloadRead.payload.byteLength);
+  try {
+    recordReceiverExport(state, { exportRequest, bytesReceived: payloadRead.payload.byteLength });
+  } catch {
+    return failureResponse(
+      state,
+      400,
+      "normalize-failed",
+      request,
+      path,
+      payloadRead.payload.byteLength,
+      "Send a valid metrics export with normalizable metric datapoints.",
+    );
+  }
+
   return new Response(toResponseBody(encodeMetricsExportResponse()), {
     status: 200,
     headers: {
@@ -249,5 +264,7 @@ function safeFailureMessage(category: ReceiverFailureCategory): string {
       return "OTLP protobuf payload is larger than the receiver limit.";
     case "decode-failed":
       return "OTLP protobuf payload could not be decoded safely.";
+    case "normalize-failed":
+      return "OTLP metrics payload could not be normalized safely.";
   }
 }

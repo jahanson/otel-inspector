@@ -3,11 +3,9 @@
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-07 (commit 1b44e2e). Confidence: 100%.
+Last indexed: 2026-07-07 (commit 768e5f4). Confidence: 100%.
 ### Architecture
-repo is a telemetry ingestion and real-time visualization platform: it receives raw event payloads via an HTTP receiver, normalizes and routes them through a live in-memory event bus, and serves a browser-based UI for live monitoring — all orchestrated by a single TypeScript entry point and documented through an extensive Linear-synced planning corpus. The backend is organized around four high-PageRank modules that form the system's core data path:
-The repository is unusual in that 81% of its content is structured planning documentation, organized into numbered phases:
-A manifest.json at the root of docs/plans/ indexes the entire planning tree, and AGENTS.md provides agent-oriented operational guidance.
+repo is an OpenTelemetry-native observability dashboard: it ingests OTLP-encoded traces, metrics, and logs via an HTTP receiver, decodes protobuf payloads into typed contracts, streams them through a reactive live bus, and renders real-time telemetry views in a browser-based UI. The repository pairs a TypeScript backend (Deno runtime) with an embedded HTML/JS frontend, while the majority of its volume is structured planning documentation—Linear issue tracking, architecture plans, and evidence fixtures—that drives the development process. The receiver accepts OTLP HTTP/gRPC payloads. The decode layer (src/backend/otel/decode.ts) parses protobuf-encoded OpenTelemetry data—using proto definitions mirrored under tools/proto/opentelemetry/—and normalizes them into the canonical contract types defined in src/backend/contracts.ts, the highest-PageRank file and de facto schema authority for the system.
 ### Entry Points
 - `src/main.ts`
 
@@ -102,6 +100,8 @@ Default section order:
 ## User Preferences
 
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
+
+- Telemetry substrate follow-up: exponential histogram support was intentionally deferred from the first OI-006 normalizer pass because the current generated OTLP metrics bindings do not expose an exponential histogram oneof arm. The next substrate/protobuf task after the current normalization/store/derivation pass must add exponential histogram proto/codegen support and typed normalization before moving on to dashboard UI work.
 
 ## Child DOX Index
 
