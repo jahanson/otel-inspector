@@ -18,7 +18,7 @@ type LiveTelemetrySummary = {
   observedAtMs: number;
   receiver: { endpoint: string; live: boolean; paused: boolean };
   ingest: { exportsPerSec: number; datapointsPerSec: number; bytesPerSec: number; dropped: number };
-  overview: { p95Ms?: number; errorRate?: number; activeRequests?: number; requestRate?: number };
+  overview: { p95Ms?: number; errorRate?: number; activeRequests?: number; requestRate?: number; topServices: string[] };
   warnings: Array<{ code: string; message: string }>;
 };
 ```

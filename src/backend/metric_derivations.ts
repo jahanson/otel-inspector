@@ -9,7 +9,9 @@ export function deriveLiveTelemetrySummary(
 ): LiveTelemetrySummary {
   const elapsedSeconds = Math.max((observedAtMs - startedAtMs) / 1000, 1);
   const requestCount = sumValues(snapshot.recentPoints.filter(isHttpRequestCount));
-  const errorCount = sumValues(snapshot.recentPoints.filter((point) => isHttpRequestCount(point) && isErrorStatus(point)));
+  const errorCount = sumValues(
+    snapshot.recentPoints.filter((point) => isHttpRequestCount(point) && isErrorStatus(point)),
+  );
 
   return {
     observedAtMs,
@@ -36,6 +38,7 @@ export function deriveLiveTelemetrySummary(
 
 function isHttpRequestCount(point: MetricPoint): boolean {
   return point.metric.type === "sum" &&
+    point.metric.temporality === "delta" &&
     point.derivationStatus === "usable" &&
     point.value !== undefined &&
     (point.metric.name === "http.server.request.count" || point.metric.name === "http.server.requests");
@@ -67,7 +70,8 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
 
   for (const point of points) {
     for (const bucket of point.buckets ?? []) {
-      buckets.set(bucket.upperBound, (buckets.get(bucket.upperBound) ?? 0) + bucket.count);
+      const upperBound = normalizeDurationUpperBound(bucket.upperBound, point.metric.unit);
+      buckets.set(upperBound, (buckets.get(upperBound) ?? 0) + bucket.count);
       totalCount += bucket.count;
     }
   }
@@ -90,6 +94,18 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
   }
 
   return undefined;
+}
+
+function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number {
+  if (!Number.isFinite(upperBound)) {
+    return upperBound;
+  }
+
+  if (unit === "s") {
+    return upperBound * 1000;
+  }
+
+  return upperBound;
 }
 
 function topServices(points: MetricPoint[]): string[] {
