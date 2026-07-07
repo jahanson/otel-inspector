@@ -116,6 +116,160 @@ Deno.test("normalizeMetricsExport retains unsupported metric records without fai
   assertEquals(result.warnings[0].code, "metric-unsupported");
 });
 
+Deno.test("normalizeMetricsExport retains one unsupported summary point per summary datapoint", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: {
+        attributes: [stringAttribute("service.name", "checkout")],
+        droppedAttributesCount: 0,
+      },
+      scopeMetrics: [{
+        scope: { name: "manual-fixture", version: "1.0.0", attributes: [], droppedAttributesCount: 0 },
+        schemaUrl: "",
+        metrics: [{
+          name: "http.server.duration.summary",
+          description: "duration summary",
+          unit: "ms",
+          data: {
+            oneofKind: "summary",
+            summary: {
+              dataPoints: [
+                {
+                  attributes: [stringAttribute("http.route", "/cart")],
+                  startTimeUnixNano: 10n,
+                  timeUnixNano: 20n,
+                  count: 3n,
+                  sum: 60,
+                  quantileValues: [],
+                },
+                {
+                  attributes: [stringAttribute("http.route", "/checkout")],
+                  startTimeUnixNano: 11n,
+                  timeUnixNano: 21n,
+                  count: 5n,
+                  sum: 125,
+                  quantileValues: [],
+                },
+              ],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 2);
+  assertEquals(result.warnings.length, 2);
+  assertEquals(result.points[0].metric.type, "summary");
+  assertEquals(result.points[0].derivationStatus, "unsupported");
+  assertEquals(result.points[0].attributes["http.route"], "/cart");
+  assertEquals(result.points[0].startTimeUnixNano, "10");
+  assertEquals(result.points[0].timestampUnixNano, "20");
+  assertEquals(result.points[0].count, 3);
+  assertEquals(result.points[0].sum, 60);
+  assertEquals(result.points[0].warnings[0].code, "metric-unsupported");
+  assertEquals(result.points[1].attributes["http.route"], "/checkout");
+  assertEquals(result.points[1].startTimeUnixNano, "11");
+  assertEquals(result.points[1].timestampUnixNano, "21");
+  assertEquals(result.points[1].count, 5);
+  assertEquals(result.points[1].sum, 125);
+  assertEquals(result.warnings[0].code, "metric-unsupported");
+  assertEquals(result.warnings[1].code, "metric-unsupported");
+});
+
+Deno.test("normalizeMetricsExport emits metric-value-missing warnings for datapoints without a usable number", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: { attributes: [], droppedAttributesCount: 0 },
+      scopeMetrics: [{
+        scope: undefined,
+        schemaUrl: "",
+        metrics: [{
+          name: "queue.depth",
+          description: "",
+          unit: "items",
+          data: {
+            oneofKind: "gauge",
+            gauge: {
+              dataPoints: [{
+                attributes: [stringAttribute("queue.name", "jobs")],
+                startTimeUnixNano: 0n,
+                timeUnixNano: 100n,
+                value: { oneofKind: undefined },
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].metric.type, "gauge");
+  assertEquals(result.points[0].attributes["queue.name"], "jobs");
+  assertEquals(result.points[0].derivationStatus, "incomplete");
+  assertEquals(result.points[0].value, undefined);
+  assertEquals(result.points[0].warnings, [{
+    code: "metric-value-missing",
+    message: "Metric datapoint has no usable numeric value.",
+  }]);
+  assertEquals(result.warnings, [{
+    code: "metric-value-missing",
+    message: "Metric datapoint has no usable numeric value.",
+  }]);
+});
+
+Deno.test("normalizeMetricsExport emits histogram-incomplete warnings for unusable histogram buckets", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: { attributes: [], droppedAttributesCount: 0 },
+      scopeMetrics: [{
+        scope: undefined,
+        schemaUrl: "",
+        metrics: [{
+          name: "http.server.duration",
+          description: "",
+          unit: "ms",
+          data: {
+            oneofKind: "histogram",
+            histogram: {
+              aggregationTemporality: AggregationTemporality.DELTA,
+              dataPoints: [{
+                attributes: [stringAttribute("http.route", "/cart")],
+                startTimeUnixNano: 10n,
+                timeUnixNano: 20n,
+                count: 3n,
+                sum: 60,
+                bucketCounts: [1n],
+                explicitBounds: [10],
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].metric.type, "histogram");
+  assertEquals(result.points[0].attributes["http.route"], "/cart");
+  assertEquals(result.points[0].derivationStatus, "incomplete");
+  assertEquals(result.points[0].count, 3);
+  assertEquals(result.points[0].sum, 60);
+  assertEquals(result.points[0].buckets, undefined);
+  assertEquals(result.points[0].warnings, [{
+    code: "histogram-incomplete",
+    message: "Histogram datapoint cannot produce safe percentile estimates.",
+  }]);
+  assertEquals(result.warnings, [{
+    code: "histogram-incomplete",
+    message: "Histogram datapoint cannot produce safe percentile estimates.",
+  }]);
+});
+
 function gaugeMetric(name: string, unit: string, value: number): Metric {
   return {
     name,

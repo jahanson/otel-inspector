@@ -4,6 +4,8 @@ import {
   type Metric,
   type NumberDataPoint,
   type ScopeMetrics,
+  type Summary,
+  type SummaryDataPoint,
 } from "./otel/proto/opentelemetry/proto/metrics/v1/metrics.ts";
 import type { ExportMetricsServiceRequestMessage } from "./otel/decode.ts";
 import {
@@ -68,7 +70,7 @@ function normalizeMetric(
     case "histogram":
       return histogramPoints(metric, scopeMetrics, resource, observedAtMs, metric.data.histogram);
     case "summary":
-      return [unsupportedPoint(metric, scopeMetrics, resource, observedAtMs, "summary")];
+      return summaryPoints(metric, scopeMetrics, resource, observedAtMs, metric.data.summary);
     case undefined:
       return [unsupportedPoint(metric, scopeMetrics, resource, observedAtMs, "unknown")];
   }
@@ -139,6 +141,22 @@ function histogramPoints(
   });
 }
 
+function summaryPoints(
+  metric: Metric,
+  scopeMetrics: ScopeMetrics,
+  resource: Record<string, PrimitiveAttributeValue>,
+  observedAtMs: number,
+  summary: Summary,
+): MetricPoint[] {
+  if (summary.dataPoints.length === 0) {
+    return [unsupportedPoint(metric, scopeMetrics, resource, observedAtMs, "summary")];
+  }
+
+  return summary.dataPoints.map((dataPoint) =>
+    unsupportedSummaryPoint(metric, scopeMetrics, resource, observedAtMs, dataPoint)
+  );
+}
+
 function unsupportedPoint(
   metric: Metric,
   scopeMetrics: ScopeMetrics,
@@ -154,6 +172,36 @@ function unsupportedPoint(
     derivationStatus: "unsupported",
     warnings: [warning],
   });
+}
+
+function unsupportedSummaryPoint(
+  metric: Metric,
+  scopeMetrics: ScopeMetrics,
+  resource: Record<string, PrimitiveAttributeValue>,
+  observedAtMs: number,
+  dataPoint: SummaryDataPoint,
+): MetricPoint {
+  const warning = {
+    code: "metric-unsupported",
+    message: "Metric type is retained but not yet used for derivations.",
+  };
+
+  return basePoint(
+    metric,
+    scopeMetrics,
+    resource,
+    observedAtMs,
+    attributesFromKeyValues(dataPoint.attributes),
+    "summary",
+    {
+      timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
+      startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
+      count: toNumberValue(dataPoint.count),
+      sum: Number.isFinite(dataPoint.sum) ? dataPoint.sum : undefined,
+      derivationStatus: "unsupported",
+      warnings: [warning],
+    },
+  );
 }
 
 function basePoint(
