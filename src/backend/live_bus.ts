@@ -20,6 +20,7 @@ export function buildReceiverState(startedAtMs = Date.now()): ReceiverState {
       "content-type-unsupported": 0,
       "payload-too-large": 0,
       "decode-failed": 0,
+      "normalize-failed": 0,
     },
   };
 }
@@ -61,6 +62,7 @@ export function buildLiveTelemetrySummary(
     },
     overview: {
       requestRate: roundRate(state.totalExports / elapsedSeconds),
+      topServices: [],
     },
     warnings,
   };

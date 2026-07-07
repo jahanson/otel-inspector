@@ -249,5 +249,7 @@ function safeFailureMessage(category: ReceiverFailureCategory): string {
       return "OTLP protobuf payload is larger than the receiver limit.";
     case "decode-failed":
       return "OTLP protobuf payload could not be decoded safely.";
+    case "normalize-failed":
+      return "OTLP metrics payload could not be normalized safely.";
   }
 }

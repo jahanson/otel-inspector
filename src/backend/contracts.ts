@@ -4,7 +4,8 @@ export type ReceiverFailureCategory =
   | "signal-unsupported"
   | "content-type-unsupported"
   | "payload-too-large"
-  | "decode-failed";
+  | "decode-failed"
+  | "normalize-failed";
 
 export type ReceiverWarning = {
   code: string;
@@ -15,7 +16,13 @@ export type LiveTelemetrySummary = {
   observedAtMs: number;
   receiver: { endpoint: string; live: boolean; paused: boolean };
   ingest: { exportsPerSec: number; datapointsPerSec: number; bytesPerSec: number; dropped: number };
-  overview: { p95Ms?: number; errorRate?: number; activeRequests?: number; requestRate?: number };
+  overview: {
+    p95Ms?: number;
+    errorRate?: number;
+    activeRequests?: number;
+    requestRate?: number;
+    topServices: string[];
+  };
   warnings: Array<ReceiverWarning>;
 };
 
