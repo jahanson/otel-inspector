@@ -14,6 +14,8 @@ owner: user
 ## P0 contract
 
 ```text
+Listen: 127.0.0.1:4318
+Max payload: 4 MiB
 POST /v1/metrics
 Content-Type: application/x-protobuf
 Body: ExportMetricsServiceRequest protobuf bytes
@@ -44,3 +46,28 @@ P0 accepts metrics only:
 ## Safe response posture
 
 Do not echo request bodies, credentials, raw attributes, or raw decode errors. Safe failures should include endpoint, content type, bytes received, failure category, and next safe action.
+
+## Safe failure response shape
+
+Until OTLP protobuf response encoding lands, receiver failures are JSON so tests
+and the desktop shell can inspect safe error state:
+
+```ts
+type ReceiverFailureResponse = {
+  category:
+    | "method-not-allowed"
+    | "endpoint-unsupported"
+    | "signal-unsupported"
+    | "content-type-unsupported"
+    | "payload-too-large"
+    | "decode-failed";
+  endpoint: string;
+  contentType: string | null;
+  bytesReceived: number;
+  message: string;
+  nextAction: string;
+};
+```
+
+The implementation source of truth is `src/backend/contracts.ts` and
+`src/backend/receiver.ts`.

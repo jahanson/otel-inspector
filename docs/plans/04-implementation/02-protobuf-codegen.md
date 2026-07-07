@@ -30,3 +30,14 @@ src/backend/otel/proto/
 src/backend/otel/decode.ts
 src/backend/otel/normalize.ts
 ```
+
+## Boundary
+
+Generated protobuf code is backend-only. UI code must consume normalized
+contracts such as `LiveTelemetrySummary` and must not import from
+`src/backend/otel/proto/`.
+
+## First handoff fixture
+
+`fixtures/otlp/malformed-protobuf.bin` is intentionally invalid and should keep
+exercising the safe `decode-failed` path after real OTLP decoding is added.

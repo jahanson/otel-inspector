@@ -18,6 +18,7 @@ node_modules/
 .npm/
 .deno/
 .cache/
+WebView2Loader.dll
 .pytest_cache/
 __pycache__/
 
