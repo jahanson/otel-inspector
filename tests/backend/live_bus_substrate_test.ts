@@ -14,7 +14,10 @@ Deno.test("recordReceiverExport normalizes decoded exports into live summary dat
     exportRequest: {
       resourceMetrics: [{
         resource: {
-          attributes: [{ key: "service.name", value: { value: { oneofKind: "stringValue", stringValue: "checkout" } } }],
+          attributes: [{
+            key: "service.name",
+            value: { value: { oneofKind: "stringValue", stringValue: "checkout" } },
+          }],
           droppedAttributesCount: 0,
         },
         scopeMetrics: [{
@@ -61,6 +64,39 @@ Deno.test("recordReceiverExport normalizes decoded exports into live summary dat
 Deno.test("buildLiveTelemetrySummary keeps receiver failures ahead of substrate warnings", () => {
   const state = buildReceiverState(1_000);
 
+  recordReceiverExport(state, {
+    exportRequest: {
+      resourceMetrics: [{
+        resource: { attributes: [], droppedAttributesCount: 0 },
+        scopeMetrics: [{
+          scope: undefined,
+          schemaUrl: "",
+          metrics: [{
+            name: "legacy.summary",
+            description: "",
+            unit: "",
+            data: {
+              oneofKind: "summary",
+              summary: {
+                dataPoints: [{
+                  attributes: [],
+                  startTimeUnixNano: 10n,
+                  timeUnixNano: 20n,
+                  count: 3n,
+                  sum: 60,
+                  quantileValues: [],
+                }],
+              },
+            },
+          }],
+        }],
+        schemaUrl: "",
+      }],
+    },
+    bytesReceived: 96,
+    observedAtMs: 1_500,
+  });
+
   recordReceiverFailure(state, "decode-failed", "OTLP protobuf payload could not be decoded safely.");
 
   const summary = buildLiveTelemetrySummary(state, 2_000);
@@ -68,5 +104,9 @@ Deno.test("buildLiveTelemetrySummary keeps receiver failures ahead of substrate 
   assertEquals(summary.warnings[0], {
     code: "decode-failed",
     message: "OTLP protobuf payload could not be decoded safely.",
+  });
+  assertEquals(summary.warnings[1], {
+    code: "metric-unsupported",
+    message: "Metric type is retained but not yet used for derivations.",
   });
 });

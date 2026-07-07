@@ -8,7 +8,10 @@
 
 - `contracts.ts` defines receiver/public telemetry types.
 - `receiver.ts` owns OTLP HTTP request validation and safe failure responses.
-- `live_bus.ts` owns in-memory summary state for the first walking skeleton.
+- `live_bus.ts` owns receiver state, substrate ingestion, receiver warning precedence, and live summary generation.
+- `normalize_metrics.ts` owns OTLP metric normalization into substrate datapoints and substrate warnings.
+- `telemetry_store.ts` owns bounded in-memory storage for normalized telemetry points, exports, and warnings.
+- `metric_derivations.ts` owns derived live summary rates, service rollups, and percentile calculations from stored points.
 - `app_server.ts` serves the dashboard shell and summary API on the dashboard port.
 - `receiver_worker.ts` keeps Deno HTTP servers off the synchronous native webview thread.
 
