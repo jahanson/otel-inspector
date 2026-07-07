@@ -4,8 +4,9 @@
     "fmt:check": "deno fmt --check",
     "lint": "deno lint",
     "check": "deno check src/main.ts src/backend/receiver_worker.ts tests/**/*.ts tools/**/*.ts",
-    "receiver:test": "deno test --allow-net=127.0.0.1:4318 tests/backend/receiver_contract_test.ts",
-    "test": "deno test --allow-net=127.0.0.1:4318 tests",
+    "proto:gen": "deno run --allow-env=PATH,LOCALAPPDATA,HOME,USERPROFILE --allow-read --allow-write --allow-run tools/generate_proto.ts",
+    "receiver:test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests/backend/receiver_contract_test.ts",
+    "test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests",
     "fixtures": "deno run --allow-write=fixtures tools/write_fixtures.ts",
     "send:metrics-fixture": "deno run --allow-read=fixtures --allow-net=127.0.0.1:4318 tools/send_metrics_fixture.ts",
     "dev": "deno run --allow-env=PLUGIN_URL,DENO_DIR,LOCALAPPDATA,USERPROFILE,HOME,XDG_CACHE_HOME --allow-read --allow-write --allow-net=127.0.0.1:4318,127.0.0.1:4319,github.com,release-assets.githubusercontent.com --allow-ffi --unstable-ffi --unstable-worker-options src/main.ts",
@@ -13,6 +14,7 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.15",
+    "@protobuf-ts/runtime": "npm:@protobuf-ts/runtime@2.11.1",
     "@webview/webview": "jsr:@webview/webview@0.9.0"
   },
   "fmt": {
@@ -27,6 +29,9 @@
     ]
   },
   "lint": {
+    "exclude": [
+      "src/backend/otel/proto"
+    ],
     "rules": {
       "tags": [
         "recommended"

@@ -1,5 +1,12 @@
 import { RECEIVER_CONTRACT, ReceiverContract, receiverEndpoint, ReceiverFailureCategory } from "./contracts.ts";
-import { buildLiveTelemetrySummary, buildReceiverState, ReceiverState, recordReceiverFailure } from "./live_bus.ts";
+import { decodeMetricsExportRequest, encodeMetricsExportResponse } from "./otel/decode.ts";
+import {
+  buildLiveTelemetrySummary,
+  buildReceiverState,
+  ReceiverState,
+  recordReceiverExport,
+  recordReceiverFailure,
+} from "./live_bus.ts";
 
 export { buildReceiverState, RECEIVER_CONTRACT, receiverEndpoint };
 export type { ReceiverState };
@@ -88,15 +95,32 @@ export async function handleReceiverRequest(
     );
   }
 
-  return failureResponse(
-    state,
-    400,
-    "decode-failed",
-    request,
-    path,
-    payloadRead.payload.byteLength,
-    "Protobuf decoding will be enabled by the OTLP type generation slice.",
-  );
+  try {
+    if (payloadRead.payload.byteLength === 0) {
+      throw new Error("empty protobuf payload");
+    }
+
+    decodeMetricsExportRequest(payloadRead.payload);
+  } catch {
+    return failureResponse(
+      state,
+      400,
+      "decode-failed",
+      request,
+      path,
+      payloadRead.payload.byteLength,
+      "Send a valid ExportMetricsServiceRequest protobuf body.",
+    );
+  }
+
+  recordReceiverExport(state, payloadRead.payload.byteLength);
+  return new Response(toResponseBody(encodeMetricsExportResponse()), {
+    status: 200,
+    headers: {
+      "content-type": contract.contentType,
+      "cache-control": "no-store",
+    },
+  });
 }
 
 export function startReceiver(state: ReceiverState = buildReceiverState()): Deno.HttpServer<Deno.NetAddr> {
@@ -162,6 +186,10 @@ function parseContentLength(value: string | null): number | undefined {
 
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
+function toResponseBody(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
 async function readPayloadWithLimit(

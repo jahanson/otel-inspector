@@ -2,9 +2,9 @@
 project: otel-inspector-dashboard
 title: "OTLP HTTP Protobuf Receiver"
 type: runtime-spec
-status: proposed-draft
+status: implemented
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-07
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -21,6 +21,10 @@ Content-Type: application/x-protobuf
 Body: ExportMetricsServiceRequest protobuf bytes
 Response: ExportMetricsServiceResponse protobuf bytes or safe failure
 ```
+
+Successful metric exports return `200` with an empty
+`ExportMetricsServiceResponse` protobuf body and are counted only after decode
+succeeds. Normalization remains a separate downstream slice.
 
 ## Rejections
 
@@ -49,8 +53,8 @@ Do not echo request bodies, credentials, raw attributes, or raw decode errors. S
 
 ## Safe failure response shape
 
-Until OTLP protobuf response encoding lands, receiver failures are JSON so tests
-and the desktop shell can inspect safe error state:
+Receiver failures are JSON so tests and the desktop shell can inspect safe
+error state:
 
 ```ts
 type ReceiverFailureResponse = {

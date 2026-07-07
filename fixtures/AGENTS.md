@@ -12,6 +12,7 @@
 ## Local Contracts
 
 - `otlp/malformed-protobuf.bin` must remain invalid and must exercise the safe `decode-failed` path.
+- `otlp/valid-minimal-metrics.bin` must remain valid and must exercise the successful `/v1/metrics` decode path.
 - Fixture assets must not contain credentials, secrets, or private raw telemetry.
 
 ## Work Guidance
