@@ -2,14 +2,16 @@
 
 ## Purpose
 
-- Own implementation plans created for Superpowers-guided execution.
+- Own design specs and implementation plans created for Superpowers-guided execution.
 
 ## Ownership
 
+- `specs/` contains approved design specs that define scope, contracts, and trade-offs before planning.
 - `plans/` contains task-by-task implementation plans for agentic workers.
 
 ## Local Contracts
 
+- Specs must be approved before they are used to create implementation plans.
 - Plans are handoff artifacts and must stay aligned with executable repo contracts when created or updated.
 
 ## Work Guidance
