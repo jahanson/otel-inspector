@@ -139,4 +139,3 @@ Results:
 ### Blocked reviewer item
 
 Exponential histogram remains out of scope for this fix. The current generated proto surface in `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts` exposes `gauge`, `sum`, `histogram`, and `summary` oneof arms only; there is no exponential histogram arm to normalize against in the owned Task 2 files. That reviewer item should be handled by the controller/human or in a future proto/codegen task.
-

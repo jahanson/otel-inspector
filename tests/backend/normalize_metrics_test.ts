@@ -270,6 +270,90 @@ Deno.test("normalizeMetricsExport emits histogram-incomplete warnings for unusab
   }]);
 });
 
+Deno.test("normalizeMetricsExport rejects histograms whose bucket counts do not match count", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: { attributes: [], droppedAttributesCount: 0 },
+      scopeMetrics: [{
+        scope: undefined,
+        schemaUrl: "",
+        metrics: [{
+          name: "http.server.duration",
+          description: "",
+          unit: "ms",
+          data: {
+            oneofKind: "histogram",
+            histogram: {
+              aggregationTemporality: AggregationTemporality.DELTA,
+              dataPoints: [{
+                attributes: [stringAttribute("http.route", "/cart")],
+                startTimeUnixNano: 10n,
+                timeUnixNano: 20n,
+                count: 3n,
+                sum: 60,
+                bucketCounts: [1n, 1n],
+                explicitBounds: [10],
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].metric.type, "histogram");
+  assertEquals(result.points[0].derivationStatus, "incomplete");
+  assertEquals(result.points[0].buckets, undefined);
+  assertEquals(result.warnings, [{
+    code: "histogram-incomplete",
+    message: "Histogram datapoint cannot produce safe percentile estimates.",
+  }]);
+});
+
+Deno.test("normalizeMetricsExport rejects histograms with unsorted explicit bounds", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: { attributes: [], droppedAttributesCount: 0 },
+      scopeMetrics: [{
+        scope: undefined,
+        schemaUrl: "",
+        metrics: [{
+          name: "http.server.duration",
+          description: "",
+          unit: "ms",
+          data: {
+            oneofKind: "histogram",
+            histogram: {
+              aggregationTemporality: AggregationTemporality.DELTA,
+              dataPoints: [{
+                attributes: [stringAttribute("http.route", "/cart")],
+                startTimeUnixNano: 10n,
+                timeUnixNano: 20n,
+                count: 3n,
+                sum: 60,
+                bucketCounts: [1n, 1n, 1n],
+                explicitBounds: [25, 10],
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].metric.type, "histogram");
+  assertEquals(result.points[0].derivationStatus, "incomplete");
+  assertEquals(result.points[0].buckets, undefined);
+  assertEquals(result.warnings, [{
+    code: "histogram-incomplete",
+    message: "Histogram datapoint cannot produce safe percentile estimates.",
+  }]);
+});
+
 function gaugeMetric(name: string, unit: string, value: number): Metric {
   return {
     name,

@@ -117,8 +117,8 @@ function histogramPoints(
     const attributes = attributesFromKeyValues(dataPoint.attributes);
     const count = toNumberValue(dataPoint.count);
     const bucketCounts = dataPoint.bucketCounts.map((bucketCount) => toNumberValue(bucketCount));
-    const usableBuckets = bucketCounts.every((bucketCount) => bucketCount !== undefined) &&
-      dataPoint.bucketCounts.length === dataPoint.explicitBounds.length + 1;
+    const usableBuckets = count !== undefined &&
+      hasUsableHistogramBuckets(bucketCounts, dataPoint.explicitBounds, count);
     const warnings = usableBuckets && count !== undefined
       ? []
       : [{ code: "histogram-incomplete", message: "Histogram datapoint cannot produce safe percentile estimates." }];
@@ -139,6 +139,36 @@ function histogramPoints(
       warnings,
     });
   });
+}
+
+function hasUsableHistogramBuckets(
+  bucketCounts: Array<number | undefined>,
+  explicitBounds: number[],
+  count: number,
+): boolean {
+  if (bucketCounts.length !== explicitBounds.length + 1) {
+    return false;
+  }
+
+  if (bucketCounts.some((bucketCount) => bucketCount === undefined || bucketCount < 0)) {
+    return false;
+  }
+
+  if (!explicitBounds.every(Number.isFinite)) {
+    return false;
+  }
+
+  for (let index = 1; index < explicitBounds.length; index += 1) {
+    if (explicitBounds[index] <= explicitBounds[index - 1]) {
+      return false;
+    }
+  }
+
+  let bucketTotal = 0;
+  for (const bucketCount of bucketCounts) {
+    bucketTotal += bucketCount!;
+  }
+  return bucketTotal === count;
 }
 
 function summaryPoints(

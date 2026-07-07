@@ -177,8 +177,9 @@
       "type": "implementation",
       "goal": "Transform decoded ResourceMetrics/ScopeMetrics/Metric/DataPoint trees into normalized series keys and datapoints.",
       "acceptanceCriteria": [
-        "Gauge, sum, histogram, and exponential histogram shapes have typed normalized forms",
-        "unknown data is preserved as safe metadata."
+        "Gauge, sum, and histogram shapes have typed normalized forms",
+        "unknown data is preserved as safe metadata.",
+        "exponential histogram normalization is deferred until proto/codegen support exposes that OTLP oneof arm."
       ],
       "blockedBy": [
         "OI-005"

@@ -24,6 +24,7 @@
 - Empty metrics protobuf bodies are decode failures, not successful empty exports.
 - Decode failures are failures, not successful exports.
 - Normalization failures are safe `normalize-failed` receiver failures.
+- Histogram buckets are derivation-usable only when bucket counts are numeric, explicit bounds are finite and strictly increasing, and bucket totals match the datapoint count.
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 
