@@ -32,3 +32,6 @@ terminal-bench-cache/**
 Thumbs.db
 .vscode/
 .idea/
+.codex/
+.repowise/
+.mcp.json
