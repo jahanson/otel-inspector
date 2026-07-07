@@ -3,9 +3,9 @@
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-07 (commit 674f650). Confidence: 100%.
+Last indexed: 2026-07-07 (commit 768e5f4). Confidence: 100%.
 ### Architecture
-repo is an observability platform that ingests OpenTelemetry-format telemetry from instrumented services, decodes and normalizes it through a reactive live bus, persists it with configurable retention, and serves real-time dashboards via an HTTP application server and embedded web UI. The pipeline flows from OTLP receivers through contract-validated event normalization into a live event bus, which both persists to storage and pushes reactive updates to a browser-based dashboard. The repository carries a substantial documentation corpus under docs/plans/, organized into numbered initiatives covering runtime architecture, telemetry normalization, UI/UX north star, API/event contracts, and Linear issue tracking. This reflects a spec-driven development methodology where architecture decisions are documented before implementation.
+repo is an OpenTelemetry-native observability dashboard: it ingests OTLP-encoded traces, metrics, and logs via an HTTP receiver, decodes protobuf payloads into typed contracts, streams them through a reactive live bus, and renders real-time telemetry views in a browser-based UI. The repository pairs a TypeScript backend (Deno runtime) with an embedded HTML/JS frontend, while the majority of its volume is structured planning documentation—Linear issue tracking, architecture plans, and evidence fixtures—that drives the development process. The receiver accepts OTLP HTTP/gRPC payloads. The decode layer (src/backend/otel/decode.ts) parses protobuf-encoded OpenTelemetry data—using proto definitions mirrored under tools/proto/opentelemetry/—and normalizes them into the canonical contract types defined in src/backend/contracts.ts, the highest-PageRank file and de facto schema authority for the system.
 ### Entry Points
 - `src/main.ts`
 
