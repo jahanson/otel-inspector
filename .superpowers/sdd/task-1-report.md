@@ -59,3 +59,10 @@ Result: 3 passed, 0 failed.
 - Fixed the stable series key bug by skipping explicit `undefined` fields during canonical stringification.
 - Added a regression test that proves `{ name: "otel.http" }` and `{ name: "otel.http", version: undefined }` now produce the same key.
 - Verified the focused test suite with `deno test tests/backend/metric_model_test.ts`.
+
+## Task 2 Formatting Drift Note
+
+- Ran `deno fmt src/backend/metric_model.ts`.
+- Ran `deno fmt --check src/backend/metric_model.ts tests/backend/metric_model_test.ts src/backend/normalize_metrics.ts tests/backend/normalize_metrics_test.ts`.
+- Ran `deno test tests/backend/metric_model_test.ts tests/backend/normalize_metrics_test.ts`.
+- Result: all checks passed after reformatting `src/backend/metric_model.ts`.

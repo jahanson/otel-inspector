@@ -66,14 +66,16 @@ export function attributesFromKeyValues(keyValues: KeyValue[]): Record<string, P
 }
 
 export function buildSeriesKey(input: SeriesKeyInput): string {
-  return `series:${stableStringify({
-    resource: input.resource,
-    scope: input.scope,
-    metricName: input.metricName,
-    metricType: input.metricType,
-    unit: input.unit ?? "",
-    attributes: input.attributes,
-  })}`;
+  return `series:${
+    stableStringify({
+      resource: input.resource,
+      scope: input.scope,
+      metricName: input.metricName,
+      metricType: input.metricType,
+      unit: input.unit ?? "",
+      attributes: input.attributes,
+    })
+  }`;
 }
 
 export function toNumberValue(value: bigint | number): number | undefined {
