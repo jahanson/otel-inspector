@@ -95,3 +95,12 @@ Verification for this follow-up:
 
 - `deno test tests/backend/telemetry_store_test.ts`
 - `deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts`
+
+## Contract Review Fix
+
+I fixed the final Task 3 contract review findings in `src/backend/telemetry_store.ts`:
+
+- removed `warningCount` from the public `IngestExportMetadata` shape and from stored export metadata
+- typed `SeriesSummary.resource` and `SeriesSummary.attributes` as `MetricPoint["resource"]` and `MetricPoint["attributes"]`
+
+I left tests unchanged because the existing telemetry store tests already cover the affected behavior and no compile or test adjustments were needed for this contract tightening.

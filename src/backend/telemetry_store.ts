@@ -9,7 +9,6 @@ export type IngestExportMetadata = {
   observedAtMs: number;
   bytesReceived: number;
   pointCount: number;
-  warningCount: number;
 };
 
 export type TelemetryStoreSnapshot = {
@@ -27,8 +26,8 @@ export type SeriesSummary = {
   metricName: string;
   metricType: string;
   unit?: string;
-  resource: Record<string, unknown>;
-  attributes: Record<string, unknown>;
+  resource: MetricPoint["resource"];
+  attributes: MetricPoint["attributes"];
   lastObservedAtMs: number;
 };
 
@@ -60,7 +59,6 @@ export class TelemetryStore {
       observedAtMs: input.observedAtMs,
       bytesReceived: input.bytesReceived,
       pointCount: input.points.length,
-      warningCount: input.warnings.length,
     });
     this.#warnings.push(...input.warnings.map(cloneMetricWarning));
     this.#trim();
