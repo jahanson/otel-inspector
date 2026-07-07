@@ -3,11 +3,20 @@
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-07 (commit 768e5f4). Confidence: 100%.
+Last indexed: 2026-07-07 (commit de532bf). Confidence: 100%.
 ### Architecture
-repo is an OpenTelemetry-native observability dashboard: it ingests OTLP-encoded traces, metrics, and logs via an HTTP receiver, decodes protobuf payloads into typed contracts, streams them through a reactive live bus, and renders real-time telemetry views in a browser-based UI. The repository pairs a TypeScript backend (Deno runtime) with an embedded HTML/JS frontend, while the majority of its volume is structured planning documentation—Linear issue tracking, architecture plans, and evidence fixtures—that drives the development process. The receiver accepts OTLP HTTP/gRPC payloads. The decode layer (src/backend/otel/decode.ts) parses protobuf-encoded OpenTelemetry data—using proto definitions mirrored under tools/proto/opentelemetry/—and normalizes them into the canonical contract types defined in src/backend/contracts.ts, the highest-PageRank file and de facto schema authority for the system.
+repo is an OpenTelemetry-native metrics ingestion and observability backend: it receives OTLP/HTTP protobuf metric payloads, decodes and normalizes them into a typed metric model, derives computed metrics, stores recent telemetry, streams live updates over an in-memory event bus, and serves a real-time web UI for visualization and analysis. The system follows a streaming ingestion pipeline with a clear separation between transport, decoding, modeling, storage, and presentation layers:
+The repository carries a substantial documentation corpus (docs/) including runtime architecture plans, redaction/privacy design, risk registers, Linear issue tracking, and agent instruction files (AGENTS.md). This suggests an AI-assisted development workflow with structured planning artifacts.
 ### Entry Points
 - `src/main.ts`
+### Risk Hotspots
+| File | Churn | 90d Commits | Owner |
+|------|-------|-------------|-------|
+| `tests/backend/receiver_contract_test.ts` | 100.0th percentile | 6 | Joseph Hanson |
+| `tests/backend/normalize_metrics_test.ts` | 97.4th percentile | 3 | Joseph Hanson |
+| `tests/backend/metric_derivations_test.ts` | 94.9th percentile | 4 | Joseph Hanson |
+| `src/backend/receiver.ts` | 92.3th percentile | 7 | Joseph Hanson |
+| `src/backend/normalize_metrics.ts` | 89.7th percentile | 3 | Joseph Hanson |
 
 ### Repowise MCP Workflow
 
