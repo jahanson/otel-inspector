@@ -101,6 +101,8 @@ Default section order:
 
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
+- Telemetry substrate follow-up: exponential histogram support was intentionally deferred from the first OI-006 normalizer pass because the current generated OTLP metrics bindings do not expose an exponential histogram oneof arm. The next substrate/protobuf task after the current normalization/store/derivation pass must add exponential histogram proto/codegen support and typed normalization before moving on to dashboard UI work.
+
 ## Child DOX Index
 
 - `docs/AGENTS.md` — planning packet, PRD/runtime/UI/implementation/evidence docs, Linear issue material, and ADRs.
