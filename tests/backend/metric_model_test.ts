@@ -41,6 +41,25 @@ Deno.test("buildSeriesKey is deterministic regardless of object insertion order"
   assertMatch(first, /^series:/);
 });
 
+Deno.test("buildSeriesKey skips explicit undefined optional fields", () => {
+  const absent = buildSeriesKey({
+    resource: { "service.name": "checkout" },
+    scope: { name: "otel.http" },
+    metricName: "http.server.duration",
+    metricType: "histogram",
+    attributes: {},
+  });
+  const explicitUndefined = buildSeriesKey({
+    resource: { "service.name": "checkout" },
+    scope: { name: "otel.http", version: undefined },
+    metricName: "http.server.duration",
+    metricType: "histogram",
+    attributes: {},
+  });
+
+  assertEquals(absent, explicitUndefined);
+});
+
 Deno.test("toNumberValue converts safe bigint values and rejects unsafe bigint values", () => {
   assertEquals(toNumberValue(42n), 42);
   assertEquals(toNumberValue(42.5), 42.5);
