@@ -24,18 +24,18 @@
 - Empty metrics protobuf bodies are decode failures, not successful empty exports.
 - Decode failures are failures, not successful exports.
 - Normalization failures are safe `normalize-failed` receiver failures.
-- Successful exports append normalized points to bounded memory and update dropped-point accounting.
+- Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 
 ## Work Guidance
 
 - Add tests before changing receiver behavior.
-- Count successful exports only after protobuf decode succeeds.
 - Keep worker messages minimal and typed locally.
 
 ## Verification
 
-- Run `deno task receiver:test` for receiver changes.
+- Run focused substrate tests for `tests/backend/metric_model_test.ts`, `tests/backend/normalize_metrics_test.ts`, `tests/backend/telemetry_store_test.ts`, `tests/backend/metric_derivations_test.ts`, `tests/backend/live_bus_substrate_test.ts`, and `tests/backend/live_bus_cadence_test.ts`.
+- Run `deno test tests/backend/receiver_test.ts` for receiver changes.
 - Run `deno task ok` before closeout.
 
 ## Child DOX Index
