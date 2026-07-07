@@ -18,7 +18,7 @@ node_modules/
 .npm/
 .deno/
 .cache/
-WebView2Loader.dll
+*.dll
 .pytest_cache/
 __pycache__/
 
@@ -32,7 +32,5 @@ terminal-bench-cache/**
 Thumbs.db
 .vscode/
 .idea/
-.codex/
 .repowise/
-.mcp.json
 .worktrees/
