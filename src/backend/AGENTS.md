@@ -25,6 +25,8 @@
 - Decode failures are failures, not successful exports.
 - Normalization failures are safe `normalize-failed` receiver failures.
 - Histogram buckets are derivation-usable only when bucket counts are numeric, explicit bounds are finite and strictly increasing, and bucket totals match the datapoint count.
+- HTTP request-rate derivations use retained-window delta sums only when they are monotonic, non-negative request counters.
+- HTTP latency p95 derivations return values only for known millisecond or second units and finite percentile buckets; open-ended `+Inf` percentile buckets stay unavailable.
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 
@@ -36,7 +38,7 @@
 ## Verification
 
 - Run focused substrate tests for `tests/backend/metric_model_test.ts`, `tests/backend/normalize_metrics_test.ts`, `tests/backend/telemetry_store_test.ts`, `tests/backend/metric_derivations_test.ts`, `tests/backend/live_bus_substrate_test.ts`, and `tests/backend/live_bus_cadence_test.ts`.
-- Run `deno test tests/backend/receiver_test.ts` for receiver changes.
+- Run `deno test tests/backend/receiver_contract_test.ts` for receiver changes.
 - Run `deno task ok` before closeout.
 
 ## Child DOX Index

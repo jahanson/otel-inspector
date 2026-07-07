@@ -8,10 +8,12 @@ export function deriveLiveTelemetrySummary(
   observedAtMs: number,
 ): LiveTelemetrySummary {
   const elapsedSeconds = Math.max((observedAtMs - startedAtMs) / 1000, 1);
-  const requestCount = sumValues(snapshot.recentPoints.filter(isHttpRequestCount));
+  const requestPoints = snapshot.recentPoints.filter(isHttpRequestCount);
+  const requestCount = sumValues(requestPoints);
   const errorCount = sumValues(
-    snapshot.recentPoints.filter((point) => isHttpRequestCount(point) && isErrorStatus(point)),
+    requestPoints.filter(isErrorStatus),
   );
+  const requestWindowSeconds = retainedWindowSeconds(requestPoints, observedAtMs);
 
   return {
     observedAtMs,
@@ -27,7 +29,7 @@ export function deriveLiveTelemetrySummary(
       dropped: snapshot.droppedPoints,
     },
     overview: {
-      requestRate: requestCount > 0 ? roundRate(requestCount / elapsedSeconds) : undefined,
+      requestRate: requestCount > 0 ? roundRate(requestCount / requestWindowSeconds) : undefined,
       errorRate: requestCount > 0 ? roundRate(errorCount / requestCount) : undefined,
       p95Ms: percentileFromHistograms(snapshot.recentPoints.filter(isHttpDurationHistogram), 0.95),
       topServices: topServices(snapshot.recentPoints),
@@ -39,8 +41,10 @@ export function deriveLiveTelemetrySummary(
 function isHttpRequestCount(point: MetricPoint): boolean {
   return point.metric.type === "sum" &&
     point.metric.temporality === "delta" &&
+    point.metric.monotonic === true &&
     point.derivationStatus === "usable" &&
     point.value !== undefined &&
+    point.value >= 0 &&
     (point.metric.name === "http.server.request.count" || point.metric.name === "http.server.requests");
 }
 
@@ -65,6 +69,21 @@ function sumValues(points: MetricPoint[]): number {
   return points.reduce((sum, point) => sum + (point.value ?? 0), 0);
 }
 
+function retainedWindowSeconds(points: MetricPoint[], observedAtMs: number): number {
+  if (points.length === 0) {
+    return 1;
+  }
+
+  let earliest = Number.POSITIVE_INFINITY;
+  let latest = observedAtMs;
+  for (const point of points) {
+    earliest = Math.min(earliest, point.observedAtMs);
+    latest = Math.max(latest, point.observedAtMs);
+  }
+
+  return Math.max((latest - earliest) / 1000, 1);
+}
+
 function percentileFromHistograms(points: MetricPoint[], quantile: number): number | undefined {
   const buckets = new Map<number, number>();
   let totalCount = 0;
@@ -72,6 +91,9 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
   for (const point of points) {
     for (const bucket of point.buckets ?? []) {
       const upperBound = normalizeDurationUpperBound(bucket.upperBound, point.metric.unit);
+      if (upperBound === undefined) {
+        return undefined;
+      }
       buckets.set(upperBound, (buckets.get(upperBound) ?? 0) + bucket.count);
       totalCount += bucket.count;
     }
@@ -83,21 +105,17 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
 
   const rank = Math.ceil(totalCount * quantile);
   let seen = 0;
-  let lastFiniteUpperBound: number | undefined;
   for (const [upperBound, count] of [...buckets.entries()].sort((left, right) => left[0] - right[0])) {
     seen += count;
-    if (Number.isFinite(upperBound)) {
-      lastFiniteUpperBound = upperBound;
-    }
     if (seen >= rank) {
-      return Number.isFinite(upperBound) ? upperBound : lastFiniteUpperBound;
+      return Number.isFinite(upperBound) ? upperBound : undefined;
     }
   }
 
   return undefined;
 }
 
-function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number {
+function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number | undefined {
   if (!Number.isFinite(upperBound)) {
     return upperBound;
   }
@@ -106,7 +124,11 @@ function normalizeDurationUpperBound(upperBound: number, unit: string | undefine
     return upperBound * 1000;
   }
 
-  return upperBound;
+  if (unit === "ms") {
+    return upperBound;
+  }
+
+  return undefined;
 }
 
 function topServices(points: MetricPoint[]): string[] {

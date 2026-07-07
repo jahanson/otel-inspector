@@ -56,7 +56,7 @@ Deno.test("recordReceiverExport normalizes decoded exports into live summary dat
   assertEquals(summary.ingest.exportsPerSec, 0.5);
   assertEquals(summary.ingest.datapointsPerSec, 0.5);
   assertEquals(summary.ingest.bytesPerSec, 64);
-  assertEquals(summary.overview.requestRate, 2);
+  assertEquals(summary.overview.requestRate, 4);
   assertEquals(summary.overview.errorRate, 0);
   assertEquals(summary.overview.topServices, ["checkout"]);
 });

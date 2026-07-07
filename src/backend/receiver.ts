@@ -1,4 +1,5 @@
 import { RECEIVER_CONTRACT, ReceiverContract, receiverEndpoint, ReceiverFailureCategory } from "./contracts.ts";
+import type { ExportMetricsServiceRequestMessage } from "./otel/decode.ts";
 import { decodeMetricsExportRequest, encodeMetricsExportResponse } from "./otel/decode.ts";
 import {
   buildLiveTelemetrySummary,
@@ -95,7 +96,7 @@ export async function handleReceiverRequest(
     );
   }
 
-  let exportRequest;
+  let exportRequest: ExportMetricsServiceRequestMessage;
   try {
     if (payloadRead.payload.byteLength === 0) {
       throw new Error("empty protobuf payload");

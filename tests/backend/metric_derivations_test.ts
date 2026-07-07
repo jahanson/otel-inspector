@@ -29,9 +29,36 @@ Deno.test("deriveLiveTelemetrySummary computes HTTP request rate and error rate 
     3_000,
   );
 
-  assertEquals(summary.overview.requestRate, 5);
+  assertEquals(summary.overview.requestRate, 10);
   assertEquals(summary.overview.errorRate, 0.2);
   assertEquals(summary.overview.topServices, ["checkout"]);
+});
+
+Deno.test("deriveLiveTelemetrySummary computes HTTP request rate from retained request window", () => {
+  const summary = deriveLiveTelemetrySummary(
+    snapshot([
+      httpRequestCount(59_000, 5, 200),
+      httpRequestCount(60_000, 5, 200),
+    ], { totalExports: 120, totalBytes: 64, totalPoints: 120, droppedPoints: 118 }),
+    0,
+    60_000,
+  );
+
+  assertEquals(summary.overview.requestRate, 10);
+});
+
+Deno.test("deriveLiveTelemetrySummary ignores non-monotonic and negative HTTP request sums", () => {
+  const summary = deriveLiveTelemetrySummary(
+    snapshot([
+      httpRequestCount(2_000, 8, 200, "delta", false),
+      httpRequestCount(2_000, -2, 500),
+    ], { totalExports: 1, totalBytes: 64, totalPoints: 2, droppedPoints: 0 }),
+    1_000,
+    3_000,
+  );
+
+  assertEquals(summary.overview.requestRate, undefined);
+  assertEquals(summary.overview.errorRate, undefined);
 });
 
 Deno.test("deriveLiveTelemetrySummary ignores cumulative HTTP sums for request and error rates", () => {
@@ -46,11 +73,34 @@ Deno.test("deriveLiveTelemetrySummary ignores cumulative HTTP sums for request a
     3_000,
   );
 
-  assertEquals(summary.overview.requestRate, 5);
+  assertEquals(summary.overview.requestRate, 10);
   assertEquals(summary.overview.errorRate, 0.2);
 });
 
 Deno.test("deriveLiveTelemetrySummary estimates p95 from usable HTTP histogram buckets", () => {
+  const summary = deriveLiveTelemetrySummary(
+    snapshot([
+      {
+        ...basePoint("http.server.duration", 2_000),
+        metric: { name: "http.server.duration", type: "histogram", unit: "ms", temporality: "delta" },
+        count: 10,
+        sum: 120,
+        buckets: [
+          { upperBound: 50, count: 5 },
+          { upperBound: 100, count: 5 },
+          { upperBound: Number.POSITIVE_INFINITY, count: 0 },
+        ],
+      },
+    ], { totalExports: 1, totalBytes: 64, totalPoints: 1, droppedPoints: 0 }),
+    1_000,
+    3_000,
+  );
+
+  assertEquals(summary.overview.p95Ms, 100);
+  assertEquals(summary.warnings, []);
+});
+
+Deno.test("deriveLiveTelemetrySummary reports p95 unavailable for the open-ended bucket", () => {
   const summary = deriveLiveTelemetrySummary(
     snapshot([
       {
@@ -69,8 +119,7 @@ Deno.test("deriveLiveTelemetrySummary estimates p95 from usable HTTP histogram b
     3_000,
   );
 
-  assertEquals(summary.overview.p95Ms, 100);
-  assertEquals(summary.warnings, []);
+  assertEquals(summary.overview.p95Ms, undefined);
 });
 
 Deno.test("deriveLiveTelemetrySummary ignores cumulative HTTP histograms for p95", () => {
@@ -105,8 +154,8 @@ Deno.test("deriveLiveTelemetrySummary converts second-based HTTP duration histog
         sum: 0.12,
         buckets: [
           { upperBound: 0.05, count: 5 },
-          { upperBound: 0.1, count: 4 },
-          { upperBound: Number.POSITIVE_INFINITY, count: 1 },
+          { upperBound: 0.1, count: 5 },
+          { upperBound: Number.POSITIVE_INFINITY, count: 0 },
         ],
       },
     ], { totalExports: 1, totalBytes: 64, totalPoints: 1, droppedPoints: 0 }),
@@ -115,6 +164,27 @@ Deno.test("deriveLiveTelemetrySummary converts second-based HTTP duration histog
   );
 
   assertEquals(summary.overview.p95Ms, 100);
+});
+
+Deno.test("deriveLiveTelemetrySummary reports p95 unavailable for ambiguous duration units", () => {
+  const summary = deriveLiveTelemetrySummary(
+    snapshot([
+      {
+        ...basePoint("http.server.request.duration", 2_000),
+        metric: { name: "http.server.request.duration", type: "histogram", unit: "us", temporality: "delta" },
+        count: 10,
+        sum: 120_000,
+        buckets: [
+          { upperBound: 50_000, count: 10 },
+          { upperBound: Number.POSITIVE_INFINITY, count: 0 },
+        ],
+      },
+    ], { totalExports: 1, totalBytes: 64, totalPoints: 1, droppedPoints: 0 }),
+    1_000,
+    3_000,
+  );
+
+  assertEquals(summary.overview.p95Ms, undefined);
 });
 
 Deno.test("deriveLiveTelemetrySummary reports unavailable overview data without guessing", () => {
@@ -159,10 +229,11 @@ function httpRequestCount(
   value: number,
   statusCode: number,
   temporality: "delta" | "cumulative" = "delta",
+  monotonic = true,
 ): MetricPoint {
   return {
     ...basePoint("http.server.request.count", observedAtMs),
-    metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality, monotonic: true },
+    metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality, monotonic },
     attributes: {
       "http.response.status_code": statusCode,
       "http.request.method": "GET",

@@ -270,7 +270,7 @@ Deno.test("POST /v1/metrics with HTTP metrics updates datapoints and overview", 
   assertEquals(response.status, 200);
   assertEquals(summary.ingest.exportsPerSec, 0.5);
   assertEquals(summary.ingest.datapointsPerSec, 1.5);
-  assertEquals(summary.overview.requestRate, 5);
+  assertEquals(summary.overview.requestRate, 10);
   assertEquals(summary.overview.errorRate, 0.2);
   assertEquals(summary.overview.p95Ms, 100);
   assertEquals(summary.overview.topServices, ["checkout"]);
@@ -367,7 +367,7 @@ function histogramDataPoint() {
     timeUnixNano: 20n,
     count: 10n,
     sum: 120,
-    bucketCounts: [5n, 4n, 1n],
+    bucketCounts: [5n, 5n, 0n],
     explicitBounds: [50, 100],
   };
 }
@@ -417,7 +417,7 @@ function toBody(payload: Uint8Array): ArrayBuffer {
 }
 
 function encodeVarint(value: bigint): number[] {
-  const encoded = [];
+  const encoded: number[] = [];
   let current = value;
   while (current >= 0x80n) {
     encoded.push(Number((current & 0x7fn) | 0x80n));
