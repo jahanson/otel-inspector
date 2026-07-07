@@ -1,7 +1,7 @@
 import { LiveTelemetrySummary } from "../backend/contracts.ts";
 
 export function buildAppHtml(initialSummary: LiveTelemetrySummary): string {
-  const summaryJson = JSON.stringify(initialSummary).replaceAll("<", "\\u003c");
+  const summaryJson = serializeForInlineScript(initialSummary);
 
   return `<!doctype html>
 <html lang="en">
@@ -268,6 +268,9 @@ export function buildAppHtml(initialSummary: LiveTelemetrySummary): string {
       async function refresh() {
         if (typeof globalThis.getTelemetrySummary === "function") {
           paint(await globalThis.getTelemetrySummary());
+        } else {
+          const response = await fetch("/api/summary", { cache: "no-store" });
+          paint(await response.json());
         }
       }
 
@@ -276,4 +279,11 @@ export function buildAppHtml(initialSummary: LiveTelemetrySummary): string {
     </script>
   </body>
 </html>`;
+}
+
+function serializeForInlineScript(value: unknown): string {
+  return JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
 }

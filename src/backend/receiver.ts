@@ -1,11 +1,5 @@
 import { RECEIVER_CONTRACT, ReceiverContract, receiverEndpoint, ReceiverFailureCategory } from "./contracts.ts";
-import {
-  buildLiveTelemetrySummary,
-  buildReceiverState,
-  ReceiverState,
-  recordReceiverExport,
-  recordReceiverFailure,
-} from "./live_bus.ts";
+import { buildLiveTelemetrySummary, buildReceiverState, ReceiverState, recordReceiverFailure } from "./live_bus.ts";
 
 export { buildReceiverState, RECEIVER_CONTRACT, receiverEndpoint };
 export type { ReceiverState };
@@ -81,20 +75,18 @@ export async function handleReceiverRequest(
     );
   }
 
-  const payload = new Uint8Array(await request.arrayBuffer());
-  if (payload.byteLength > contract.maxPayloadBytes) {
+  const payloadRead = await readPayloadWithLimit(request, contract.maxPayloadBytes);
+  if (payloadRead.tooLarge) {
     return failureResponse(
       state,
       413,
       "payload-too-large",
       request,
       path,
-      payload.byteLength,
+      payloadRead.bytesReceived,
       "Reduce the OTLP export body below 4 MiB.",
     );
   }
-
-  recordReceiverExport(state, payload.byteLength);
 
   return failureResponse(
     state,
@@ -102,7 +94,7 @@ export async function handleReceiverRequest(
     "decode-failed",
     request,
     path,
-    payload.byteLength,
+    payloadRead.payload.byteLength,
     "Protobuf decoding will be enabled by the OTLP type generation slice.",
   );
 }
@@ -170,6 +162,49 @@ function parseContentLength(value: string | null): number | undefined {
 
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
+async function readPayloadWithLimit(
+  request: Request,
+  maxPayloadBytes: number,
+): Promise<
+  { payload: Uint8Array; bytesReceived: number; tooLarge: false } | { bytesReceived: number; tooLarge: true }
+> {
+  if (request.body === null) {
+    return { payload: new Uint8Array(), bytesReceived: 0, tooLarge: false };
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytesReceived = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      bytesReceived += value.byteLength;
+      if (bytesReceived > maxPayloadBytes) {
+        await reader.cancel();
+        return { bytesReceived: maxPayloadBytes + 1, tooLarge: true };
+      }
+
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const payload = new Uint8Array(bytesReceived);
+  let offset = 0;
+  for (const chunk of chunks) {
+    payload.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return { payload, bytesReceived, tooLarge: false };
 }
 
 function safeFailureMessage(category: ReceiverFailureCategory): string {

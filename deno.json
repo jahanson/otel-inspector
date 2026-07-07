@@ -3,12 +3,12 @@
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
     "lint": "deno lint",
-    "check": "deno check src/main.ts tests/**/*.ts tools/**/*.ts",
+    "check": "deno check src/main.ts src/backend/receiver_worker.ts tests/**/*.ts tools/**/*.ts",
     "receiver:test": "deno test --allow-net=127.0.0.1:4318 tests/backend/receiver_contract_test.ts",
     "test": "deno test --allow-net=127.0.0.1:4318 tests",
     "fixtures": "deno run --allow-write=fixtures tools/write_fixtures.ts",
-    "send:metrics-fixture": "deno run --allow-net=127.0.0.1:4318 tools/send_metrics_fixture.ts",
-    "dev": "deno run --allow-env=PLUGIN_URL,DENO_DIR,LOCALAPPDATA,USERPROFILE,HOME,XDG_CACHE_HOME --allow-read --allow-write --allow-net=127.0.0.1:4318,github.com,release-assets.githubusercontent.com --allow-ffi --unstable-ffi src/main.ts",
+    "send:metrics-fixture": "deno run --allow-read=fixtures --allow-net=127.0.0.1:4318 tools/send_metrics_fixture.ts",
+    "dev": "deno run --allow-env=PLUGIN_URL,DENO_DIR,LOCALAPPDATA,USERPROFILE,HOME,XDG_CACHE_HOME --allow-read --allow-write --allow-net=127.0.0.1:4318,127.0.0.1:4319,github.com,release-assets.githubusercontent.com --allow-ffi --unstable-ffi --unstable-worker-options src/main.ts",
     "ok": "deno task fmt:check && deno task lint && deno task check && deno task test"
   },
   "imports": {

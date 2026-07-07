@@ -80,4 +80,10 @@ When the user requests a durable behavior change, record it here or in the relev
 
 ## Child DOX Index
 
-This project is not yet indexed. Before continuing you must scan the project, build the DOX tree and replace this message with the actual index. Go deep and scan files recursively to properly evaluate complexity and create nested DOX files where needed.
+- `docs/AGENTS.md` — planning packet, PRD/runtime/UI/implementation/evidence docs, Linear issue material, and ADRs.
+- `fixtures/AGENTS.md` — local OTLP fixture assets and fixture inventory.
+- `src/AGENTS.md` — executable Deno desktop application source.
+  - `src/backend/AGENTS.md` — receiver contract, live telemetry state, worker-owned servers, and backend runtime boundaries.
+  - `src/ui/AGENTS.md` — embedded dashboard shell and UI projection contracts.
+- `tests/AGENTS.md` — Deno tests for backend contracts, dashboard shell, and regression coverage.
+- `tools/AGENTS.md` — local fixture generation and dogfood sender scripts.
