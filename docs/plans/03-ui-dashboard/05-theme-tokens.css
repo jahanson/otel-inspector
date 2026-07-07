@@ -1,0 +1,18 @@
+/* Mabel-inspired starter tokens for OTEL Inspector. */
+:root {
+  --mabel-color-accent-coral: #DC695F;
+  --mabel-color-accent-orange: #FF9F3A;
+  --mabel-color-accent-blue: #6F8DFF;
+  --mabel-color-accent-green: #6EDF98;
+  --mabel-color-neutral-light: #F2F0EB;
+  --mabel-color-neutral-dark: #23272A;
+
+  --otel-background: var(--mabel-color-neutral-dark);
+  --otel-foreground: var(--mabel-color-neutral-light);
+  --otel-surface: color-mix(in srgb, var(--mabel-color-neutral-dark) 88%, white);
+  --otel-border: color-mix(in srgb, var(--mabel-color-neutral-light) 18%, transparent);
+  --otel-live: var(--mabel-color-accent-green);
+  --otel-warning: var(--mabel-color-accent-orange);
+  --otel-error: var(--mabel-color-accent-coral);
+  --otel-selected: var(--mabel-color-accent-blue);
+}

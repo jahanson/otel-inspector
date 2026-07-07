@@ -1,0 +1,33 @@
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Run outputs
+08-evidence/runs/**
+!08-evidence/runs/.gitkeep
+artifacts/**
+reports/generated/**
+
+# Dependencies and caches
+node_modules/
+.npm/
+.deno/
+.cache/
+.pytest_cache/
+__pycache__/
+
+# Benchmark heavy data
+benchmarks/data/**
+swebench-cache/**
+terminal-bench-cache/**
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

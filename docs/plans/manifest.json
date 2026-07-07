@@ -1,0 +1,130 @@
+{
+  "project": "otel-inspector-dashboard",
+  "title": "OTEL Inspector and Dashboard",
+  "created": "2026-07-05",
+  "source_method": "LINEAR_METHOD_v2.md",
+  "linear": {
+    "initiative": "Mabel \u2014 Portable AI Work Partner",
+    "project": "OTEL Inspector and Dashboard MVP",
+    "target_date": "2026-08-14",
+    "milestones": [
+      {
+        "id": "M0",
+        "name": "Project frame + receiver contract",
+        "target_date": "2026-07-10",
+        "goal": "Lock the Linear/project shape, source-of-truth split, OTLP receiver scope, and dogfood success criteria before implementation sprawl begins.",
+        "acceptance": [
+          "Project packet, PRD draft, issue map, dependency spine, labels/views, and status template exist.",
+          "OTLP receiver v0 is explicitly metrics-first and supports /v1/metrics over HTTP/protobuf.",
+          "P1 traces/logs/proxy features are named but not allowed to inflate MVP."
+        ]
+      },
+      {
+        "id": "M1",
+        "name": "OTLP metrics receiver walking skeleton",
+        "target_date": "2026-07-17",
+        "goal": "Prove the end-to-end ingest spine from local OTLP HTTP/protobuf request to normalized metric summaries and safe failure records.",
+        "acceptance": [
+          "Deno backend listens on localhost for POST /v1/metrics.",
+          "Valid protobuf metric exports decode into ResourceMetrics \u2192 ScopeMetrics \u2192 Metric \u2192 DataPoint records.",
+          "Bad content type, malformed protobuf, oversize payloads, and decode failures produce visible safe failures."
+        ]
+      },
+      {
+        "id": "M2",
+        "name": "Reactive telemetry substrate",
+        "target_date": "2026-07-24",
+        "goal": "Build the live in-memory substrate that dashboards project instead of parsing raw OTLP trees directly.",
+        "acceptance": [
+          "Normalized metric store supports bounded retention and ring-buffer eviction accounting.",
+          "Derived metric engine computes latest, rate, deltas, and histogram percentile estimates where possible.",
+          "Live bus batches updates so UI never rerenders per datapoint."
+        ]
+      },
+      {
+        "id": "M3",
+        "name": "Docked inspector dashboard",
+        "target_date": "2026-07-31",
+        "goal": "Ship the side-panel inspector UX with overview cards, charts, explorer, filters, pause/resume, and clear empty/degraded states.",
+        "acceptance": [
+          "Docked Sheet/ResizablePanel inspector can attach beside the app and expand to full dashboard mode.",
+          "Overview renders latency, throughput, error, active request, ingest, and dropped-point state.",
+          "Metrics Explorer can filter by service/resource/metric/attribute and open metric detail."
+        ]
+      },
+      {
+        "id": "M4",
+        "name": "Safe payload inspect + debug fixtures",
+        "target_date": "2026-08-07",
+        "goal": "Make raw telemetry inspectable enough to trust and debuggable enough to improve, without turning payloads into secret soup.",
+        "acceptance": [
+          "Payload Inspector traces every dashboard point back to decoded resource/scope/metric/datapoint context.",
+          "Redaction policy hides sensitive attributes and reports what was hidden.",
+          "Redacted fixture export exists for ingest, decode, high-cardinality, redaction, and chart-derivation failures."
+        ]
+      },
+      {
+        "id": "M5",
+        "name": "Dogfood packaging + acceptance evidence",
+        "target_date": "2026-08-14",
+        "goal": "Package the Deno desktop app for local dogfood and assemble the evidence bundle that proves the MVP claims.",
+        "acceptance": [
+          "Deno desktop build runs with explicit network/file permissions and documented localhost receiver posture.",
+          "Golden fixtures, UI snapshots, redaction tests, and acceptance matrix are current.",
+          "Project can close or promote follow-on traces/logs/proxy work without hiding unfinished MVP evidence."
+        ]
+      }
+    ],
+    "issue_count": 26,
+    "dependency_count": 44,
+    "labels": [
+      "adr",
+      "blocked-by-decision",
+      "certification",
+      "data-table",
+      "debuggability",
+      "deno-desktop",
+      "docs",
+      "evidence",
+      "graphs",
+      "http-metrics",
+      "inspectability",
+      "logs",
+      "metrics",
+      "otel",
+      "p0-dogfood",
+      "p1-certification",
+      "payload",
+      "performance",
+      "persistence",
+      "privacy",
+      "protobuf",
+      "provider-contract",
+      "proxy",
+      "reactive-ui",
+      "regression",
+      "shadcn",
+      "telemetry-store",
+      "traces",
+      "ui"
+    ]
+  },
+  "external_references": [
+    {
+      "name": "OpenTelemetry OTLP Specification",
+      "url": "https://opentelemetry.io/docs/specs/otlp/"
+    },
+    {
+      "name": "OpenTelemetry HTTP Metrics Semantic Conventions",
+      "url": "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/"
+    },
+    {
+      "name": "Deno Desktop Apps",
+      "url": "https://docs.deno.com/runtime/desktop/"
+    },
+    {
+      "name": "shadcn/ui Charts",
+      "url": "https://ui.shadcn.com/docs/components/chart"
+    }
+  ]
+}

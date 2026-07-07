@@ -1,0 +1,178 @@
+[
+  {
+    "blocked_by": "OI-001",
+    "blocks": "OI-002"
+  },
+  {
+    "blocked_by": "OI-001",
+    "blocks": "OI-003"
+  },
+  {
+    "blocked_by": "OI-002",
+    "blocks": "OI-004"
+  },
+  {
+    "blocked_by": "OI-002",
+    "blocks": "OI-005"
+  },
+  {
+    "blocked_by": "OI-004",
+    "blocks": "OI-005"
+  },
+  {
+    "blocked_by": "OI-005",
+    "blocks": "OI-006"
+  },
+  {
+    "blocked_by": "OI-006",
+    "blocks": "OI-007"
+  },
+  {
+    "blocked_by": "OI-005",
+    "blocks": "OI-008"
+  },
+  {
+    "blocked_by": "OI-006",
+    "blocks": "OI-009"
+  },
+  {
+    "blocked_by": "OI-007",
+    "blocks": "OI-009"
+  },
+  {
+    "blocked_by": "OI-009",
+    "blocks": "OI-010"
+  },
+  {
+    "blocked_by": "OI-009",
+    "blocks": "OI-011"
+  },
+  {
+    "blocked_by": "OI-007",
+    "blocks": "OI-012"
+  },
+  {
+    "blocked_by": "OI-009",
+    "blocks": "OI-012"
+  },
+  {
+    "blocked_by": "OI-011",
+    "blocks": "OI-013"
+  },
+  {
+    "blocked_by": "OI-012",
+    "blocks": "OI-013"
+  },
+  {
+    "blocked_by": "OI-010",
+    "blocks": "OI-014"
+  },
+  {
+    "blocked_by": "OI-011",
+    "blocks": "OI-014"
+  },
+  {
+    "blocked_by": "OI-012",
+    "blocks": "OI-014"
+  },
+  {
+    "blocked_by": "OI-009",
+    "blocks": "OI-015"
+  },
+  {
+    "blocked_by": "OI-012",
+    "blocks": "OI-015"
+  },
+  {
+    "blocked_by": "OI-006",
+    "blocks": "OI-016"
+  },
+  {
+    "blocked_by": "OI-018",
+    "blocks": "OI-016"
+  },
+  {
+    "blocked_by": "OI-012",
+    "blocks": "OI-017"
+  },
+  {
+    "blocked_by": "OI-013",
+    "blocks": "OI-017"
+  },
+  {
+    "blocked_by": "OI-008",
+    "blocks": "OI-018"
+  },
+  {
+    "blocked_by": "OI-018",
+    "blocks": "OI-019"
+  },
+  {
+    "blocked_by": "OI-016",
+    "blocks": "OI-020"
+  },
+  {
+    "blocked_by": "OI-018",
+    "blocks": "OI-020"
+  },
+  {
+    "blocked_by": "OI-007",
+    "blocks": "OI-021"
+  },
+  {
+    "blocked_by": "OI-018",
+    "blocks": "OI-021"
+  },
+  {
+    "blocked_by": "OI-005",
+    "blocks": "OI-022"
+  },
+  {
+    "blocked_by": "OI-018",
+    "blocks": "OI-022"
+  },
+  {
+    "blocked_by": "OI-001",
+    "blocks": "OI-023"
+  },
+  {
+    "blocked_by": "OI-003",
+    "blocks": "OI-023"
+  },
+  {
+    "blocked_by": "OI-001",
+    "blocks": "OI-024"
+  },
+  {
+    "blocked_by": "OI-003",
+    "blocks": "OI-024"
+  },
+  {
+    "blocked_by": "OI-003",
+    "blocks": "OI-025"
+  },
+  {
+    "blocked_by": "OI-013",
+    "blocks": "OI-025"
+  },
+  {
+    "blocked_by": "OI-014",
+    "blocks": "OI-025"
+  },
+  {
+    "blocked_by": "OI-015",
+    "blocks": "OI-025"
+  },
+  {
+    "blocked_by": "OI-016",
+    "blocks": "OI-025"
+  },
+  {
+    "blocked_by": "OI-020",
+    "blocks": "OI-026"
+  },
+  {
+    "blocked_by": "OI-025",
+    "blocks": "OI-026"
+  }
+]

@@ -1,0 +1,787 @@
+{
+  "initiative": {
+    "name": "Mabel \u2014 Portable AI Work Partner",
+    "recommendation": "attach-to-existing-unless-observability-spawns-multiple-projects"
+  },
+  "project": {
+    "name": "OTEL Inspector and Dashboard MVP",
+    "targetDate": "2026-08-14",
+    "lead": "TBD",
+    "status": "planned"
+  },
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Project frame + receiver contract",
+      "target_date": "2026-07-10",
+      "goal": "Lock the Linear/project shape, source-of-truth split, OTLP receiver scope, and dogfood success criteria before implementation sprawl begins.",
+      "acceptance": [
+        "Project packet, PRD draft, issue map, dependency spine, labels/views, and status template exist.",
+        "OTLP receiver v0 is explicitly metrics-first and supports /v1/metrics over HTTP/protobuf.",
+        "P1 traces/logs/proxy features are named but not allowed to inflate MVP."
+      ]
+    },
+    {
+      "id": "M1",
+      "name": "OTLP metrics receiver walking skeleton",
+      "target_date": "2026-07-17",
+      "goal": "Prove the end-to-end ingest spine from local OTLP HTTP/protobuf request to normalized metric summaries and safe failure records.",
+      "acceptance": [
+        "Deno backend listens on localhost for POST /v1/metrics.",
+        "Valid protobuf metric exports decode into ResourceMetrics \u2192 ScopeMetrics \u2192 Metric \u2192 DataPoint records.",
+        "Bad content type, malformed protobuf, oversize payloads, and decode failures produce visible safe failures."
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Reactive telemetry substrate",
+      "target_date": "2026-07-24",
+      "goal": "Build the live in-memory substrate that dashboards project instead of parsing raw OTLP trees directly.",
+      "acceptance": [
+        "Normalized metric store supports bounded retention and ring-buffer eviction accounting.",
+        "Derived metric engine computes latest, rate, deltas, and histogram percentile estimates where possible.",
+        "Live bus batches updates so UI never rerenders per datapoint."
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Docked inspector dashboard",
+      "target_date": "2026-07-31",
+      "goal": "Ship the side-panel inspector UX with overview cards, charts, explorer, filters, pause/resume, and clear empty/degraded states.",
+      "acceptance": [
+        "Docked Sheet/ResizablePanel inspector can attach beside the app and expand to full dashboard mode.",
+        "Overview renders latency, throughput, error, active request, ingest, and dropped-point state.",
+        "Metrics Explorer can filter by service/resource/metric/attribute and open metric detail."
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "Safe payload inspect + debug fixtures",
+      "target_date": "2026-08-07",
+      "goal": "Make raw telemetry inspectable enough to trust and debuggable enough to improve, without turning payloads into secret soup.",
+      "acceptance": [
+        "Payload Inspector traces every dashboard point back to decoded resource/scope/metric/datapoint context.",
+        "Redaction policy hides sensitive attributes and reports what was hidden.",
+        "Redacted fixture export exists for ingest, decode, high-cardinality, redaction, and chart-derivation failures."
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "Dogfood packaging + acceptance evidence",
+      "target_date": "2026-08-14",
+      "goal": "Package the Deno desktop app for local dogfood and assemble the evidence bundle that proves the MVP claims.",
+      "acceptance": [
+        "Deno desktop build runs with explicit network/file permissions and documented localhost receiver posture.",
+        "Golden fixtures, UI snapshots, redaction tests, and acceptance matrix are current.",
+        "Project can close or promote follow-on traces/logs/proxy work without hiding unfinished MVP evidence."
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "OI-001",
+      "title": "Establish Linear project packet and source-of-truth split",
+      "milestone": "M0",
+      "type": "docs",
+      "goal": "Create the project packet, PRD draft, issue map, dependency spine, and evidence folders using the Linear Method shape.",
+      "acceptanceCriteria": [
+        "Project packet exists",
+        "no new initiative is created unless explicitly promoted",
+        "docs distinguish Linear execution docs from durable project-library canon."
+      ],
+      "blockedBy": [],
+      "labels": [
+        "p0-dogfood",
+        "docs"
+      ]
+    },
+    {
+      "id": "OI-002",
+      "title": "Define OTLP receiver v0 contract",
+      "milestone": "M0",
+      "type": "implementation",
+      "goal": "Specify the v0 receiver contract: metrics-first OTLP/HTTP protobuf on localhost, /v1/metrics only, with traces/logs as P1 placeholders.",
+      "acceptanceCriteria": [
+        "Receiver contract doc names accepted paths, content types, payload limits, error categories, and non-goals."
+      ],
+      "blockedBy": [
+        "OI-001"
+      ],
+      "labels": [
+        "otel",
+        "provider-contract"
+      ]
+    },
+    {
+      "id": "OI-003",
+      "title": "Scaffold Deno desktop shell and UI/backend bridge",
+      "milestone": "M1",
+      "type": "implementation",
+      "goal": "Create the Deno desktop app shell with a backend receiver process and React/shadcn dashboard canvas.",
+      "acceptanceCriteria": [
+        "App opens as desktop shell",
+        "backend can publish synthetic telemetry summaries to UI",
+        "permissions are explicit."
+      ],
+      "blockedBy": [
+        "OI-001"
+      ],
+      "labels": [
+        "deno-desktop",
+        "p0-dogfood"
+      ]
+    },
+    {
+      "id": "OI-004",
+      "title": "Generate OTLP protobuf TypeScript types",
+      "milestone": "M1",
+      "type": "implementation",
+      "goal": "Add protobuf codegen or generated TypeScript bindings for OTLP metrics export requests/responses.",
+      "acceptanceCriteria": [
+        "Generated types decode fixture ExportMetricsServiceRequest payloads",
+        "codegen command is documented",
+        "generated files are reproducible."
+      ],
+      "blockedBy": [
+        "OI-002"
+      ],
+      "labels": [
+        "otel",
+        "protobuf"
+      ]
+    },
+    {
+      "id": "OI-005",
+      "title": "Implement POST /v1/metrics receiver",
+      "milestone": "M1",
+      "type": "implementation",
+      "goal": "Implement localhost OTLP HTTP/protobuf receiver for metric exports.",
+      "acceptanceCriteria": [
+        "Valid metrics payload returns success",
+        "wrong method/path/content-type produce explicit failures",
+        "no traces/logs accepted in v0."
+      ],
+      "blockedBy": [
+        "OI-002",
+        "OI-004"
+      ],
+      "labels": [
+        "otel",
+        "p0-dogfood"
+      ]
+    },
+    {
+      "id": "OI-006",
+      "title": "Normalize ResourceMetrics into metric series records",
+      "milestone": "M1",
+      "type": "implementation",
+      "goal": "Transform decoded ResourceMetrics/ScopeMetrics/Metric/DataPoint trees into normalized series keys and datapoints.",
+      "acceptanceCriteria": [
+        "Gauge, sum, histogram, and exponential histogram shapes have typed normalized forms",
+        "unknown data is preserved as safe metadata."
+      ],
+      "blockedBy": [
+        "OI-005"
+      ],
+      "labels": [
+        "telemetry-store"
+      ]
+    },
+    {
+      "id": "OI-007",
+      "title": "Implement bounded ingest ring buffer",
+      "milestone": "M2",
+      "type": "implementation",
+      "goal": "Store recent normalized datapoints and export metadata in bounded memory with eviction/drop accounting.",
+      "acceptanceCriteria": [
+        "Buffer bounds are configurable",
+        "eviction increments dropped counters",
+        "safe inspect can show retained vs dropped counts."
+      ],
+      "blockedBy": [
+        "OI-006"
+      ],
+      "labels": [
+        "telemetry-store",
+        "p0-dogfood"
+      ]
+    },
+    {
+      "id": "OI-008",
+      "title": "Add ingest failure and partial success model",
+      "milestone": "M1",
+      "type": "implementation",
+      "goal": "Create stable failure categories for decode, content type, payload size, malformed metric, and redaction-blocked cases.",
+      "acceptanceCriteria": [
+        "Failures include endpoint, payload metadata, stopped-before-store state, and next safe action",
+        "failures are snapshot-tested."
+      ],
+      "blockedBy": [
+        "OI-005"
+      ],
+      "labels": [
+        "inspectability",
+        "regression"
+      ]
+    },
+    {
+      "id": "OI-009",
+      "title": "Build metric derivation engine",
+      "milestone": "M2",
+      "type": "implementation",
+      "goal": "Compute latest value, rate, deltas, datapoints/sec, ingest bytes/sec, and service/route aggregates from normalized points.",
+      "acceptanceCriteria": [
+        "Derived values are deterministic from fixtures",
+        "missing temporality/unit data is labeled instead of guessed."
+      ],
+      "blockedBy": [
+        "OI-006",
+        "OI-007"
+      ],
+      "labels": [
+        "metrics",
+        "regression"
+      ]
+    },
+    {
+      "id": "OI-010",
+      "title": "Estimate histogram percentiles safely",
+      "milestone": "M2",
+      "type": "implementation",
+      "goal": "Derive p50/p95/p99 from explicit histogram buckets and label approximations honestly.",
+      "acceptanceCriteria": [
+        "Percentile estimates match fixture buckets",
+        "UI can mark estimates as bucket-derived",
+        "absent buckets show unavailable state."
+      ],
+      "blockedBy": [
+        "OI-009"
+      ],
+      "labels": [
+        "metrics",
+        "p1-certification"
+      ]
+    },
+    {
+      "id": "OI-011",
+      "title": "Add HTTP semantic metric presets",
+      "milestone": "M2",
+      "type": "implementation",
+      "goal": "Recognize common HTTP metric names such as request duration and active requests and map them into first-class dashboard cards.",
+      "acceptanceCriteria": [
+        "Dashboard presets activate only when matching metrics exist",
+        "missing duration/active request metrics produce clear empty states."
+      ],
+      "blockedBy": [
+        "OI-009"
+      ],
+      "labels": [
+        "otel",
+        "http-metrics"
+      ]
+    },
+    {
+      "id": "OI-012",
+      "title": "Implement live bus batching and downsampling",
+      "milestone": "M2",
+      "type": "implementation",
+      "goal": "Push telemetry summaries to the UI on a controlled cadence instead of every datapoint.",
+      "acceptanceCriteria": [
+        "UI update cadence is configurable",
+        "high ingest rate does not freeze dashboard",
+        "downsampling is visible in safe inspect."
+      ],
+      "blockedBy": [
+        "OI-007",
+        "OI-009"
+      ],
+      "labels": [
+        "reactive-ui",
+        "performance"
+      ]
+    },
+    {
+      "id": "OI-013",
+      "title": "Design and implement Overview cards",
+      "milestone": "M3",
+      "type": "implementation",
+      "goal": "Create KPI cards for request rate, p95 latency, error rate, active requests, ingest rate, and dropped datapoints.",
+      "acceptanceCriteria": [
+        "Cards render healthy, empty, paused, degraded, and stale states",
+        "each card links to metric/payload source context."
+      ],
+      "blockedBy": [
+        "OI-011",
+        "OI-012"
+      ],
+      "labels": [
+        "shadcn",
+        "ui"
+      ]
+    },
+    {
+      "id": "OI-014",
+      "title": "Implement live charts for latency, throughput, errors, and ingest health",
+      "milestone": "M3",
+      "type": "implementation",
+      "goal": "Use shadcn Chart/Recharts primitives for live Area/Line/Bar/Composed charts with time-window controls.",
+      "acceptanceCriteria": [
+        "Charts support 1m/5m/15m windows",
+        "tooltips show source metric and aggregation",
+        "charts degrade gracefully when series are missing."
+      ],
+      "blockedBy": [
+        "OI-010",
+        "OI-011",
+        "OI-012"
+      ],
+      "labels": [
+        "graphs",
+        "ui"
+      ]
+    },
+    {
+      "id": "OI-015",
+      "title": "Implement Metrics Explorer table and filters",
+      "milestone": "M3",
+      "type": "implementation",
+      "goal": "Build searchable/filterable metric series explorer with service/resource/metric/attribute controls.",
+      "acceptanceCriteria": [
+        "Explorer shows metric name, type, unit, latest, rate/delta, resource, cardinality, last seen, and status."
+      ],
+      "blockedBy": [
+        "OI-009",
+        "OI-012"
+      ],
+      "labels": [
+        "shadcn",
+        "data-table"
+      ]
+    },
+    {
+      "id": "OI-016",
+      "title": "Implement decoded Payload Inspector",
+      "milestone": "M4",
+      "type": "implementation",
+      "goal": "Build tree/table view from export history \u2192 resource metrics \u2192 scope metrics \u2192 metric \u2192 datapoints.",
+      "acceptanceCriteria": [
+        "Payload inspector can open the decoded source for any selected chart point",
+        "raw protobuf body remains off by default."
+      ],
+      "blockedBy": [
+        "OI-006",
+        "OI-018"
+      ],
+      "labels": [
+        "inspectability",
+        "payload"
+      ]
+    },
+    {
+      "id": "OI-017",
+      "title": "Add pause/resume/clear controls",
+      "milestone": "M3",
+      "type": "implementation",
+      "goal": "Add live pause, resume, clear session, and time window controls to the inspector.",
+      "acceptanceCriteria": [
+        "Paused state freezes charts without stopping receiver unless configured",
+        "clear session requires confirmation and records action."
+      ],
+      "blockedBy": [
+        "OI-012",
+        "OI-013"
+      ],
+      "labels": [
+        "ui",
+        "p0-dogfood"
+      ]
+    },
+    {
+      "id": "OI-018",
+      "title": "Implement redaction and sensitive attribute policy",
+      "milestone": "M4",
+      "type": "implementation",
+      "goal": "Add deterministic redaction for credentials, cookies, tokens, API keys, secrets, and high-risk attribute names/values.",
+      "acceptanceCriteria": [
+        "Safe inspect and payload inspector never show sensitive values by default",
+        "redaction report includes hidden counts and patterns."
+      ],
+      "blockedBy": [
+        "OI-008"
+      ],
+      "labels": [
+        "privacy",
+        "inspectability"
+      ]
+    },
+    {
+      "id": "OI-019",
+      "title": "Make raw payload capture explicit opt-in",
+      "milestone": "M4",
+      "type": "implementation",
+      "goal": "Design raw protobuf/body capture as disabled by default with visible privacy posture and retention limits.",
+      "acceptanceCriteria": [
+        "Raw capture cannot be enabled silently",
+        "UI labels raw capture state",
+        "export redacts or refuses unsafe raw data."
+      ],
+      "blockedBy": [
+        "OI-018"
+      ],
+      "labels": [
+        "privacy",
+        "debuggability"
+      ]
+    },
+    {
+      "id": "OI-020",
+      "title": "Export redacted debug fixtures",
+      "milestone": "M4",
+      "type": "evidence",
+      "goal": "Create fixture export for ingest, decode, derivation, redaction, and UI reproduction cases.",
+      "acceptanceCriteria": [
+        "Fixtures include contract, endpoint, decoded summary, failure category, redaction report, reproduction steps, and expected behavior."
+      ],
+      "blockedBy": [
+        "OI-016",
+        "OI-018"
+      ],
+      "labels": [
+        "debuggability",
+        "regression"
+      ]
+    },
+    {
+      "id": "OI-021",
+      "title": "Persist optional session history to SQLite",
+      "milestone": "M5",
+      "type": "implementation",
+      "goal": "Add optional local SQLite retention for export metadata and normalized summary records.",
+      "acceptanceCriteria": [
+        "Persistence is off or bounded by default",
+        "retention policy is visible",
+        "delete/clear works and is tested."
+      ],
+      "blockedBy": [
+        "OI-007",
+        "OI-018"
+      ],
+      "labels": [
+        "persistence",
+        "p1-certification"
+      ]
+    },
+    {
+      "id": "OI-022",
+      "title": "Add proxy-forward mode design spike",
+      "milestone": "M5",
+      "type": "decision",
+      "goal": "Design non-MVP proxy mode where app \u2192 inspector \u2192 upstream collector while preserving OTLP semantics and showing upstream failures.",
+      "acceptanceCriteria": [
+        "Decision doc clarifies MVP exclusion or P1 scope",
+        "proxy does not block dogfood packaging."
+      ],
+      "blockedBy": [
+        "OI-005",
+        "OI-018"
+      ],
+      "labels": [
+        "proxy",
+        "adr"
+      ]
+    },
+    {
+      "id": "OI-023",
+      "title": "Scaffold traces tab as P1 placeholder",
+      "milestone": "M5",
+      "type": "implementation",
+      "goal": "Reserve UI and data model seams for /v1/traces without accepting trace payloads in MVP.",
+      "acceptanceCriteria": [
+        "Traces tab is visibly coming-soon/P1",
+        "no fake trace data",
+        "architecture doc names required future work."
+      ],
+      "blockedBy": [
+        "OI-001",
+        "OI-003"
+      ],
+      "labels": [
+        "traces",
+        "p1-certification"
+      ]
+    },
+    {
+      "id": "OI-024",
+      "title": "Scaffold logs tab as P1 placeholder",
+      "milestone": "M5",
+      "type": "implementation",
+      "goal": "Reserve UI and data model seams for /v1/logs without accepting log payloads in MVP.",
+      "acceptanceCriteria": [
+        "Logs tab is visibly coming-soon/P1",
+        "no fake log data",
+        "architecture doc names required future work."
+      ],
+      "blockedBy": [
+        "OI-001",
+        "OI-003"
+      ],
+      "labels": [
+        "logs",
+        "p1-certification"
+      ]
+    },
+    {
+      "id": "OI-025",
+      "title": "Package Deno desktop dogfood build",
+      "milestone": "M5",
+      "type": "implementation",
+      "goal": "Produce a local dogfood Deno desktop build with documented receiver port, permissions, and supported platforms.",
+      "acceptanceCriteria": [
+        "Build runs locally",
+        "status shows receiver endpoint",
+        "permissions are documented",
+        "packaging notes distinguish dev from release."
+      ],
+      "blockedBy": [
+        "OI-003",
+        "OI-013",
+        "OI-014",
+        "OI-015",
+        "OI-016"
+      ],
+      "labels": [
+        "deno-desktop",
+        "p0-dogfood"
+      ]
+    },
+    {
+      "id": "OI-026",
+      "title": "Assemble acceptance evidence bundle",
+      "milestone": "M5",
+      "type": "evidence",
+      "goal": "Collect fixtures, UI snapshots, redaction reports, performance notes, issue close status, and open follow-ons.",
+      "acceptanceCriteria": [
+        "Acceptance matrix is complete",
+        "P0 claims have evidence",
+        "missing P1 work is filed as follow-on, not hidden."
+      ],
+      "blockedBy": [
+        "OI-020",
+        "OI-025"
+      ],
+      "labels": [
+        "evidence",
+        "certification"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "blocked_by": "OI-001",
+      "blocks": "OI-002"
+    },
+    {
+      "blocked_by": "OI-001",
+      "blocks": "OI-003"
+    },
+    {
+      "blocked_by": "OI-002",
+      "blocks": "OI-004"
+    },
+    {
+      "blocked_by": "OI-002",
+      "blocks": "OI-005"
+    },
+    {
+      "blocked_by": "OI-004",
+      "blocks": "OI-005"
+    },
+    {
+      "blocked_by": "OI-005",
+      "blocks": "OI-006"
+    },
+    {
+      "blocked_by": "OI-006",
+      "blocks": "OI-007"
+    },
+    {
+      "blocked_by": "OI-005",
+      "blocks": "OI-008"
+    },
+    {
+      "blocked_by": "OI-006",
+      "blocks": "OI-009"
+    },
+    {
+      "blocked_by": "OI-007",
+      "blocks": "OI-009"
+    },
+    {
+      "blocked_by": "OI-009",
+      "blocks": "OI-010"
+    },
+    {
+      "blocked_by": "OI-009",
+      "blocks": "OI-011"
+    },
+    {
+      "blocked_by": "OI-007",
+      "blocks": "OI-012"
+    },
+    {
+      "blocked_by": "OI-009",
+      "blocks": "OI-012"
+    },
+    {
+      "blocked_by": "OI-011",
+      "blocks": "OI-013"
+    },
+    {
+      "blocked_by": "OI-012",
+      "blocks": "OI-013"
+    },
+    {
+      "blocked_by": "OI-010",
+      "blocks": "OI-014"
+    },
+    {
+      "blocked_by": "OI-011",
+      "blocks": "OI-014"
+    },
+    {
+      "blocked_by": "OI-012",
+      "blocks": "OI-014"
+    },
+    {
+      "blocked_by": "OI-009",
+      "blocks": "OI-015"
+    },
+    {
+      "blocked_by": "OI-012",
+      "blocks": "OI-015"
+    },
+    {
+      "blocked_by": "OI-006",
+      "blocks": "OI-016"
+    },
+    {
+      "blocked_by": "OI-018",
+      "blocks": "OI-016"
+    },
+    {
+      "blocked_by": "OI-012",
+      "blocks": "OI-017"
+    },
+    {
+      "blocked_by": "OI-013",
+      "blocks": "OI-017"
+    },
+    {
+      "blocked_by": "OI-008",
+      "blocks": "OI-018"
+    },
+    {
+      "blocked_by": "OI-018",
+      "blocks": "OI-019"
+    },
+    {
+      "blocked_by": "OI-016",
+      "blocks": "OI-020"
+    },
+    {
+      "blocked_by": "OI-018",
+      "blocks": "OI-020"
+    },
+    {
+      "blocked_by": "OI-007",
+      "blocks": "OI-021"
+    },
+    {
+      "blocked_by": "OI-018",
+      "blocks": "OI-021"
+    },
+    {
+      "blocked_by": "OI-005",
+      "blocks": "OI-022"
+    },
+    {
+      "blocked_by": "OI-018",
+      "blocks": "OI-022"
+    },
+    {
+      "blocked_by": "OI-001",
+      "blocks": "OI-023"
+    },
+    {
+      "blocked_by": "OI-003",
+      "blocks": "OI-023"
+    },
+    {
+      "blocked_by": "OI-001",
+      "blocks": "OI-024"
+    },
+    {
+      "blocked_by": "OI-003",
+      "blocks": "OI-024"
+    },
+    {
+      "blocked_by": "OI-003",
+      "blocks": "OI-025"
+    },
+    {
+      "blocked_by": "OI-013",
+      "blocks": "OI-025"
+    },
+    {
+      "blocked_by": "OI-014",
+      "blocks": "OI-025"
+    },
+    {
+      "blocked_by": "OI-015",
+      "blocks": "OI-025"
+    },
+    {
+      "blocked_by": "OI-016",
+      "blocks": "OI-025"
+    },
+    {
+      "blocked_by": "OI-020",
+      "blocks": "OI-026"
+    },
+    {
+      "blocked_by": "OI-025",
+      "blocks": "OI-026"
+    }
+  ],
+  "labels": [
+    "adr",
+    "blocked-by-decision",
+    "certification",
+    "data-table",
+    "debuggability",
+    "deno-desktop",
+    "docs",
+    "evidence",
+    "graphs",
+    "http-metrics",
+    "inspectability",
+    "logs",
+    "metrics",
+    "otel",
+    "p0-dogfood",
+    "p1-certification",
+    "payload",
+    "performance",
+    "persistence",
+    "privacy",
+    "protobuf",
+    "provider-contract",
+    "proxy",
+    "reactive-ui",
+    "regression",
+    "shadcn",
+    "telemetry-store",
+    "traces",
+    "ui"
+  ]
+}
