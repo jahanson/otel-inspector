@@ -3,11 +3,9 @@
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-07 (commit 1b44e2e). Confidence: 100%.
+Last indexed: 2026-07-07 (commit 674f650). Confidence: 100%.
 ### Architecture
-repo is a telemetry ingestion and real-time visualization platform: it receives raw event payloads via an HTTP receiver, normalizes and routes them through a live in-memory event bus, and serves a browser-based UI for live monitoring — all orchestrated by a single TypeScript entry point and documented through an extensive Linear-synced planning corpus. The backend is organized around four high-PageRank modules that form the system's core data path:
-The repository is unusual in that 81% of its content is structured planning documentation, organized into numbered phases:
-A manifest.json at the root of docs/plans/ indexes the entire planning tree, and AGENTS.md provides agent-oriented operational guidance.
+repo is an observability platform that ingests OpenTelemetry-format telemetry from instrumented services, decodes and normalizes it through a reactive live bus, persists it with configurable retention, and serves real-time dashboards via an HTTP application server and embedded web UI. The pipeline flows from OTLP receivers through contract-validated event normalization into a live event bus, which both persists to storage and pushes reactive updates to a browser-based dashboard. The repository carries a substantial documentation corpus under docs/plans/, organized into numbered initiatives covering runtime architecture, telemetry normalization, UI/UX north star, API/event contracts, and Linear issue tracking. This reflects a spec-driven development methodology where architecture decisions are documented before implementation.
 ### Entry Points
 - `src/main.ts`
 
