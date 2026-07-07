@@ -1,6 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { createTelemetryStore } from "../../src/backend/telemetry_store.ts";
-import type { MetricPoint } from "../../src/backend/metric_model.ts";
+import { createTelemetryStore, type MetricPoint, type MetricWarning } from "../../src/backend/telemetry_store.ts";
 
 Deno.test("TelemetryStore appends export metadata and retained points", () => {
   const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
@@ -42,11 +41,88 @@ Deno.test("TelemetryStore exposes deterministic series list and selected series 
 
   store.recordExport({ observedAtMs: 1_000, bytesReceived: 10, points: [first, second, third], warnings: [] });
 
-  assertEquals(store.seriesList().map((series: { seriesKey: string }) => series.seriesKey), ["series:duration", "series:queue"]);
+  assertEquals(store.seriesList().map((series: { seriesKey: string }) => series.seriesKey), [
+    "series:duration",
+    "series:queue",
+  ]);
   assertEquals(store.pointsForSeries("series:duration", 1_500, 2_500), [second]);
 });
 
-function point(name: string, observedAtMs: number, value: number, seriesKey = `series:${name}`): MetricPoint {
+Deno.test("TelemetryStore sorts equal metric names by series key", () => {
+  const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
+
+  store.recordExport({
+    observedAtMs: 1_000,
+    bytesReceived: 10,
+    points: [
+      point("cpu.usage", 1_000, 2, "series:z"),
+      point("cpu.usage", 2_000, 1, "series:a"),
+    ],
+    warnings: [],
+  });
+
+  assertEquals(store.seriesList().map((series: { seriesKey: string }) => series.seriesKey), ["series:a", "series:z"]);
+});
+
+Deno.test("TelemetryStore clones input points and warnings before storing them", () => {
+  const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
+  const inputPoint = point("cpu.usage", 1_000, 2, "series:cpu", [warning("point warning")]);
+  const inputWarning = warning("original warning");
+
+  store.recordExport({
+    observedAtMs: 1_000,
+    bytesReceived: 10,
+    points: [inputPoint],
+    warnings: [inputWarning],
+  });
+
+  inputPoint.metric.name = "mutated metric";
+  inputPoint.resource["service.name"] = "mutated service";
+  inputPoint.warnings[0].message = "mutated nested warning";
+  inputWarning.message = "mutated warning";
+
+  const snapshot = store.snapshot();
+  assertEquals(snapshot.recentPoints[0].metric.name, "cpu.usage");
+  assertEquals(snapshot.recentPoints[0].resource["service.name"], "checkout");
+  assertEquals(snapshot.recentPoints[0].warnings[0].message, "point warning");
+  assertEquals(snapshot.warnings[0].message, "original warning");
+});
+
+Deno.test("TelemetryStore returns cloned history from readback", () => {
+  const store = createTelemetryStore({ maxPoints: 10, maxExports: 5 });
+
+  store.recordExport({
+    observedAtMs: 1_000,
+    bytesReceived: 10,
+    points: [point("cpu.usage", 1_000, 2, "series:cpu", [warning("point warning")])],
+    warnings: [warning("original warning")],
+  });
+
+  const snapshot = store.snapshot();
+  snapshot.recentPoints[0].metric.name = "mutated snapshot metric";
+  snapshot.recentPoints[0].resource["service.name"] = "mutated snapshot service";
+  snapshot.recentPoints[0].warnings[0].message = "mutated nested warning";
+  snapshot.warnings[0].message = "mutated snapshot warning";
+
+  const queriedPoints = store.pointsForSeries("series:cpu");
+  queriedPoints[0].metric.name = "mutated queried metric";
+  queriedPoints[0].resource["service.name"] = "mutated queried service";
+  queriedPoints[0].warnings[0].message = "mutated queried warning";
+
+  const freshSnapshot = store.snapshot();
+  assertEquals(freshSnapshot.recentPoints[0].metric.name, "cpu.usage");
+  assertEquals(freshSnapshot.recentPoints[0].resource["service.name"], "checkout");
+  assertEquals(freshSnapshot.recentPoints[0].warnings[0].message, "point warning");
+  assertEquals(freshSnapshot.warnings[0].message, "original warning");
+});
+
+function point(
+  name: string,
+  observedAtMs: number,
+  value: number,
+  seriesKey = `series:${name}`,
+  warnings: MetricWarning[] = [],
+): MetricPoint {
   return {
     seriesKey,
     observedAtMs,
@@ -56,6 +132,13 @@ function point(name: string, observedAtMs: number, value: number, seriesKey = `s
     attributes: {},
     value,
     derivationStatus: "usable",
-    warnings: [],
+    warnings,
+  };
+}
+
+function warning(message: string): MetricWarning {
+  return {
+    code: "warning",
+    message,
   };
 }

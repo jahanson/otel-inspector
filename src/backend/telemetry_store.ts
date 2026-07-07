@@ -1,4 +1,24 @@
-import type { MetricPoint, MetricWarning } from "./metric_model.ts";
+export type MetricWarning = {
+  code: string;
+  message: string;
+  [key: string]: unknown;
+};
+
+export type MetricPoint = {
+  seriesKey: string;
+  observedAtMs: number;
+  resource: Record<string, unknown>;
+  scope: Record<string, unknown>;
+  metric: {
+    name: string;
+    type: string;
+    unit?: string;
+  };
+  attributes: Record<string, unknown>;
+  value: number;
+  derivationStatus: string;
+  warnings: MetricWarning[];
+};
 
 export type TelemetryStoreOptions = {
   maxPoints: number;
@@ -27,17 +47,15 @@ export type SeriesSummary = {
   metricName: string;
   metricType: string;
   unit?: string;
-  resource: MetricPoint["resource"];
-  attributes: MetricPoint["attributes"];
+  resource: Record<string, unknown>;
+  attributes: Record<string, unknown>;
   lastObservedAtMs: number;
 };
-
-type ExportRecord = IngestExportMetadata;
 
 export class TelemetryStore {
   readonly options: TelemetryStoreOptions;
   #points: MetricPoint[] = [];
-  #exports: ExportRecord[] = [];
+  #exports: IngestExportMetadata[] = [];
   #warnings: MetricWarning[] = [];
   #totalExports = 0;
   #totalBytes = 0;
@@ -57,14 +75,14 @@ export class TelemetryStore {
     this.#totalExports += 1;
     this.#totalBytes += input.bytesReceived;
     this.#totalPoints += input.points.length;
-    this.#points.push(...input.points);
+    this.#points.push(...input.points.map(cloneMetricPoint));
     this.#exports.push({
       observedAtMs: input.observedAtMs,
       bytesReceived: input.bytesReceived,
       pointCount: input.points.length,
       warningCount: input.warnings.length,
     });
-    this.#warnings.push(...input.warnings);
+    this.#warnings.push(...input.warnings.map(cloneMetricWarning));
     this.#trim();
   }
 
@@ -74,9 +92,9 @@ export class TelemetryStore {
       totalBytes: this.#totalBytes,
       totalPoints: this.#totalPoints,
       droppedPoints: this.#droppedPoints,
-      recentPoints: [...this.#points],
-      exports: [...this.#exports],
-      warnings: [...this.#warnings],
+      recentPoints: this.#points.map(cloneMetricPoint),
+      exports: this.#exports.map((record) => ({ ...record })),
+      warnings: this.#warnings.map(cloneMetricWarning),
     };
   }
 
@@ -89,8 +107,8 @@ export class TelemetryStore {
         metricName: point.metric.name,
         metricType: point.metric.type,
         unit: point.metric.unit,
-        resource: point.resource,
-        attributes: point.attributes,
+        resource: structuredClone(point.resource),
+        attributes: structuredClone(point.attributes),
         lastObservedAtMs: point.observedAtMs,
       });
     }
@@ -106,11 +124,13 @@ export class TelemetryStore {
     fromObservedAtMs = Number.NEGATIVE_INFINITY,
     toObservedAtMs = Number.POSITIVE_INFINITY,
   ): MetricPoint[] {
-    return this.#points.filter((point) =>
-      point.seriesKey === seriesKey &&
-      point.observedAtMs >= fromObservedAtMs &&
-      point.observedAtMs <= toObservedAtMs
-    );
+    return this.#points
+      .filter((point) =>
+        point.seriesKey === seriesKey &&
+        point.observedAtMs >= fromObservedAtMs &&
+        point.observedAtMs <= toObservedAtMs
+      )
+      .map(cloneMetricPoint);
   }
 
   #trim(): void {
@@ -135,4 +155,12 @@ export function createTelemetryStore(options: Partial<TelemetryStoreOptions> = {
     maxPoints: options.maxPoints ?? 10_000,
     maxExports: options.maxExports ?? 500,
   });
+}
+
+function cloneMetricPoint(point: MetricPoint): MetricPoint {
+  return structuredClone(point);
+}
+
+function cloneMetricWarning(warning: MetricWarning): MetricWarning {
+  return structuredClone(warning);
 }
