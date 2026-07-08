@@ -39,6 +39,16 @@ export function buildReceiverState(startedAtMs = Date.now()): ReceiverState {
   };
 }
 
+export function clearReceiverState(state: ReceiverState, observedAtMs = Date.now()): void {
+  state.store = createTelemetryStore();
+  state.startedAtMs = observedAtMs;
+  delete state.lastWarning;
+
+  for (const category of Object.keys(state.failureCounts) as ReceiverFailureCategory[]) {
+    state.failureCounts[category] = 0;
+  }
+}
+
 export function recordReceiverFailure(
   state: ReceiverState,
   category: ReceiverFailureCategory,

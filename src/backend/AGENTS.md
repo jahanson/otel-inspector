@@ -13,13 +13,14 @@
 - `metric_derivations.ts` owns dashboard-ready summary derivations from retained points.
 - `receiver.ts` owns OTLP HTTP request validation and safe failure responses.
 - `live_bus.ts` owns receiver state, substrate ingestion, and live summary cadence.
-- `app_server.ts` serves the dashboard shell and summary API on the dashboard port.
+- `app_server.ts` serves the dashboard shell, placeholder assets, summary API, dashboard projection API, and local clear action on the dashboard port.
 - `receiver_worker.ts` keeps Deno HTTP servers off the synchronous native webview thread.
 
 ## Local Contracts
 
 - Receiver listens on `127.0.0.1:4318` and accepts only `POST /v1/metrics` with `application/x-protobuf`.
 - Dashboard app server listens on `127.0.0.1:4319`.
+- Dashboard routes expose `GET /api/summary`, `GET /api/dashboard`, `POST /api/dashboard/clear`, `GET /assets/app.js`, and `GET /assets/styles.css`.
 - Payload size limit is `4 MiB`; enforce it before buffering beyond the cap.
 - Empty metrics protobuf bodies are decode failures, not successful empty exports.
 - Decode failures are failures, not successful exports.
@@ -31,6 +32,7 @@
 - HTTP latency p95 derivations return values only for known millisecond or second units and finite percentile buckets; open-ended `+Inf` percentile buckets stay unavailable.
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
+- Clearing dashboard state resets retained telemetry and receiver failure counters without stopping the receiver process.
 
 ## Work Guidance
 

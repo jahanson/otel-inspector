@@ -1,30 +1,25 @@
-import { assertStringIncludes } from "@std/assert";
 import { assertEquals, assertFalse } from "@std/assert";
-import { buildReceiverState } from "../../src/backend/receiver.ts";
-import { buildLiveTelemetrySummary } from "../../src/backend/live_bus.ts";
-import { buildAppHtml } from "../../src/ui/app_html.ts";
+import { assertStringIncludes } from "@std/assert";
+import { buildAppShell } from "../../src/ui/app_shell.ts";
 
-Deno.test("app shell renders receiver endpoint and live synthetic summary", () => {
-  const summary = buildLiveTelemetrySummary(buildReceiverState(1_000), 2_000);
-  const html = buildAppHtml(summary);
-
-  assertStringIncludes(html, "OTEL Inspector");
-  assertStringIncludes(html, "http://127.0.0.1:4318/v1/metrics");
-  assertStringIncludes(html, "exports/sec");
-  assertStringIncludes(html, "Payload Inspector");
-  assertStringIncludes(html, "grid-template-columns: repeat(12, minmax(0, 1fr));");
-  assertStringIncludes(html, "min-height: 0;");
-});
-
-Deno.test("app shell escapes inline summary JSON for script safety", () => {
-  const summary = buildLiveTelemetrySummary(buildReceiverState(1_000), 2_000);
-  summary.warnings.push({
-    code: "decode-failed",
-    message: "bad <script> line\u2028next paragraph\u2029tail",
+Deno.test("app shell renders root mount, assets, and inline projection bootstrap", () => {
+  const html = buildAppShell({
+    receiver: { endpoint: "http://127.0.0.1:4318/v1/metrics" },
+    windowMs: 60_000,
   });
 
-  const html = buildAppHtml(summary);
-  const jsonMatch = html.match(/const initialSummary = (?<json>.*);/);
+  assertStringIncludes(html, "OTEL Inspector");
+  assertStringIncludes(html, 'id="root"');
+  assertStringIncludes(html, "/assets/styles.css");
+  assertStringIncludes(html, "/assets/app.js");
+  assertStringIncludes(html, "__OTEL_INITIAL_PROJECTION__");
+});
+
+Deno.test("app shell escapes inline projection JSON for script safety", () => {
+  const html = buildAppShell({
+    warning: "bad <script> line\u2028next paragraph\u2029tail",
+  });
+  const jsonMatch = html.match(/__OTEL_INITIAL_PROJECTION__ = (?<json>.*);/);
 
   assertEquals(jsonMatch?.groups?.json.includes("\\u003cscript>"), true);
   assertEquals(jsonMatch?.groups?.json.includes("\\u2028"), true);
