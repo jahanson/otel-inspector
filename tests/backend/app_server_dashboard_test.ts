@@ -20,6 +20,25 @@ Deno.test("dashboard app server serves dashboard projection endpoint", async () 
   assertEquals(body.cards.latency.state, "unavailable");
 });
 
+Deno.test("dashboard app server returns build hint when dashboard assets are unavailable", async () => {
+  const state = buildReceiverState(1_000);
+  const readStub = stub(Deno, "readFileSync", () => {
+    throw new Deno.errors.NotFound("missing");
+  });
+
+  try {
+    for (const pathname of ["/assets/app.js", "/assets/styles.css"]) {
+      const response = handleAppRequest(new Request(`http://127.0.0.1:4319${pathname}`), state);
+      assertEquals(response.status, 503);
+      assertEquals(await response.text(), "Asset not built. Run deno task ui:build.");
+    }
+
+    assertSpyCalls(readStub, 2);
+  } finally {
+    readStub.restore();
+  }
+});
+
 Deno.test({
   name: "dashboard app server serves app shell and built asset responses",
   async fn() {

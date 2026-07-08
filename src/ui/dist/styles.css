@@ -12,10 +12,15 @@
   --color-error: #dc695f;
   --color-selected: #7b93ff;
   --color-focus: #9cb0ff;
-  --chart-latency: #7b93ff;
-  --chart-throughput: #59d18c;
-  --chart-error: #dc695f;
-  --chart-ingest: #f4b05e;
+  --chart-latency: var(--color-selected);
+  --chart-throughput: var(--color-live);
+  --chart-error: var(--color-error);
+  --chart-ingest: var(--color-warning);
+  --chart-overlay-start: rgb(255 255 255 / 2%);
+  --chart-overlay-end: rgb(255 255 255 / 0%);
+  --chart-accent-transparent: rgb(123 147 255 / 0%);
+  --color-warning-border: rgb(244 176 94 / 45%);
+  --color-warning-surface: rgb(244 176 94 / 8%);
   --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   --space-1: 4px;
@@ -268,8 +273,8 @@ h2 {
   width: 100%;
   border-radius: var(--radius-1);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
-    linear-gradient(90deg, var(--chart-latency, var(--color-selected)) 0 3px, transparent 3px 100%);
+    linear-gradient(180deg, var(--chart-overlay-start), var(--chart-overlay-end)),
+    linear-gradient(90deg, var(--chart-latency) 0 3px, var(--chart-accent-transparent) 3px 100%);
 }
 
 .series-placeholder {
@@ -317,9 +322,9 @@ tbody tr:not(:last-child) {
 
 .warning-item {
   padding: var(--space-3) var(--space-4);
-  border: 1px solid rgba(244, 176, 94, 0.45);
+  border: 1px solid var(--color-warning-border);
   border-radius: var(--radius-1);
-  background: rgba(244, 176, 94, 0.08);
+  background: var(--color-warning-surface);
 }
 
 @media (max-width: 640px) {

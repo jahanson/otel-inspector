@@ -78,3 +78,36 @@
 ## Issues or concerns
 
 - No open implementation concerns after the required verification passed.
+
+## Review Fixes: dashboard asset build follow-up
+
+### Review findings addressed
+
+- Replaced the brittle `tools/build_ui.ts` binary path splice with the supported `npm:esbuild@0.25.8` module API while keeping `deno task ui:build` Deno-owned.
+- Added focused missing-asset coverage in `tests/backend/app_server_dashboard_test.ts` that stubs `Deno.readFileSync` to throw and asserts `503` plus `Asset not built. Run deno task ui:build.` for both dashboard asset routes.
+- Promoted chart/warning effect colors in `src/ui/dashboard/styles.css` to named CSS custom properties so component rules consume tokens instead of literal gradient and RGBA values.
+- Regenerated `src/ui/dist/app.js` and `src/ui/dist/styles.css` via `deno task ui:build`.
+
+### Files changed
+
+- `tools/build_ui.ts`
+- `tests/backend/app_server_dashboard_test.ts`
+- `src/ui/dashboard/styles.css`
+- `src/ui/dist/app.js`
+- `src/ui/dist/styles.css`
+
+### Tests run and exact pass/fail summary
+
+- `deno task ui:build` — passed; emitted `src\\ui\\dist\\app.js 973.3kb`
+- `deno test tests/backend/app_server_dashboard_test.ts` — passed; `5 passed | 0 failed`
+- `deno task check` — passed; checked `src/main.ts`, `src/backend/receiver_worker.ts`, `src/ui/dashboard/main.tsx`, 11 test files, and 4 tool files
+- `deno task ok` — passed; `67 passed | 0 failed`, plus `ui:build`, `fmt:check`, `lint`, and `check` all passed cleanly
+
+### Commit created
+
+- `fix: harden dashboard asset build`
+
+### DOX pass result
+
+- Re-checked the root, `src`, `src/backend`, `src/ui`, `tools`, and `tests` DOX chain before closeout.
+- Left DOX files unchanged because these review fixes did not alter ownership, contracts, workflows, or verification requirements already documented there.
