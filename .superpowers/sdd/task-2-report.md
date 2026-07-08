@@ -188,7 +188,7 @@ DONE
 
 ### Commit Created
 
-- `a8526ee` `fix: use latest active requests gauge`
+- `2c77805` `fix: use latest active requests gauge`
 
 ### DOX Pass
 
