@@ -65,7 +65,7 @@ Deno.test("overview tab renders LiveCharts after OverviewCards", () => {
 
   assertStringIncludes(source, 'import { LiveCharts } from "./charts/LiveCharts.tsx";');
   const overviewBranchStart = source.indexOf('activeTab === "overview"');
-  const overviewCardsIndex = source.indexOf("<OverviewCards cards={projection.cards} />", overviewBranchStart);
+  const overviewCardsIndex = source.indexOf("<OverviewCards", overviewBranchStart);
   const liveChartsIndex = source.indexOf("<LiveCharts charts={projection.charts} />", overviewBranchStart);
 
   assert(overviewBranchStart !== -1, "Expected the overview branch to exist.");
@@ -80,8 +80,40 @@ Deno.test("metrics tab renders MetricsExplorer from explorer rows and keeps fall
   assertStringIncludes(source, 'import { MetricsExplorer } from "./components/MetricsExplorer.tsx";');
   assertStringIncludes(source, "projection.explorer.rows");
   assertStringIncludes(source, 'activeTab === "metrics"');
-  assertStringIncludes(source, "<MetricsExplorer rows={projection.explorer.rows} />");
+  assertStringIncludes(source, "setActiveTab");
   assertStringIncludes(source, "This dashboard tab is not implemented yet.");
+});
+
+Deno.test("dashboard app exposes time window controls and guarded clear action", () => {
+  const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+
+  assertStringIncludes(source, "windowOptions");
+  assertStringIncludes(source, "setWindowMs");
+  assertStringIncludes(source, "refreshProjection(option.value");
+  assertStringIncludes(source, 'aria-label="Time window"');
+  assertStringIncludes(source, 'confirm("Clear retained telemetry for this dashboard session?")');
+  assertStringIncludes(source, "setLastAction");
+  assertStringIncludes(source, "Session cleared");
+});
+
+Deno.test("overview cards expose metric source navigation", () => {
+  const overviewSource = Deno.readTextFileSync(
+    new URL("../../src/ui/dashboard/components/OverviewCards.tsx", import.meta.url),
+  );
+  const appSource = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+  const explorerSource = Deno.readTextFileSync(
+    new URL("../../src/ui/dashboard/components/MetricsExplorer.tsx", import.meta.url),
+  );
+  const typesSource = Deno.readTextFileSync(new URL("../../src/ui/dashboard/types.ts", import.meta.url));
+
+  assertStringIncludes(overviewSource, "onInspect");
+  assertStringIncludes(overviewSource, "card.detailTarget");
+  assertStringIncludes(overviewSource, "Inspect source");
+  assertStringIncludes(appSource, "setMetricsTarget(card.detailTarget)");
+  assertStringIncludes(appSource, "target={metricsTarget}");
+  assertStringIncludes(explorerSource, 'target?: DashboardCard["detailTarget"]');
+  assertStringIncludes(explorerSource, "target.metricName");
+  assertStringIncludes(typesSource, "detailTarget");
 });
 
 Deno.test("MetricsExplorer source keeps semantic table markup and fallback values", () => {
@@ -95,11 +127,18 @@ Deno.test("MetricsExplorer source keeps semantic table markup and fallback value
   assertStringIncludes(source, '<th scope="col">Type</th>');
   assertStringIncludes(source, '<th scope="col">Unit</th>');
   assertStringIncludes(source, '<th scope="col">Latest</th>');
+  assertStringIncludes(source, '<th scope="col">Rate</th>');
   assertStringIncludes(source, '<th scope="col">Service</th>');
+  assertStringIncludes(source, '<th scope="col">Cardinality</th>');
   assertStringIncludes(source, '<th scope="col">Status</th>');
   assertStringIncludes(source, '<th scope="col">Last seen</th>');
+  assertStringIncludes(source, "selectedRow");
+  assertStringIncludes(source, "Metric detail");
+  assertStringIncludes(source, "row.cardinality");
+  assertStringIncludes(source, "formatAttributes");
   assertStringIncludes(source, 'row.unit ?? "—"');
   assertStringIncludes(source, 'row.latest === undefined ? "—" : formatNumber(row.latest)');
+  assertStringIncludes(source, 'row.rate === undefined ? "—" : formatNumber(row.rate)');
   assertStringIncludes(source, 'row.resourceService ?? "—"');
   assertFalse(source.includes("data-label"));
   assert(source.includes("<table>"));

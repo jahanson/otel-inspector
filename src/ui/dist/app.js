@@ -19713,7 +19713,7 @@ var require_use_sync_external_store_shim_development = __commonJS({
           },
           [subscribe, value, getSnapshot]
         );
-        useEffect18(
+        useEffect19(
           function() {
             checkIfSnapshotChanged(inst) && forceUpdate({ inst });
             return subscribe(function() {
@@ -19739,7 +19739,7 @@ var require_use_sync_external_store_shim_development = __commonJS({
         return getSnapshot();
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useState12 = React40.useState, useEffect18 = React40.useEffect, useLayoutEffect3 = React40.useLayoutEffect, useDebugValue2 = React40.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useState12 = React40.useState, useEffect19 = React40.useEffect, useLayoutEffect3 = React40.useLayoutEffect, useDebugValue2 = React40.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
       exports.useSyncExternalStore = void 0 !== React40.useSyncExternalStore ? React40.useSyncExternalStore : shim;
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
     })();
@@ -19767,7 +19767,7 @@ var require_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React40 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef9 = React40.useRef, useEffect18 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
+      var React40 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef9 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
         var instRef = useRef9(null);
         if (null === instRef.current) {
@@ -19810,7 +19810,7 @@ var require_with_selector_development = __commonJS({
           [getSnapshot, getServerSnapshot, selector, isEqual2]
         );
         var value = useSyncExternalStore2(subscribe, instRef[0], instRef[1]);
-        useEffect18(
+        useEffect19(
           function() {
             inst.hasValue = true;
             inst.value = value;
@@ -20994,7 +20994,7 @@ var require_use_sync_external_store_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React40.useSyncExternalStore, useRef9 = React40.useRef, useEffect18 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
+      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React40.useSyncExternalStore, useRef9 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
         var instRef = useRef9(null);
         if (null === instRef.current) {
@@ -21037,7 +21037,7 @@ var require_use_sync_external_store_with_selector_development = __commonJS({
           [getSnapshot, getServerSnapshot, selector, isEqual2]
         );
         var value = useSyncExternalStore2(subscribe, instRef[0], instRef[1]);
-        useEffect18(
+        useEffect19(
           function() {
             inst.hasValue = true;
             inst.value = value;
@@ -21115,9 +21115,21 @@ var seenFormatter = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
   second: "2-digit"
 });
-function MetricsExplorer({ rows }) {
+function MetricsExplorer({ rows, target }) {
   const [query, setQuery] = (0, import_react.useState)("");
+  const [selectedSeriesKey, setSelectedSeriesKey] = (0, import_react.useState)(rows[0]?.seriesKey);
   const filteredRows = (0, import_react.useMemo)(() => filterExplorerRows(query, rows), [query, rows]);
+  const selectedRow = filteredRows.find((row) => row.seriesKey === selectedSeriesKey) ?? filteredRows[0];
+  (0, import_react.useEffect)(() => {
+    if (!target) {
+      return;
+    }
+    const targetRow = rows.find(
+      (row) => target.seriesKey && row.seriesKey === target.seriesKey || target.metricName && row.metricName === target.metricName
+    );
+    setQuery(target.seriesKey ?? target.metricName ?? "");
+    setSelectedSeriesKey(targetRow?.seriesKey);
+  }, [rows, target]);
   return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("section", { className: "explorer", "aria-label": "Metrics Explorer", children: [
     /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { className: "explorer__filter", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: "Filter metrics" }),
@@ -21137,20 +21149,54 @@ function MetricsExplorer({ rows }) {
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Type" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Unit" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Latest" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Rate" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Service" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Cardinality" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Status" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Last seen" })
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Last seen" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Detail" })
       ] }) }),
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("tbody", { children: filteredRows.map((row) => /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.metricName }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.metricType }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.unit ?? "\u2014" }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.latest === void 0 ? "\u2014" : formatNumber(row.latest) }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.rate === void 0 ? "\u2014" : formatNumber(row.rate) }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.resourceService ?? "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.cardinality }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.status }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: seenFormatter.format(row.lastObservedAtMs) })
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: seenFormatter.format(row.lastObservedAtMs) }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { className: "table-action", onClick: () => setSelectedSeriesKey(row.seriesKey), type: "button", children: "View" }) })
       ] }, row.seriesKey)) })
     ] }) }),
+    selectedRow ? /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("aside", { className: "explorer__detail", "aria-label": "Metric detail", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "explorer__detail-kicker", children: "Metric detail" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h2", { children: selectedRow.metricName })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("dl", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dt", { children: "Series" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dd", { children: selectedRow.seriesKey })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dt", { children: "Service" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dd", { children: selectedRow.resourceService ?? "\u2014" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dt", { children: "Rate / delta" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dd", { children: selectedRow.rate === void 0 ? "\u2014" : formatNumber(selectedRow.rate) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dt", { children: "Cardinality" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dd", { children: rowCardinalityLabel(selectedRow) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dt", { children: "Attributes" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("dd", { children: formatAttributes(selectedRow.attributes) })
+        ] })
+      ] })
+    ] }) : null,
     filteredRows.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "empty-state explorer__empty", children: "No metrics match the current filter." }) : null
   ] });
 }
@@ -21165,6 +21211,16 @@ function filterExplorerRows(query, rows) {
 }
 function formatNumber(value) {
   return numberFormatter.format(value);
+}
+function rowCardinalityLabel(row) {
+  return `${row.cardinality}`;
+}
+function formatAttributes(attributes) {
+  const entries = Object.entries(attributes);
+  if (entries.length === 0) {
+    return "\u2014";
+  }
+  return entries.map(([key, value]) => `${key}=${String(value)}`).join(", ");
 }
 
 // src/ui/dashboard/components/ui/card.tsx
@@ -21187,10 +21243,10 @@ var orderedCards = [
   "ingest",
   "dropped"
 ];
-function OverviewCards({ cards }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key] }, cards[key].id)) });
+function OverviewCards({ cards, onInspect }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key], onInspect }, cards[key].id)) });
 }
-function OverviewCard({ card }) {
+function OverviewCard({ card, onInspect }) {
   return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "overview-card", "data-state": card.state, children: [
     /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "overview-card__topline", children: [
       /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__label", children: card.label }),
@@ -21200,7 +21256,8 @@ function OverviewCard({ card }) {
       /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__value", children: card.value === void 0 ? "\u2014" : formatValue(card.value) }),
       card.unit ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__unit", children: card.unit }) : null
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__source", children: card.source })
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__source", children: card.source }),
+    card.detailTarget && onInspect ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Button, { className: "overview-card__inspect", onClick: () => onInspect(card), type: "button", children: "Inspect source" }) : null
   ] });
 }
 function formatValue(value) {
@@ -42607,21 +42664,29 @@ var tabs = [
   { value: "payload", label: "Payload", disabled: true },
   { value: "settings", label: "Settings", disabled: true }
 ];
+var windowOptions = [
+  { label: "1m", value: 6e4 },
+  { label: "5m", value: 3e5 },
+  { label: "15m", value: 9e5 }
+];
 function App() {
   const [projection, setProjection] = (0, import_react47.useState)(() => readInitialProjection());
   const [activeTab, setActiveTab] = (0, import_react47.useState)("overview");
+  const [windowMs, setWindowMs] = (0, import_react47.useState)(() => projection.windowMs);
   const [paused, setPaused] = (0, import_react47.useState)(false);
   const [refreshError, setRefreshError] = (0, import_react47.useState)(null);
   const [clearing, setClearing] = (0, import_react47.useState)(false);
+  const [lastAction, setLastAction] = (0, import_react47.useState)(null);
+  const [metricsTarget, setMetricsTarget] = (0, import_react47.useState)();
   (0, import_react47.useEffect)(() => {
     if (paused) {
       return;
     }
     const id = setInterval(() => {
-      void refreshProjection(projection.windowMs, setProjection, setRefreshError);
+      void refreshProjection(windowMs, setProjection, setRefreshError);
     }, 1e3);
     return () => clearInterval(id);
-  }, [paused, projection.windowMs]);
+  }, [paused, windowMs]);
   return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("main", { className: "workbench", children: [
     /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("header", { className: "workbench__header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "heading", children: [
@@ -42632,16 +42697,34 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Button, { type: "button", onClick: () => setPaused((value) => !value), children: paused ? "Resume" : "Pause" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "window-controls", "aria-label": "Time window", children: windowOptions.map((option) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          Button,
+          {
+            "aria-pressed": projection.windowMs === option.value,
+            className: "window-controls__button",
+            onClick: () => {
+              setWindowMs(option.value);
+              void refreshProjection(option.value, setProjection, setRefreshError);
+            },
+            type: "button",
+            children: option.label
+          },
+          option.value
+        )) }),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
           Button,
           {
             type: "button",
             disabled: clearing,
             onClick: async () => {
+              if (!globalThis.confirm("Clear retained telemetry for this dashboard session?")) {
+                return;
+              }
               setClearing(true);
               try {
                 await fetch("/api/dashboard/clear", { method: "POST" });
-                await refreshProjection(projection.windowMs, setProjection, setRefreshError);
+                await refreshProjection(windowMs, setProjection, setRefreshError);
+                setLastAction(`Session cleared at ${(/* @__PURE__ */ new Date()).toLocaleTimeString()}.`);
               } finally {
                 setClearing(false);
               }
@@ -42654,13 +42737,23 @@ function App() {
     /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Tabs, { value: activeTab, onValueChange: setActiveTab, values: [...tabs] }),
     /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "workbench__body", id: `panel-${activeTab}`, role: "tabpanel", children: [
       activeTab === "overview" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_jsx_runtime9.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(OverviewCards, { cards: projection.cards }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          OverviewCards,
+          {
+            cards: projection.cards,
+            onInspect: (card) => {
+              setMetricsTarget(card.detailTarget);
+              setActiveTab("metrics");
+            }
+          }
+        ),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(LiveCharts, { charts: projection.charts })
-      ] }) : activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MetricsExplorer, { rows: projection.explorer.rows }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
+      ] }) : activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MetricsExplorer, { rows: projection.explorer.rows, target: metricsTarget }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
       projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
         refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: refreshError }) : null,
         projection.warnings.map((warning2) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: warning2.message }, warning2.code))
-      ] }) : null
+      ] }) : null,
+      lastAction ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "last-action", "aria-live": "polite", children: lastAction }) : null
     ] })
   ] });
 }

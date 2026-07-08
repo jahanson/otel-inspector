@@ -1,6 +1,7 @@
 import React from "react";
 import type { DashboardCard, DashboardProjection } from "../types.ts";
 import { Badge } from "./ui/badge.tsx";
+import { Button } from "./ui/button.tsx";
 import { Card } from "./ui/card.tsx";
 
 type Cards = DashboardProjection["cards"];
@@ -19,15 +20,15 @@ const orderedCards: Array<keyof Cards> = [
   "dropped",
 ];
 
-export function OverviewCards({ cards }: { cards: Cards }) {
+export function OverviewCards({ cards, onInspect }: { cards: Cards; onInspect?: (card: DashboardCard) => void }) {
   return (
     <section className="overview-grid" aria-label="Overview cards">
-      {orderedCards.map((key) => <OverviewCard key={cards[key].id} card={cards[key]} />)}
+      {orderedCards.map((key) => <OverviewCard key={cards[key].id} card={cards[key]} onInspect={onInspect} />)}
     </section>
   );
 }
 
-function OverviewCard({ card }: { card: DashboardCard }) {
+function OverviewCard({ card, onInspect }: { card: DashboardCard; onInspect?: (card: DashboardCard) => void }) {
   return (
     <Card className="overview-card" data-state={card.state}>
       <div className="overview-card__topline">
@@ -41,6 +42,13 @@ function OverviewCard({ card }: { card: DashboardCard }) {
         {card.unit ? <span className="overview-card__unit">{card.unit}</span> : null}
       </p>
       <p className="overview-card__source">{card.source}</p>
+      {card.detailTarget && onInspect
+        ? (
+          <Button className="overview-card__inspect" onClick={() => onInspect(card)} type="button">
+            Inspect source
+          </Button>
+        )
+        : null}
     </Card>
   );
 }

@@ -258,7 +258,23 @@ function card(
   unit: string,
   source: string,
 ): DashboardCard {
-  return { id, label, state, value, unit, source };
+  return { id, label, state, value, unit, source, detailTarget: detailTargetForCard(id) };
+}
+
+function detailTargetForCard(id: DashboardCard["id"]): DashboardCard["detailTarget"] | undefined {
+  switch (id) {
+    case "latency":
+      return { metricName: "http.server.duration" };
+    case "throughput":
+    case "error-rate":
+      return { metricName: "http.server.request.count" };
+    case "active-requests":
+      return { metricName: "http.server.active_requests" };
+    case "ingest":
+      return { metricName: "otel.inspector.ingest.datapoints" };
+    case "dropped":
+      return undefined;
+  }
 }
 
 function latencyChart(points: MetricPoint[], windowMs: number): ChartSeries {
@@ -353,6 +369,7 @@ function explorerRows(points: MetricPoint[]): ExplorerRow[] {
       metricType: point.metric.type,
       unit: point.metric.unit,
       latest: point.value,
+      rate: isHttpRequestCount(point) ? point.value : undefined,
       resourceService: typeof point.resource["service.name"] === "string" ? point.resource["service.name"] : undefined,
       attributes: point.attributes,
       cardinality: 1,

@@ -5,7 +5,7 @@ import { Tabs } from "./components/ui/tabs.tsx";
 import { MetricsExplorer } from "./components/MetricsExplorer.tsx";
 import { OverviewCards } from "./components/OverviewCards.tsx";
 import { LiveCharts } from "./charts/LiveCharts.tsx";
-import type { DashboardProjection } from "./types.ts";
+import type { DashboardCard, DashboardProjection } from "./types.ts";
 
 const tabs = [
   { value: "overview", label: "Overview" },
@@ -14,12 +14,21 @@ const tabs = [
   { value: "settings", label: "Settings", disabled: true },
 ] as const;
 
+const windowOptions = [
+  { label: "1m", value: 60_000 },
+  { label: "5m", value: 300_000 },
+  { label: "15m", value: 900_000 },
+] as const;
+
 export function App() {
   const [projection, setProjection] = useState<DashboardProjection>(() => readInitialProjection());
   const [activeTab, setActiveTab] = useState("overview");
+  const [windowMs, setWindowMs] = useState(() => projection.windowMs);
   const [paused, setPaused] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
+  const [lastAction, setLastAction] = useState<string | null>(null);
+  const [metricsTarget, setMetricsTarget] = useState<DashboardCard["detailTarget"]>();
 
   useEffect(() => {
     if (paused) {
@@ -27,11 +36,11 @@ export function App() {
     }
 
     const id = setInterval(() => {
-      void refreshProjection(projection.windowMs, setProjection, setRefreshError);
+      void refreshProjection(windowMs, setProjection, setRefreshError);
     }, 1_000);
 
     return () => clearInterval(id);
-  }, [paused, projection.windowMs]);
+  }, [paused, windowMs]);
 
   return (
     <main className="workbench">
@@ -48,14 +57,34 @@ export function App() {
           <Button type="button" onClick={() => setPaused((value) => !value)}>
             {paused ? "Resume" : "Pause"}
           </Button>
+          <div className="window-controls" aria-label="Time window">
+            {windowOptions.map((option) => (
+              <Button
+                aria-pressed={projection.windowMs === option.value}
+                className="window-controls__button"
+                key={option.value}
+                onClick={() => {
+                  setWindowMs(option.value);
+                  void refreshProjection(option.value, setProjection, setRefreshError);
+                }}
+                type="button"
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
           <Button
             type="button"
             disabled={clearing}
             onClick={async () => {
+              if (!globalThis.confirm("Clear retained telemetry for this dashboard session?")) {
+                return;
+              }
               setClearing(true);
               try {
                 await fetch("/api/dashboard/clear", { method: "POST" });
-                await refreshProjection(projection.windowMs, setProjection, setRefreshError);
+                await refreshProjection(windowMs, setProjection, setRefreshError);
+                setLastAction(`Session cleared at ${new Date().toLocaleTimeString()}.`);
               } finally {
                 setClearing(false);
               }
@@ -72,12 +101,18 @@ export function App() {
         {activeTab === "overview"
           ? (
             <>
-              <OverviewCards cards={projection.cards} />
+              <OverviewCards
+                cards={projection.cards}
+                onInspect={(card) => {
+                  setMetricsTarget(card.detailTarget);
+                  setActiveTab("metrics");
+                }}
+              />
               <LiveCharts charts={projection.charts} />
             </>
           )
           : activeTab === "metrics"
-          ? <MetricsExplorer rows={projection.explorer.rows} />
+          ? <MetricsExplorer rows={projection.explorer.rows} target={metricsTarget} />
           : <p className="empty-state">This dashboard tab is not implemented yet.</p>}
 
         {projection.warnings.length > 0 || refreshError
@@ -89,6 +124,7 @@ export function App() {
             </div>
           )
           : null}
+        {lastAction ? <p className="last-action" aria-live="polite">{lastAction}</p> : null}
       </section>
     </main>
   );
