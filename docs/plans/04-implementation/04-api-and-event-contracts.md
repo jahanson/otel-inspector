@@ -25,7 +25,8 @@ type LiveTelemetrySummary = {
 
 This summary is implemented by `src/backend/metric_derivations.ts` and served by
 `src/backend/app_server.ts` at `/api/summary`. M3 UI controls and chart-specific
-projection contracts are still pending.
+projection contracts are planned for later dashboard work; their runtime shape
+will be defined when the dashboard projection module and routes are added.
 
 ## M3 Dashboard Projections
 
