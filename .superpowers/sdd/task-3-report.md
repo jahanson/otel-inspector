@@ -1,119 +1,142 @@
-# Task 3 Report: Bounded Telemetry Store
+# Task 3 Report: Normalize Exponential Histogram Datapoints And Close Docs
 
-## Scope
+## What I implemented
 
-Implemented the bounded telemetry store required by Task 3 in:
+- Added two Task 3 normalization tests to
+  `tests/backend/normalize_metrics_test.ts` on top of the existing Task 2
+  generated-binding coverage.
+- Extended `src/backend/metric_model.ts` with:
+  - `ExponentialHistogramBuckets`
+  - `ExponentialHistogramValue`
+  - `MetricPoint.exponentialHistogram?`
+- Extended `src/backend/normalize_metrics.ts` to:
+  - import generated exponential histogram types;
+  - add the `"exponentialHistogram"` branch in `normalizeMetric()`;
+  - normalize exponential histogram datapoints into typed retained records;
+  - mark safe retained records as `unsupported` with typed
+    `exponentialHistogram` metadata;
+  - mark inconsistent or unsafe records as `incomplete` without retained
+    exponential bucket metadata.
+- Updated docs/evidence:
+  - `docs/plans/02-runtime-architecture/02-telemetry-normalization-store.md`
+  - `docs/plans/04-implementation/05-test-plan.md`
+  - `docs/plans/05-linear-issues/OI-006.md`
+  - `docs/plans/06-evidence/acceptance-matrix.md`
+- Appended the Task 2 unblock resolution note to
+  `.superpowers/sdd/task-2-report.md`.
 
-- `src/backend/telemetry_store.ts`
-- `tests/backend/telemetry_store_test.ts`
+## What I tested and exact results
 
-I did not modify any unrelated source files.
+1. `deno test .\tests\backend\normalize_metrics_test.ts`
+   - RED: failed during type-checking with:
+     - `TS2366` at `src/backend/normalize_metrics.ts:55:4`
+     - `TS2339` for missing `MetricPoint.exponentialHistogram` in the new
+       tests
+   - GREEN: passed with `ok | 11 passed | 0 failed`
 
-## Red / Green
+2. `deno task receiver:test`
+   - Passed with `ok | 14 passed | 0 failed`
 
-Red:
+3. `deno test .\tests\backend\metric_model_test.ts .\tests\backend\normalize_metrics_test.ts .\tests\backend\telemetry_store_test.ts .\tests\backend\metric_derivations_test.ts .\tests\backend\live_bus_substrate_test.ts .\tests\backend\live_bus_cadence_test.ts`
+   - Passed with `ok | 37 passed | 0 failed`
 
-- Added the focused telemetry store test file first.
-- Ran `deno test tests/backend/telemetry_store_test.ts`.
-- Confirmed the expected missing-module failure for `src/backend/telemetry_store.ts`.
+4. `deno task ok`
+   - Passed.
+   - `deno fmt --check`: `Checked 36 files`
+   - `deno lint`: `Checked 24 files`
+   - Full suite: `ok | 54 passed | 0 failed`
 
-Green:
+5. Diff inspection
+   - `git status --short`: scoped dirty files only
+   - `git diff --stat`: proto/codegen, model, normalizer, tests, docs, and
+     report updates only
 
-- Implemented `TelemetryStore`, `TelemetryStoreSnapshot`, `TelemetryStoreOptions`,
-  `IngestExportMetadata`, `SeriesSummary`, and `createTelemetryStore`.
-- Re-ran `deno test tests/backend/telemetry_store_test.ts`.
-- Confirmed all 3 tests passed.
+## TDD Evidence
 
-## Behavior
+### RED
 
-The store now:
-
-- retains recent metric points up to `maxPoints`
-- counts dropped points when older points are evicted
-- tracks export metadata including observed time, bytes, point count, and warning count
-- keeps recent export metadata and warnings bounded by `maxExports`
-- returns deterministic series summaries
-- supports querying points for a series within an observed-at window
-
-## Verification
-
-Focused test command:
-
-```powershell
-deno test tests/backend/telemetry_store_test.ts
-```
-
-Result:
-
-- 3 tests passed
-- 0 failed
-
-## Commit
-
-- `b3e816d` `feat: add bounded telemetry store`
-
-## Self-review
-
-- The implementation stays within the task scope and only touches the two owned files.
-- The store API matches the task brief and the tests cover the requested retention and series-query behavior.
-- The worktree still has an unrelated pre-existing modification in `.superpowers/sdd/task-2-report.md`; I left it untouched.
-
-## Review Fixes
-
-I addressed the follow-up review findings by tightening the telemetry store boundary:
-
-- `seriesList()` now sorts retained series by `metricName` and then `seriesKey` so ties are deterministic.
-- `recordExport()` clones incoming `MetricPoint` and `MetricWarning` objects before storing them.
-- `snapshot()` and `pointsForSeries()` return cloned objects so callers cannot mutate stored history through readback results.
-
-## Review Verification
-
-Focused verification after the fix:
+Command:
 
 ```powershell
-deno test tests/backend/telemetry_store_test.ts
-deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts
+deno test .\tests\backend\normalize_metrics_test.ts
 ```
 
-Result:
+Output:
 
-- 6 tests passed
-- 0 failed
-- formatting check passed
+```text
+TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
+at src/backend/normalize_metrics.ts:55:4
 
-## Review Follow-up
+TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'MetricPoint'.
+at tests/backend/normalize_metrics_test.ts:133:33
 
-I fixed the remaining review finding by removing the local `MetricPoint` and
-`MetricWarning` definitions from `src/backend/telemetry_store.ts` and importing
-the canonical types from `src/backend/metric_model.ts` instead.
+TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'MetricPoint'.
+at tests/backend/normalize_metrics_test.ts:191:33
+```
 
-I also updated `tests/backend/telemetry_store_test.ts` to import the type-only
-aliases from `metric_model.ts`, since the store no longer re-exports those
-shapes.
+### GREEN
 
-Verification for this follow-up:
+Command:
 
-- `deno test tests/backend/telemetry_store_test.ts`
-- `deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts`
+```powershell
+deno test .\tests\backend\normalize_metrics_test.ts
+```
 
-## Contract Review Fix
+Output:
 
-I fixed the final Task 3 contract review findings in `src/backend/telemetry_store.ts`:
+```text
+ok | 11 passed | 0 failed
+```
 
-- removed `warningCount` from the public `IngestExportMetadata` shape and from stored export metadata
-- typed `SeriesSummary.resource` and `SeriesSummary.attributes` as `MetricPoint["resource"]` and `MetricPoint["attributes"]`
+## Files changed
 
-I left tests unchanged because the existing telemetry store tests already cover the affected behavior and no compile or test adjustments were needed for this contract tightening.
+- `.superpowers/sdd/task-2-report.md`
+- `.superpowers/sdd/task-3-report.md`
+- `docs/plans/02-runtime-architecture/02-telemetry-normalization-store.md`
+- `docs/plans/04-implementation/05-test-plan.md`
+- `docs/plans/05-linear-issues/OI-006.md`
+- `docs/plans/06-evidence/acceptance-matrix.md`
+- `src/backend/metric_model.ts`
+- `src/backend/normalize_metrics.ts`
+- `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
+- `tests/backend/normalize_metrics_test.ts`
+- `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`
 
-## Series Timestamp Fix
+## Self-review findings
 
-I fixed the remaining review finding for `seriesList()` in
-`src/backend/telemetry_store.ts`:
+- The Task 2 generated bindings were left intact and consumed as-is; generated
+  protobuf output was not hand-edited.
+- The new normalization path is isolated to metric-model/normalizer/test/doc
+  surfaces in the approved write scope.
+- Incomplete exponential histograms do not retain unsafe bucket metadata and
+  still surface a typed `exponential_histogram` metric record plus warning.
 
-- `lastObservedAtMs` now tracks the maximum observed timestamp seen for each series
-- added a regression test with out-of-order points for the same series to prove the latest timestamp wins
+## Any concerns
 
-Verification for this follow-up:
+- The success fixture was corrected so `count` now equals positive bucket
+  totals plus negative bucket totals plus `zeroCount`, and
+  `buildExponentialHistogramValue()` now follows OTLP total-count semantics.
 
-- `deno test tests/backend/telemetry_store_test.ts`
-- `deno fmt --check src/backend/telemetry_store.ts tests/backend/telemetry_store_test.ts`
+## Review-fix closeout
+
+- Files changed:
+  - `src/backend/AGENTS.md`
+  - `docs/plans/06-evidence/acceptance-matrix.md`
+  - `.superpowers/sdd/task-3-report.md`
+- Verification:
+  - `deno fmt --check src/backend/AGENTS.md docs/plans/06-evidence/acceptance-matrix.md .superpowers/sdd/task-3-report.md` returned `No target files found.`
+  - `git diff --check`
+
+## Final-review fix
+
+- Corrected exponential histogram `Buckets.bucket_counts` from `fixed64` to
+  `uint64` in the local proto and plan snippet to match OTLP wire encoding.
+- Regenerated protobuf bindings with `deno task proto:gen`; generated
+  exponential bucket reads/writes now use `uint64`.
+- Added a wire-level regression that decodes a hand-encoded OTLP exponential
+  histogram payload with packed uint64 bucket counts before normalization.
+- RED: `deno test .\tests\backend\normalize_metrics_test.ts` failed in
+  `ExponentialHistogramDataPoint_Buckets` while the generated decoder still
+  tried to read packed uint64 values as `fixed64`.
+- GREEN: `deno test .\tests\backend\normalize_metrics_test.ts` passed with
+  `12 passed | 0 failed`.

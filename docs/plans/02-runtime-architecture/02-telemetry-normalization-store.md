@@ -67,6 +67,8 @@ Implemented in `src/backend/metric_model.ts`, where `MetricPoint` keeps OTLP tim
 Exponential histogram datapoints are retained as typed normalized records once
 the local proto/codegen surface exposes the OTLP oneof arm, but percentile
 derivation remains unavailable until a separate safe derivation design lands.
+Datapoints with inconsistent or unsafe bucket metadata stay normalized as
+`incomplete` records without retained exponential bucket details.
 
 ## Derived summaries
 

@@ -1,20 +1,43 @@
-# Task 2 Report: Normalize OTLP Metrics Into MetricPoint Records
+# Task 2 Report: Add Exponential Histogram Proto Surface
 
-## Scope
+## What I implemented
 
-- Created `src/backend/normalize_metrics.ts`
-- Created `tests/backend/normalize_metrics_test.ts`
-- Left all other source files unchanged
+- Added `ExponentialHistogram exponential_histogram = 10;` to `Metric.data` in `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`.
+- Added minimal local `ExponentialHistogram` and `ExponentialHistogramDataPoint` messages, including nested `Buckets`, without exemplars.
+- Regenerated `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts` via `deno task proto:gen`.
+- Added a generated-binding test in `tests/backend/normalize_metrics_test.ts` that:
+  - imports `ExponentialHistogramDataPoint`;
+  - constructs a metric with `data.oneofKind === "exponentialHistogram"`;
+  - asserts the generated oneof arm and bucket count typing exist.
 
-## DOX chain read
+## What I tested and exact results
 
-- `AGENTS.md`
-- `src/AGENTS.md`
-- `src/backend/AGENTS.md`
-- `src/backend/otel/AGENTS.md`
-- `tests/AGENTS.md`
+1. `deno test tests/backend/normalize_metrics_test.ts`
+   - RED result: failed during type checking exactly because the generated surface did not exist yet.
 
-## TDD evidence
+2. `deno task proto:gen`
+   - Result: passed.
+   - Output:
+
+   ```text
+   Generated OTLP protobuf bindings in src/backend/otel/proto
+   ```
+
+3. `rg -n "exponentialHistogram|ExponentialHistogramDataPoint" src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
+   - Result: passed.
+   - Confirmed generated exports and the `Metric.data` exponential histogram oneof arm exist.
+
+4. `deno test tests/backend/normalize_metrics_test.ts`
+   - Post-codegen result: still fails, but now for a different reason:
+   - `src/backend/normalize_metrics.ts` no longer type-checks because `normalizeMetric()` is no longer exhaustive after `Metric.data` gained the new `"exponentialHistogram"` arm.
+   - Exact failing error:
+
+   ```text
+   TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
+   at src/backend/normalize_metrics.ts:55:4
+   ```
+
+## TDD Evidence
 
 ### RED
 
@@ -24,10 +47,14 @@ Command:
 deno test tests/backend/normalize_metrics_test.ts
 ```
 
-Result:
+Output:
 
-- Failed as expected with `TS2307`
-- Failure reason: `src/backend/normalize_metrics.ts` did not exist yet
+```text
+TS2305 [ERROR]: Module ".../metrics.ts" has no exported member 'ExponentialHistogramDataPoint'.
+TS2322 [ERROR]: Type '"exponentialHistogram"' is not assignable to type '"gauge" | "sum" | "histogram" | "summary" | undefined'.
+TS2367 [ERROR]: This comparison appears to be unintentional because the types '"gauge" | "sum" | "histogram" | "summary" | undefined' and '"exponentialHistogram"' have no overlap.
+TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'never'.
+```
 
 ### GREEN
 
@@ -37,105 +64,40 @@ Command:
 deno test tests/backend/normalize_metrics_test.ts
 ```
 
-Result:
+Output:
 
-- Passed
-- `3 passed | 0 failed`
-
-## Implementation summary
-
-- Normalized OTLP gauge datapoints into `MetricPoint` records with resource, scope, timestamps, unit, and numeric value.
-- Normalized OTLP sum datapoints into `MetricPoint` records with temporality and monotonic metadata.
-- Normalized OTLP histogram datapoints into `MetricPoint` records with count, sum, and explicit bucket boundaries when the bucket data is usable.
-- Retained unsupported summary metrics as `MetricPoint` records marked `derivationStatus: "unsupported"` with `metric-unsupported` warnings.
-- Aggregated point warnings into the top-level `NormalizeMetricsResult`.
-- Reused Task 1 helpers from `metric_model.ts` for attribute normalization, series key generation, and safe numeric conversion.
-
-## Verification
-
-Focused task verification:
-
-```powershell
-deno test tests/backend/normalize_metrics_test.ts
-deno fmt --check src/backend/normalize_metrics.ts tests/backend/normalize_metrics_test.ts
+```text
+TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
+at src/backend/normalize_metrics.ts:55:4
 ```
 
-Results:
+Status:
 
-- Focused test passed
-- Task files passed format check
+- The generated-binding test itself is now satisfied by the regenerated proto surface.
+- The full focused test command is blocked by an out-of-scope compile failure in `src/backend/normalize_metrics.ts`.
 
-Repo-wide verification attempt:
+## Files changed
 
-```powershell
-deno task ok
-```
+- `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`
+- `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
+- `tests/backend/normalize_metrics_test.ts`
+- `.superpowers/sdd/task-2-report.md`
 
-Result:
+## Self-review findings
 
-- Failed during `deno fmt --check`
-- Failure includes pre-existing formatting drift in `src/backend/metric_model.ts`
-- I did not modify that file for Task 2 because the task scope said to avoid unrelated changes
+- The proto and generated bindings are scoped correctly to metrics-only MVP work.
+- I did not hand-edit generated files; the generated TypeScript came only from `deno task proto:gen`.
+- I did not add exponential histogram normalization behavior.
+- I did not update any AGENTS.md files because this task did not change durable contracts or ownership docs.
 
-## Self-review
+## Any concerns
 
-- Kept the implementation inside the exact task-owned file boundary.
-- Followed the brief’s required warning codes and derivation statuses verbatim.
-- Adjusted the `sum` branch to satisfy TypeScript oneof narrowing without changing behavior.
-- No AGENTS updates were needed because this task did not change durable structure, ownership, or workflow contracts.
+- The user-approved write scope does not include `src/backend/normalize_metrics.ts`, but the new generated `Metric.data` union now requires an exhaustiveness update there before `deno test tests/backend/normalize_metrics_test.ts` can pass.
+- Because of that scope boundary, I did not make the follow-on source change or create a commit.
 
-## Concerns
+## Resolution note
 
-- `deno task ok` is not green in this worktree because `src/backend/metric_model.ts` currently fails repo-wide formatting checks outside Task 2 scope.
-
-## Controller Follow-up
-
-The branch formatting concern was resolved after Task 2 by commit 4ccf598 (ix: restore metric model formatting drift). Follow-up command deno fmt --check src/backend/metric_model.ts tests/backend/metric_model_test.ts src/backend/normalize_metrics.ts tests/backend/normalize_metrics_test.ts passed with Checked 4 files.
-
-## Task 2 Review Fix Follow-up
-
-### Scope
-
-- Updated `src/backend/normalize_metrics.ts`
-- Updated `tests/backend/normalize_metrics_test.ts`
-- Left all other source files unchanged
-
-### Review findings addressed
-
-- Summary normalization now emits one unsupported `MetricPoint` per summary datapoint when datapoints are present.
-- Summary datapoint attributes, `startTimeUnixNano`, `timeUnixNano`, `count`, and `sum` are preserved when safely representable.
-- Empty summary metrics still preserve the existing behavior by returning a single unsupported summary point.
-- Added regression coverage for `metric-value-missing`.
-- Added regression coverage for `histogram-incomplete`.
-
-### TDD evidence
-
-RED:
-
-- `deno test tests/backend/normalize_metrics_test.ts`
-- Failed with `1 failed` in `normalizeMetricsExport retains one unsupported summary point per summary datapoint`
-- Failure showed the current implementation emitted `1` point instead of the expected `2`
-
-GREEN:
-
-- `deno test tests/backend/normalize_metrics_test.ts`
-- Passed with `6 passed | 0 failed`
-
-### Verification
-
-- `deno test tests/backend/normalize_metrics_test.ts`
-- `deno fmt --check src/backend/normalize_metrics.ts tests/backend/normalize_metrics_test.ts`
-
-Results:
-
-- Tests passed
-- Format check passed
-
-### DOX pass
-
-- Re-checked the active DOX chain for the touched paths
-- No AGENTS updates were needed because the fix did not change durable structure, ownership, workflow, or verification contracts
-
-### Blocked reviewer item
-
-Exponential histogram remains out of scope for this fix. The current generated proto surface in `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts` exposes `gauge`, `sum`, `histogram`, and `summary` oneof arms only; there is no exponential histogram arm to normalize against in the owned Task 2 files. That reviewer item should be handled by the controller/human or in a future proto/codegen task.
+- Task 3 picked up the blocked handoff, added the missing `normalizeMetric()`
+  exponential histogram branch plus typed retention handling, and the coupled
+  checkpoint now passes focused normalization tests, receiver/substrate tests,
+  and `deno task ok`.

@@ -1,5 +1,7 @@
 import {
   AggregationTemporality,
+  type ExponentialHistogram,
+  type ExponentialHistogramDataPoint,
   type Histogram,
   type Metric,
   type NumberDataPoint,
@@ -11,6 +13,8 @@ import type { ExportMetricsServiceRequestMessage } from "./otel/decode.ts";
 import {
   attributesFromKeyValues,
   buildSeriesKey,
+  type ExponentialHistogramBuckets,
+  type ExponentialHistogramValue,
   type MetricPoint,
   type MetricType,
   type MetricWarning,
@@ -69,6 +73,8 @@ function normalizeMetric(
     }
     case "histogram":
       return histogramPoints(metric, scopeMetrics, resource, observedAtMs, metric.data.histogram);
+    case "exponentialHistogram":
+      return exponentialHistogramPoints(metric, scopeMetrics, resource, observedAtMs, metric.data.exponentialHistogram);
     case "summary":
       return summaryPoints(metric, scopeMetrics, resource, observedAtMs, metric.data.summary);
     case undefined:
@@ -139,6 +145,109 @@ function histogramPoints(
       warnings,
     });
   });
+}
+
+function exponentialHistogramPoints(
+  metric: Metric,
+  scopeMetrics: ScopeMetrics,
+  resource: Record<string, PrimitiveAttributeValue>,
+  observedAtMs: number,
+  exponentialHistogram: ExponentialHistogram,
+): MetricPoint[] {
+  return exponentialHistogram.dataPoints.map((dataPoint) =>
+    exponentialHistogramPoint(metric, scopeMetrics, resource, observedAtMs, dataPoint, exponentialHistogram)
+  );
+}
+
+function exponentialHistogramPoint(
+  metric: Metric,
+  scopeMetrics: ScopeMetrics,
+  resource: Record<string, PrimitiveAttributeValue>,
+  observedAtMs: number,
+  dataPoint: ExponentialHistogramDataPoint,
+  exponentialHistogram: ExponentialHistogram,
+): MetricPoint {
+  const attributes = attributesFromKeyValues(dataPoint.attributes);
+  const count = toNumberValue(dataPoint.count);
+  const zeroCount = toNumberValue(dataPoint.zeroCount);
+  const positive = normalizeExponentialBuckets(dataPoint.positive);
+  const negative = normalizeExponentialBuckets(dataPoint.negative);
+  const safeHistogram = buildExponentialHistogramValue(dataPoint, positive, negative, count, zeroCount);
+  const incomplete = safeHistogram === undefined;
+  const warning = incomplete
+    ? {
+      code: "exponential-histogram-incomplete",
+      message: "Exponential histogram datapoint cannot be retained as safe bucket metadata.",
+    }
+    : {
+      code: "metric-unsupported",
+      message: "Exponential histogram is retained but not yet used for derivations.",
+    };
+
+  return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, "exponential_histogram", {
+    timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
+    startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
+    count,
+    sum: dataPoint.sum !== undefined && Number.isFinite(dataPoint.sum) ? dataPoint.sum : undefined,
+    exponentialHistogram: safeHistogram,
+    metricOverrides: { temporality: temporalityName(exponentialHistogram.aggregationTemporality) },
+    derivationStatus: incomplete ? "incomplete" : "unsupported",
+    warnings: [warning],
+  });
+}
+
+function normalizeExponentialBuckets(
+  buckets: ExponentialHistogramDataPoint["positive"],
+): ExponentialHistogramBuckets | undefined {
+  if (!buckets) {
+    return undefined;
+  }
+
+  const counts = buckets.bucketCounts.map((bucketCount) => toNumberValue(bucketCount));
+  if (counts.some((count) => count === undefined || count < 0)) {
+    return undefined;
+  }
+
+  return { offset: buckets.offset, counts: counts as number[] };
+}
+
+function buildExponentialHistogramValue(
+  dataPoint: ExponentialHistogramDataPoint,
+  positive: ExponentialHistogramBuckets | undefined,
+  negative: ExponentialHistogramBuckets | undefined,
+  count: number | undefined,
+  zeroCount: number | undefined,
+): ExponentialHistogramValue | undefined {
+  if (count === undefined || zeroCount === undefined || zeroCount < 0) {
+    return undefined;
+  }
+
+  if ((dataPoint.positive && positive === undefined) || (dataPoint.negative && negative === undefined)) {
+    return undefined;
+  }
+
+  const bucketTotal = bucketCountTotal(positive) + bucketCountTotal(negative) + zeroCount;
+  if (bucketTotal !== count) {
+    return undefined;
+  }
+
+  return {
+    scale: dataPoint.scale,
+    zeroCount,
+    zeroThreshold: Number.isFinite(dataPoint.zeroThreshold) ? dataPoint.zeroThreshold : undefined,
+    positive,
+    negative,
+    min: dataPoint.min !== undefined && Number.isFinite(dataPoint.min) ? dataPoint.min : undefined,
+    max: dataPoint.max !== undefined && Number.isFinite(dataPoint.max) ? dataPoint.max : undefined,
+  };
+}
+
+function bucketCountTotal(buckets: ExponentialHistogramBuckets | undefined): number {
+  if (!buckets) {
+    return 0;
+  }
+
+  return buckets.counts.reduce((sum, count) => sum + count, 0);
 }
 
 function hasUsableHistogramBuckets(
@@ -248,6 +357,7 @@ function basePoint(
     count?: number;
     sum?: number;
     buckets?: Array<{ upperBound: number; count: number }>;
+    exponentialHistogram?: ExponentialHistogramValue;
     metricOverrides?: { temporality?: "delta" | "cumulative" | "unspecified"; monotonic?: boolean };
     derivationStatus: "usable" | "unsupported" | "incomplete";
     warnings: MetricWarning[];
@@ -286,6 +396,7 @@ function basePoint(
     count: options.count,
     sum: options.sum,
     buckets: options.buckets,
+    exponentialHistogram: options.exponentialHistogram,
     derivationStatus: options.derivationStatus,
     warnings: options.warnings,
   };

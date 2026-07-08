@@ -85,6 +85,12 @@ export interface Metric {
      */
     histogram: Histogram;
   } | {
+    oneofKind: "exponentialHistogram";
+    /**
+     * @generated from protobuf field: opentelemetry.proto.metrics.v1.ExponentialHistogram exponential_histogram = 10
+     */
+    exponentialHistogram: ExponentialHistogram;
+  } | {
     oneofKind: "summary";
     /**
      * @generated from protobuf field: opentelemetry.proto.metrics.v1.Summary summary = 11
@@ -132,6 +138,89 @@ export interface Histogram {
    * @generated from protobuf field: opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2
    */
   aggregationTemporality: AggregationTemporality;
+}
+/**
+ * @generated from protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogram
+ */
+export interface ExponentialHistogram {
+  /**
+   * @generated from protobuf field: repeated opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint data_points = 1
+   */
+  dataPoints: ExponentialHistogramDataPoint[];
+  /**
+   * @generated from protobuf field: opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2
+   */
+  aggregationTemporality: AggregationTemporality;
+}
+/**
+ * @generated from protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint
+ */
+export interface ExponentialHistogramDataPoint {
+  /**
+   * @generated from protobuf field: repeated opentelemetry.proto.common.v1.KeyValue attributes = 1
+   */
+  attributes: KeyValue[];
+  /**
+   * @generated from protobuf field: fixed64 start_time_unix_nano = 2
+   */
+  startTimeUnixNano: bigint;
+  /**
+   * @generated from protobuf field: fixed64 time_unix_nano = 3
+   */
+  timeUnixNano: bigint;
+  /**
+   * @generated from protobuf field: fixed64 count = 4
+   */
+  count: bigint;
+  /**
+   * @generated from protobuf field: optional double sum = 5
+   */
+  sum?: number;
+  /**
+   * @generated from protobuf field: sint32 scale = 6
+   */
+  scale: number;
+  /**
+   * @generated from protobuf field: fixed64 zero_count = 7
+   */
+  zeroCount: bigint;
+  /**
+   * @generated from protobuf field: opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets positive = 8
+   */
+  positive?: ExponentialHistogramDataPoint_Buckets;
+  /**
+   * @generated from protobuf field: opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets negative = 9
+   */
+  negative?: ExponentialHistogramDataPoint_Buckets;
+  /**
+   * @generated from protobuf field: uint32 flags = 10
+   */
+  flags: number;
+  /**
+   * @generated from protobuf field: optional double min = 12
+   */
+  min?: number;
+  /**
+   * @generated from protobuf field: optional double max = 13
+   */
+  max?: number;
+  /**
+   * @generated from protobuf field: double zero_threshold = 14
+   */
+  zeroThreshold: number;
+}
+/**
+ * @generated from protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets
+ */
+export interface ExponentialHistogramDataPoint_Buckets {
+  /**
+   * @generated from protobuf field: sint32 offset = 1
+   */
+  offset: number;
+  /**
+   * @generated from protobuf field: repeated uint64 bucket_counts = 2
+   */
+  bucketCounts: bigint[];
 }
 /**
  * @generated from protobuf message opentelemetry.proto.metrics.v1.Summary
@@ -437,6 +526,7 @@ class Metric$Type extends MessageType<Metric> {
       { no: 5, name: "gauge", kind: "message", oneof: "data", T: () => Gauge },
       { no: 7, name: "sum", kind: "message", oneof: "data", T: () => Sum },
       { no: 9, name: "histogram", kind: "message", oneof: "data", T: () => Histogram },
+      { no: 10, name: "exponential_histogram", kind: "message", oneof: "data", T: () => ExponentialHistogram },
       { no: 11, name: "summary", kind: "message", oneof: "data", T: () => Summary },
     ]);
   }
@@ -488,6 +578,17 @@ class Metric$Type extends MessageType<Metric> {
             histogram: Histogram.internalBinaryRead(reader, reader.uint32(), options, (message.data as any).histogram),
           };
           break;
+        case /* opentelemetry.proto.metrics.v1.ExponentialHistogram exponential_histogram */ 10:
+          message.data = {
+            oneofKind: "exponentialHistogram",
+            exponentialHistogram: ExponentialHistogram.internalBinaryRead(
+              reader,
+              reader.uint32(),
+              options,
+              (message.data as any).exponentialHistogram,
+            ),
+          };
+          break;
         case /* opentelemetry.proto.metrics.v1.Summary summary */ 11:
           message.data = {
             oneofKind: "summary",
@@ -532,6 +633,14 @@ class Metric$Type extends MessageType<Metric> {
     if (message.data.oneofKind === "histogram") {
       Histogram.internalBinaryWrite(message.data.histogram, writer.tag(9, WireType.LengthDelimited).fork(), options)
         .join();
+    }
+    /* opentelemetry.proto.metrics.v1.ExponentialHistogram exponential_histogram = 10; */
+    if (message.data.oneofKind === "exponentialHistogram") {
+      ExponentialHistogram.internalBinaryWrite(
+        message.data.exponentialHistogram,
+        writer.tag(10, WireType.LengthDelimited).fork(),
+        options,
+      ).join();
     }
     /* opentelemetry.proto.metrics.v1.Summary summary = 11; */
     if (message.data.oneofKind === "summary") {
@@ -772,6 +881,367 @@ class Histogram$Type extends MessageType<Histogram> {
  * @generated MessageType for protobuf message opentelemetry.proto.metrics.v1.Histogram
  */
 export const Histogram = new Histogram$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ExponentialHistogram$Type extends MessageType<ExponentialHistogram> {
+  constructor() {
+    super("opentelemetry.proto.metrics.v1.ExponentialHistogram", [
+      {
+        no: 1,
+        name: "data_points",
+        kind: "message",
+        repeat: 2, /*RepeatType.UNPACKED*/
+        T: () => ExponentialHistogramDataPoint,
+      },
+      {
+        no: 2,
+        name: "aggregation_temporality",
+        kind: "enum",
+        T: () => [
+          "opentelemetry.proto.metrics.v1.AggregationTemporality",
+          AggregationTemporality,
+          "AGGREGATION_TEMPORALITY_",
+        ],
+      },
+    ]);
+  }
+  override create(value?: PartialMessage<ExponentialHistogram>): ExponentialHistogram {
+    const message = globalThis.Object.create(this.messagePrototype!);
+    message.dataPoints = [];
+    message.aggregationTemporality = 0;
+    if (value !== undefined) {
+      reflectionMergePartial<ExponentialHistogram>(this, message, value);
+    }
+    return message;
+  }
+  override internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: ExponentialHistogram,
+  ): ExponentialHistogram {
+    let message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* repeated opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint data_points */ 1:
+          message.dataPoints.push(ExponentialHistogramDataPoint.internalBinaryRead(reader, reader.uint32(), options));
+          break;
+        case /* opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality */ 2:
+          message.aggregationTemporality = reader.int32();
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw") {
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          }
+          let d = reader.skip(wireType);
+          if (u !== false) {
+            (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+          }
+      }
+    }
+    return message;
+  }
+  override internalBinaryWrite(
+    message: ExponentialHistogram,
+    writer: IBinaryWriter,
+    options: BinaryWriteOptions,
+  ): IBinaryWriter {
+    /* repeated opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint data_points = 1; */
+    for (let i = 0; i < message.dataPoints.length; i++) {
+      ExponentialHistogramDataPoint.internalBinaryWrite(
+        message.dataPoints[i],
+        writer.tag(1, WireType.LengthDelimited).fork(),
+        options,
+      ).join();
+    }
+    /* opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2; */
+    if (message.aggregationTemporality !== 0) {
+      writer.tag(2, WireType.Varint).int32(message.aggregationTemporality);
+    }
+    let u = options.writeUnknownFields;
+    if (u !== false) {
+      (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    }
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogram
+ */
+export const ExponentialHistogram = new ExponentialHistogram$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ExponentialHistogramDataPoint$Type extends MessageType<ExponentialHistogramDataPoint> {
+  constructor() {
+    super("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint", [
+      { no: 1, name: "attributes", kind: "message", repeat: 2, /*RepeatType.UNPACKED*/ T: () => KeyValue },
+      { no: 2, name: "start_time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 3, name: "time_unix_nano", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 4, name: "count", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 5, name: "sum", kind: "scalar", opt: true, T: 1 /*ScalarType.DOUBLE*/ },
+      { no: 6, name: "scale", kind: "scalar", T: 17 /*ScalarType.SINT32*/ },
+      { no: 7, name: "zero_count", kind: "scalar", T: 6, /*ScalarType.FIXED64*/ L: 0 /*LongType.BIGINT*/ },
+      { no: 8, name: "positive", kind: "message", T: () => ExponentialHistogramDataPoint_Buckets },
+      { no: 9, name: "negative", kind: "message", T: () => ExponentialHistogramDataPoint_Buckets },
+      { no: 10, name: "flags", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+      { no: 12, name: "min", kind: "scalar", opt: true, T: 1 /*ScalarType.DOUBLE*/ },
+      { no: 13, name: "max", kind: "scalar", opt: true, T: 1 /*ScalarType.DOUBLE*/ },
+      { no: 14, name: "zero_threshold", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+    ]);
+  }
+  override create(value?: PartialMessage<ExponentialHistogramDataPoint>): ExponentialHistogramDataPoint {
+    const message = globalThis.Object.create(this.messagePrototype!);
+    message.attributes = [];
+    message.startTimeUnixNano = 0n;
+    message.timeUnixNano = 0n;
+    message.count = 0n;
+    message.scale = 0;
+    message.zeroCount = 0n;
+    message.flags = 0;
+    message.zeroThreshold = 0;
+    if (value !== undefined) {
+      reflectionMergePartial<ExponentialHistogramDataPoint>(this, message, value);
+    }
+    return message;
+  }
+  override internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: ExponentialHistogramDataPoint,
+  ): ExponentialHistogramDataPoint {
+    let message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* repeated opentelemetry.proto.common.v1.KeyValue attributes */ 1:
+          message.attributes.push(KeyValue.internalBinaryRead(reader, reader.uint32(), options));
+          break;
+        case /* fixed64 start_time_unix_nano */ 2:
+          message.startTimeUnixNano = reader.fixed64().toBigInt();
+          break;
+        case /* fixed64 time_unix_nano */ 3:
+          message.timeUnixNano = reader.fixed64().toBigInt();
+          break;
+        case /* fixed64 count */ 4:
+          message.count = reader.fixed64().toBigInt();
+          break;
+        case /* optional double sum */ 5:
+          message.sum = reader.double();
+          break;
+        case /* sint32 scale */ 6:
+          message.scale = reader.sint32();
+          break;
+        case /* fixed64 zero_count */ 7:
+          message.zeroCount = reader.fixed64().toBigInt();
+          break;
+        case /* opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets positive */ 8:
+          message.positive = ExponentialHistogramDataPoint_Buckets.internalBinaryRead(
+            reader,
+            reader.uint32(),
+            options,
+            message.positive,
+          );
+          break;
+        case /* opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets negative */ 9:
+          message.negative = ExponentialHistogramDataPoint_Buckets.internalBinaryRead(
+            reader,
+            reader.uint32(),
+            options,
+            message.negative,
+          );
+          break;
+        case /* uint32 flags */ 10:
+          message.flags = reader.uint32();
+          break;
+        case /* optional double min */ 12:
+          message.min = reader.double();
+          break;
+        case /* optional double max */ 13:
+          message.max = reader.double();
+          break;
+        case /* double zero_threshold */ 14:
+          message.zeroThreshold = reader.double();
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw") {
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          }
+          let d = reader.skip(wireType);
+          if (u !== false) {
+            (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+          }
+      }
+    }
+    return message;
+  }
+  override internalBinaryWrite(
+    message: ExponentialHistogramDataPoint,
+    writer: IBinaryWriter,
+    options: BinaryWriteOptions,
+  ): IBinaryWriter {
+    /* repeated opentelemetry.proto.common.v1.KeyValue attributes = 1; */
+    for (let i = 0; i < message.attributes.length; i++) {
+      KeyValue.internalBinaryWrite(message.attributes[i], writer.tag(1, WireType.LengthDelimited).fork(), options)
+        .join();
+    }
+    /* fixed64 start_time_unix_nano = 2; */
+    if (message.startTimeUnixNano !== 0n) {
+      writer.tag(2, WireType.Bit64).fixed64(message.startTimeUnixNano);
+    }
+    /* fixed64 time_unix_nano = 3; */
+    if (message.timeUnixNano !== 0n) {
+      writer.tag(3, WireType.Bit64).fixed64(message.timeUnixNano);
+    }
+    /* fixed64 count = 4; */
+    if (message.count !== 0n) {
+      writer.tag(4, WireType.Bit64).fixed64(message.count);
+    }
+    /* optional double sum = 5; */
+    if (message.sum !== undefined) {
+      writer.tag(5, WireType.Bit64).double(message.sum);
+    }
+    /* sint32 scale = 6; */
+    if (message.scale !== 0) {
+      writer.tag(6, WireType.Varint).sint32(message.scale);
+    }
+    /* fixed64 zero_count = 7; */
+    if (message.zeroCount !== 0n) {
+      writer.tag(7, WireType.Bit64).fixed64(message.zeroCount);
+    }
+    /* opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets positive = 8; */
+    if (message.positive) {
+      ExponentialHistogramDataPoint_Buckets.internalBinaryWrite(
+        message.positive,
+        writer.tag(8, WireType.LengthDelimited).fork(),
+        options,
+      ).join();
+    }
+    /* opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets negative = 9; */
+    if (message.negative) {
+      ExponentialHistogramDataPoint_Buckets.internalBinaryWrite(
+        message.negative,
+        writer.tag(9, WireType.LengthDelimited).fork(),
+        options,
+      ).join();
+    }
+    /* uint32 flags = 10; */
+    if (message.flags !== 0) {
+      writer.tag(10, WireType.Varint).uint32(message.flags);
+    }
+    /* optional double min = 12; */
+    if (message.min !== undefined) {
+      writer.tag(12, WireType.Bit64).double(message.min);
+    }
+    /* optional double max = 13; */
+    if (message.max !== undefined) {
+      writer.tag(13, WireType.Bit64).double(message.max);
+    }
+    /* double zero_threshold = 14; */
+    if (message.zeroThreshold !== 0) {
+      writer.tag(14, WireType.Bit64).double(message.zeroThreshold);
+    }
+    let u = options.writeUnknownFields;
+    if (u !== false) {
+      (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    }
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint
+ */
+export const ExponentialHistogramDataPoint = new ExponentialHistogramDataPoint$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ExponentialHistogramDataPoint_Buckets$Type extends MessageType<ExponentialHistogramDataPoint_Buckets> {
+  constructor() {
+    super("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets", [
+      { no: 1, name: "offset", kind: "scalar", T: 17 /*ScalarType.SINT32*/ },
+      {
+        no: 2,
+        name: "bucket_counts",
+        kind: "scalar",
+        repeat: 1, /*RepeatType.PACKED*/
+        T: 4, /*ScalarType.UINT64*/
+        L: 0, /*LongType.BIGINT*/
+      },
+    ]);
+  }
+  override create(
+    value?: PartialMessage<ExponentialHistogramDataPoint_Buckets>,
+  ): ExponentialHistogramDataPoint_Buckets {
+    const message = globalThis.Object.create(this.messagePrototype!);
+    message.offset = 0;
+    message.bucketCounts = [];
+    if (value !== undefined) {
+      reflectionMergePartial<ExponentialHistogramDataPoint_Buckets>(this, message, value);
+    }
+    return message;
+  }
+  override internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: ExponentialHistogramDataPoint_Buckets,
+  ): ExponentialHistogramDataPoint_Buckets {
+    let message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* sint32 offset */ 1:
+          message.offset = reader.sint32();
+          break;
+        case /* repeated uint64 bucket_counts */ 2:
+          if (wireType === WireType.LengthDelimited) {
+            for (let e = reader.int32() + reader.pos; reader.pos < e;) {
+              message.bucketCounts.push(reader.uint64().toBigInt());
+            }
+          } else {
+            message.bucketCounts.push(reader.uint64().toBigInt());
+          }
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw") {
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          }
+          let d = reader.skip(wireType);
+          if (u !== false) {
+            (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+          }
+      }
+    }
+    return message;
+  }
+  override internalBinaryWrite(
+    message: ExponentialHistogramDataPoint_Buckets,
+    writer: IBinaryWriter,
+    options: BinaryWriteOptions,
+  ): IBinaryWriter {
+    /* sint32 offset = 1; */
+    if (message.offset !== 0) {
+      writer.tag(1, WireType.Varint).sint32(message.offset);
+    }
+    /* repeated uint64 bucket_counts = 2; */
+    if (message.bucketCounts.length) {
+      writer.tag(2, WireType.LengthDelimited).fork();
+      for (let i = 0; i < message.bucketCounts.length; i++) {
+        writer.uint64(message.bucketCounts[i]);
+      }
+      writer.join();
+    }
+    let u = options.writeUnknownFields;
+    if (u !== false) {
+      (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    }
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets
+ */
+export const ExponentialHistogramDataPoint_Buckets = new ExponentialHistogramDataPoint_Buckets$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Summary$Type extends MessageType<Summary> {
   constructor() {

@@ -25,6 +25,7 @@ message Metric {
     Gauge gauge = 5;
     Sum sum = 7;
     Histogram histogram = 9;
+    ExponentialHistogram exponential_histogram = 10;
     Summary summary = 11;
   }
 }
@@ -42,6 +43,32 @@ message Sum {
 message Histogram {
   repeated HistogramDataPoint data_points = 1;
   AggregationTemporality aggregation_temporality = 2;
+}
+
+message ExponentialHistogram {
+  repeated ExponentialHistogramDataPoint data_points = 1;
+  AggregationTemporality aggregation_temporality = 2;
+}
+
+message ExponentialHistogramDataPoint {
+  repeated opentelemetry.proto.common.v1.KeyValue attributes = 1;
+  fixed64 start_time_unix_nano = 2;
+  fixed64 time_unix_nano = 3;
+  fixed64 count = 4;
+  optional double sum = 5;
+  sint32 scale = 6;
+  fixed64 zero_count = 7;
+  Buckets positive = 8;
+  Buckets negative = 9;
+  uint32 flags = 10;
+  optional double min = 12;
+  optional double max = 13;
+  double zero_threshold = 14;
+
+  message Buckets {
+    sint32 offset = 1;
+    repeated uint64 bucket_counts = 2;
+  }
 }
 
 message Summary {

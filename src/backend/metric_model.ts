@@ -7,6 +7,21 @@ export type MetricWarning = {
   message: string;
 };
 
+export type ExponentialHistogramBuckets = {
+  offset: number;
+  counts: number[];
+};
+
+export type ExponentialHistogramValue = {
+  scale: number;
+  zeroCount?: number;
+  zeroThreshold?: number;
+  positive?: ExponentialHistogramBuckets;
+  negative?: ExponentialHistogramBuckets;
+  min?: number;
+  max?: number;
+};
+
 export type MetricType =
   | "gauge"
   | "sum"
@@ -39,6 +54,7 @@ export type MetricPoint = {
   count?: number;
   sum?: number;
   buckets?: Array<{ upperBound: number; count: number }>;
+  exponentialHistogram?: ExponentialHistogramValue;
   derivationStatus: DerivationStatus;
   warnings: MetricWarning[];
 };

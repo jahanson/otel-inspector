@@ -4,7 +4,7 @@ title: "Test Plan"
 type: test-plan
 status: proposed-draft
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -23,7 +23,8 @@ owner: user
 
 - Resource attributes preserved/redacted.
 - Scope metadata preserved.
-- Gauge/sum/histogram shapes normalized; exponential histogram coverage is a follow-up after proto/codegen support exposes that OTLP oneof arm.
+- Gauge/sum/histogram/exponential histogram shapes normalized; exponential
+  histogram percentile derivation remains a follow-up.
 - Unknown metric type labels unknown.
 
 ## Derivation tests

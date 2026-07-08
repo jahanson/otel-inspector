@@ -409,7 +409,7 @@ message ExponentialHistogramDataPoint {
 
   message Buckets {
     sint32 offset = 1;
-    repeated fixed64 bucket_counts = 2;
+    repeated uint64 bucket_counts = 2;
   }
 }
 ```

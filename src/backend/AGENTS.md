@@ -25,6 +25,7 @@
 - Decode failures are failures, not successful exports.
 - Normalization failures are safe `normalize-failed` receiver failures.
 - Histogram buckets are derivation-usable only when bucket counts are numeric, explicit bounds are finite and strictly increasing, and bucket totals match the datapoint count.
+- Exponential histogram datapoints keep typed `MetricPoint.exponentialHistogram` metadata only when positive bucket totals, negative bucket totals, and `zeroCount` are numeric and sum to the datapoint `count`; otherwise retain the metric as `exponential_histogram` with `derivationStatus: "incomplete"` and no exponential bucket metadata.
 - HTTP request-rate derivations use retained-window delta sums only when they are monotonic, non-negative request counters.
 - HTTP latency p95 derivations return values only for known millisecond or second units and finite percentile buckets; open-ended `+Inf` percentile buckets stay unavailable.
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
