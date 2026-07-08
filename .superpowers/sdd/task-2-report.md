@@ -96,3 +96,35 @@ DONE
   `src/backend/`, and `tests/` before editing.
 - No AGENTS files needed updates because the change was scoped to behavior and
   tests inside the existing backend/test ownership boundaries.
+
+## Task 2 Re-Review Follow-up
+
+### Re-review Finding Addressed
+
+- Aligned dashboard projection cards and ingest empty-state metadata with the
+  selected window by deriving a window-local telemetry summary from the
+  filtered points and exports instead of reusing the caller summary wholesale.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+- `.superpowers/sdd/task-2-report.md`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 5 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 61 passed, 0 failed.
+
+### Commit Created
+
+- `fix: align dashboard projection cards with window`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the work stayed inside the existing
+  backend projection and test ownership boundaries.

@@ -132,6 +132,53 @@ Deno.test("buildDashboardProjection keeps distinct series keys separate in the e
   assertEquals(projection.explorer.rows[1].latest, 11);
 });
 
+Deno.test("buildDashboardProjection keeps cards and ingest empty-state within the selected window", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpRequestCount(1_000, 8, 200),
+      httpHistogram(1_000, [
+        { upperBound: 50, count: 5 },
+        { upperBound: 100, count: 5 },
+      ]),
+    ], [
+      { observedAtMs: 1_000, bytesReceived: 128, pointCount: 2 },
+    ]),
+    summary({
+      p95Ms: 100,
+      requestRate: 10,
+      errorRate: 0.2,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 10_000, windowMs: 500 },
+  );
+
+  assertObjectMatch(projection.cards.latency, {
+    state: "unavailable",
+    value: undefined,
+    source: "No usable HTTP duration histogram in the selected window.",
+  });
+  assertObjectMatch(projection.cards.throughput, {
+    state: "empty",
+    value: undefined,
+    source: "No HTTP request counter in the selected window.",
+  });
+  assertObjectMatch(projection.cards.errorRate, {
+    state: "empty",
+    value: undefined,
+    source: "No HTTP status code attributes in the selected window.",
+  });
+  assertObjectMatch(projection.cards.ingest, {
+    state: "empty",
+    value: undefined,
+    source: "No accepted exports yet.",
+  });
+  assertEquals(projection.charts.latency.points, []);
+  assertEquals(projection.charts.throughput.points, []);
+  assertEquals(projection.charts.errorRate.points, []);
+  assertEquals(projection.charts.ingest.points, []);
+  assertEquals(projection.explorer.rows, []);
+});
+
 function summary(overview: LiveTelemetrySummary["overview"]): LiveTelemetrySummary {
   return {
     observedAtMs: 3_000,

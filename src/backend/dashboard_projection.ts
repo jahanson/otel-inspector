@@ -1,5 +1,6 @@
 import type { LiveTelemetrySummary } from "./contracts.ts";
 import type { MetricPoint, PrimitiveAttributeValue } from "./metric_model.ts";
+import { deriveLiveTelemetrySummary } from "./metric_derivations.ts";
 import type { TelemetryStoreSnapshot } from "./telemetry_store.ts";
 
 export type CardState = "healthy" | "empty" | "paused" | "degraded" | "stale" | "unavailable";
@@ -89,6 +90,12 @@ export function buildDashboardProjection(
   const exportsInWindow = snapshot.exports.filter((record) =>
     isPointInWindow(record.observedAtMs, observedAtMs, windowMs)
   );
+  const windowSnapshot = buildWindowSnapshot(snapshot, points, exportsInWindow);
+  const windowSummary = {
+    ...deriveLiveTelemetrySummary(windowSnapshot, observedAtMs - windowMs, observedAtMs),
+    receiver: summary.receiver,
+    warnings: summary.warnings,
+  };
   const requestPoints = points.filter(isHttpRequestCount);
   const latencyPoints = points.filter(isHttpDurationHistogram);
   const errorPoints = requestPoints.filter(isErrorStatus);
@@ -97,14 +104,14 @@ export function buildDashboardProjection(
     observedAtMs,
     windowMs,
     receiver: summary.receiver,
-    ingest: summary.ingest,
+    ingest: windowSummary.ingest,
     cards: {
-      latency: latencyCard(summary, latencyPoints),
-      throughput: throughputCard(summary, requestPoints),
-      errorRate: errorRateCard(summary, requestPoints),
+      latency: latencyCard(windowSummary, latencyPoints),
+      throughput: throughputCard(windowSummary, requestPoints),
+      errorRate: errorRateCard(windowSummary, requestPoints),
       activeRequests: activeRequestsCard(points),
-      ingest: ingestCard(summary),
-      dropped: droppedCard(summary),
+      ingest: ingestCard(windowSummary),
+      dropped: droppedCard(windowSummary),
     },
     charts: {
       latency: latencyChart(latencyPoints, windowMs),
@@ -113,7 +120,7 @@ export function buildDashboardProjection(
       ingest: ingestChart(exportsInWindow, summary, windowMs),
     },
     explorer: { rows: explorerRows(points) },
-    warnings: summary.warnings,
+    warnings: windowSummary.warnings,
   };
 }
 
@@ -209,6 +216,9 @@ function activeRequestsCard(points: MetricPoint[]): DashboardCard {
 }
 
 function ingestCard(summary: LiveTelemetrySummary): DashboardCard {
+  if (summary.ingest.datapointsPerSec === 0) {
+    return card("ingest", "ingest", "empty", undefined, "pts/s", "No accepted exports yet.");
+  }
   return card(
     "ingest",
     "ingest",
@@ -297,6 +307,22 @@ function ingestChart(
       state: "exact",
     })),
     unavailableReason: summary.ingest.datapointsPerSec === 0 ? "No accepted exports yet." : undefined,
+  };
+}
+
+function buildWindowSnapshot(
+  snapshot: TelemetryStoreSnapshot,
+  points: MetricPoint[],
+  exportsInWindow: TelemetryStoreSnapshot["exports"],
+): TelemetryStoreSnapshot {
+  return {
+    totalExports: exportsInWindow.length,
+    totalBytes: exportsInWindow.reduce((sum, record) => sum + record.bytesReceived, 0),
+    totalPoints: exportsInWindow.reduce((sum, record) => sum + record.pointCount, 0),
+    droppedPoints: snapshot.droppedPoints,
+    recentPoints: points,
+    exports: exportsInWindow,
+    warnings: snapshot.warnings,
   };
 }
 
