@@ -182,6 +182,30 @@ Deno.test("buildDashboardProjection keeps cards and ingest empty-state within th
   assertEquals(projection.explorer.rows, []);
 });
 
+Deno.test("buildDashboardProjection uses the newest active request gauge in the selected window", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      activeRequestsGauge(1_000, 2),
+      activeRequestsGauge(2_000, 7),
+    ]),
+    summary({
+      p95Ms: 88,
+      requestRate: 2,
+      errorRate: 0.1,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertObjectMatch(projection.cards.activeRequests, {
+    id: "active-requests",
+    state: "healthy",
+    value: 7,
+    unit: "req",
+    source: "http.server.active_requests",
+  });
+});
+
 function summary(overview: LiveTelemetrySummary["overview"]): LiveTelemetrySummary {
   return {
     observedAtMs: 3_000,
@@ -252,6 +276,14 @@ function explorerPoint(seriesKey: string, observedAtMs: number, value: number): 
     attributes: { "http.request.method": "GET", "http.route": "/cart" },
     derivationStatus: "usable",
     warnings: [],
+    value,
+  };
+}
+
+function activeRequestsGauge(observedAtMs: number, value: number): MetricPoint {
+  return {
+    ...basePoint("http.server.active_requests", observedAtMs),
+    metric: { name: "http.server.active_requests", type: "gauge", unit: "req" },
     value,
   };
 }

@@ -199,10 +199,15 @@ function errorRateCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Da
 }
 
 function activeRequestsCard(points: MetricPoint[]): DashboardCard {
-  const active = points.find((point) =>
-    point.metric.type === "gauge" &&
-    (point.metric.name === "http.server.active_requests" || point.metric.name === "http.server.active_requests_count")
-  );
+  const active = points.reduce<MetricPoint | undefined>((latest, point) => {
+    if (!isActiveRequestsGauge(point)) {
+      return latest;
+    }
+    if (latest === undefined || point.observedAtMs >= latest.observedAtMs) {
+      return point;
+    }
+    return latest;
+  }, undefined);
   return active?.value === undefined
     ? card(
       "active-requests",
@@ -213,6 +218,11 @@ function activeRequestsCard(points: MetricPoint[]): DashboardCard {
       "No active request gauge in the selected window.",
     )
     : card("active-requests", "active requests", "healthy", active.value, "req", active.metric.name);
+}
+
+function isActiveRequestsGauge(point: MetricPoint): boolean {
+  return point.metric.type === "gauge" &&
+    (point.metric.name === "http.server.active_requests" || point.metric.name === "http.server.active_requests_count");
 }
 
 function ingestCard(summary: LiveTelemetrySummary): DashboardCard {

@@ -128,3 +128,71 @@ DONE
   `src/backend/`, and `tests/` before editing.
 - No AGENTS files needed updates because the work stayed inside the existing
   backend projection and test ownership boundaries.
+
+## Task 2 Final Re-Review Follow-up
+
+### Re-review Finding Addressed
+
+- Passed the window-local telemetry summary into `ingestChart(...)` so the
+  ingest chart empty state now follows the selected window instead of the
+  broader caller summary.
+
+### Dropped-Card Resolution
+
+- Kept `cards.dropped` unchanged as the bounded-store/lifetime retention
+  counter derived from `deriveLiveTelemetrySummary()` and `snapshot.droppedPoints`.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 5 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 61 passed, 0 failed.
+
+### Commit Created
+
+- `5962df5` `fix: align ingest chart empty state with window`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the fix stayed inside the existing
+  backend projection and test ownership boundaries.
+
+## Task 2 Active-Request Freshness Re-Review
+
+### Re-review Finding Addressed
+
+- Updated `activeRequestsCard()` to choose the newest matching active-request
+  gauge inside the selected window by comparing `observedAtMs`, so later
+  in-window gauges now win over earlier insertion-order points.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+- `.superpowers/sdd/task-2-report.md`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 6 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 62 passed, 0 failed.
+
+### Commit Created
+
+- `a8526ee` `fix: use latest active requests gauge`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the fix stayed inside the existing
+  backend projection and test ownership boundaries.
