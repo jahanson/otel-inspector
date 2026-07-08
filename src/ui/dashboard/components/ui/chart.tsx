@@ -6,6 +6,9 @@ export function ChartContainer(props: { config: ChartConfig; className?: string;
   const style = Object.entries(props.config).reduce<Record<string, string>>((acc, [key, value]) => {
     if (value.color) {
       acc[`--chart-${key}`] = value.color;
+      if (!acc["--chart-accent"]) {
+        acc["--chart-accent"] = value.color;
+      }
     }
     return acc;
   }, {});

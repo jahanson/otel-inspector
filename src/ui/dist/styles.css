@@ -23,6 +23,8 @@
   --color-warning-surface: rgb(244 176 94 / 8%);
   --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --font-display-size: 3.25rem;
+  --font-metric-size: 1.9rem;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -124,7 +126,7 @@ p {
 }
 
 h1 {
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-size: var(--font-display-size);
   line-height: 1.02;
   overflow-wrap: anywhere;
 }
@@ -257,7 +259,7 @@ h2 {
 }
 
 .metric-value {
-  font-size: clamp(1.25rem, 2.5vw, 1.9rem);
+  font-size: var(--font-metric-size);
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
@@ -274,7 +276,7 @@ h2 {
   border-radius: var(--radius-1);
   background:
     linear-gradient(180deg, var(--chart-overlay-start), var(--chart-overlay-end)),
-    linear-gradient(90deg, var(--chart-latency) 0 3px, var(--chart-accent-transparent) 3px 100%);
+    linear-gradient(90deg, var(--chart-accent) 0 3px, var(--chart-accent-transparent) 3px 100%);
 }
 
 .series-placeholder {
@@ -328,6 +330,11 @@ tbody tr:not(:last-child) {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --font-display-size: 2.5rem;
+    --font-metric-size: 1.5rem;
+  }
+
   .workbench__header,
   .series-card__header,
   .metric-card__topline,

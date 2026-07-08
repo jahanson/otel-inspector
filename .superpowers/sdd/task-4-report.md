@@ -111,3 +111,34 @@
 
 - Re-checked the root, `src`, `src/backend`, `src/ui`, `tools`, and `tests` DOX chain before closeout.
 - Left DOX files unchanged because these review fixes did not alter ownership, contracts, workflows, or verification requirements already documented there.
+
+## Review Fixes: chart token normalization and viewport font sizing
+
+### Re-review findings addressed
+
+- Normalized chart styling tokens in `src/ui/dashboard/components/ui/chart.tsx` so the container emits `--chart-accent` alongside per-series CSS variables, and `src/ui/dashboard/styles.css` now consumes `--chart-accent` for the chart stripe.
+- Replaced viewport-unit font sizing in `src/ui/dashboard/styles.css` with breakpoint-driven font-size tokens so text no longer scales directly with viewport width.
+- Regenerated `src/ui/dist/app.js` and `src/ui/dist/styles.css` with `deno task ui:build`.
+
+### Files changed
+
+- `src/ui/dashboard/components/ui/chart.tsx`
+- `src/ui/dashboard/styles.css`
+- `src/ui/dist/app.js`
+- `src/ui/dist/styles.css`
+
+### Tests/checks run and exact pass/fail summary
+
+- `deno task ui:build` - passed; emitted `src\\ui\\dist\\app.js 973.5kb`
+- `deno task check` - passed; checked `src/main.ts`, `src/backend/receiver_worker.ts`, `src/ui/dashboard/main.tsx`, 11 test files, and 4 tool files
+- `deno task ok` - passed; `67 passed | 0 failed`
+- `rg -n "vw" src/ui/dashboard/styles.css` - no matches, which confirms the viewport unit was removed from the dashboard stylesheet
+
+### Commit created
+
+- `fix: honor dashboard chart color tokens`
+
+### DOX pass result
+
+- Re-checked the root DOX and `src/ui/AGENTS.md` before editing.
+- No AGENTS.md updates were needed because this fix changed implementation details only; the existing UI contract still matches the current behavior.
