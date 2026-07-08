@@ -19646,8 +19646,38 @@ function Tabs({ value, onValueChange, values }) {
   )) });
 }
 
-// src/ui/dashboard/App.tsx
+// src/ui/dashboard/components/OverviewCards.tsx
 var import_jsx_runtime6 = __toESM(require_jsx_runtime());
+var orderedCards = [
+  "latency",
+  "throughput",
+  "errorRate",
+  "activeRequests",
+  "ingest",
+  "dropped"
+];
+function OverviewCards({ cards }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key] }, cards[key].id)) });
+}
+function OverviewCard({ card }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "overview-card", "data-state": card.state, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "overview-card__topline", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__label", children: card.label }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": card.state, className: "overview-card__state", children: card.state })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("p", { className: "overview-card__value-row", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__value", children: card.value === void 0 ? "\u2014" : formatValue(card.value) }),
+      card.unit ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__unit", children: card.unit }) : null
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__source", children: card.source })
+  ] });
+}
+function formatValue(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, "");
+}
+
+// src/ui/dashboard/App.tsx
+var import_jsx_runtime7 = __toESM(require_jsx_runtime());
 var tabs = [
   { value: "overview", label: "Overview" },
   { value: "metrics", label: "Metrics" },
@@ -19660,14 +19690,6 @@ var chartConfig = {
   error: { label: "Errors", color: "var(--chart-error)" },
   ingest: { label: "Ingest", color: "var(--chart-ingest)" }
 };
-var dashboardCards = (projection) => [
-  projection.cards.latency,
-  projection.cards.throughput,
-  projection.cards.errorRate,
-  projection.cards.activeRequests,
-  projection.cards.ingest,
-  projection.cards.dropped
-];
 function App() {
   const [projection, setProjection] = (0, import_react.useState)(() => readInitialProjection());
   const [activeTab, setActiveTab] = (0, import_react.useState)("overview");
@@ -19683,18 +19705,17 @@ function App() {
     }, 1e3);
     return () => clearInterval(id);
   }, [paused, projection.windowMs]);
-  const cards = (0, import_react.useMemo)(() => dashboardCards(projection), [projection]);
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("main", { className: "workbench", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("header", { className: "workbench__header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "heading", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "eyebrow", children: "Local telemetry dashboard" }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("h1", { children: "OTEL Inspector" }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "endpoint", children: projection.receiver.endpoint })
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("main", { className: "workbench", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("header", { className: "workbench__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "heading", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "eyebrow", children: "Local telemetry dashboard" }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h1", { children: "OTEL Inspector" }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "endpoint", children: projection.receiver.endpoint })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Button, { type: "button", onClick: () => setPaused((value) => !value), children: paused ? "Resume" : "Pause" }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Button, { type: "button", onClick: () => setPaused((value) => !value), children: paused ? "Resume" : "Pause" }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
           Button,
           {
             type: "button",
@@ -19713,66 +19734,59 @@ function App() {
         )
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tabs, { value: activeTab, onValueChange: setActiveTab, values: [...tabs] }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("section", { className: "workbench__body", id: `panel-${activeTab}`, role: "tabpanel", children: [
-      activeTab === "overview" ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { className: "card-grid", children: cards.map((card) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "metric-card", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "metric-card__topline", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "metric-label", children: card.label }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": card.state, children: card.state })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "metric-value", children: formatMetricValue(card) }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "metric-source", children: card.source })
-        ] }, card.id)) }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "chart-grid", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(SeriesCard, { series: projection.charts.latency, tone: "latency" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(SeriesCard, { series: projection.charts.throughput, tone: "throughput" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(SeriesCard, { series: projection.charts.errorRate, tone: "error" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(SeriesCard, { series: projection.charts.ingest, tone: "ingest" })
+    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Tabs, { value: activeTab, onValueChange: setActiveTab, values: [...tabs] }),
+    /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("section", { className: "workbench__body", id: `panel-${activeTab}`, role: "tabpanel", children: [
+      activeTab === "overview" ? /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_jsx_runtime7.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(OverviewCards, { cards: projection.cards }),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "chart-grid", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(SeriesCard, { series: projection.charts.latency, tone: "latency" }),
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(SeriesCard, { series: projection.charts.throughput, tone: "throughput" }),
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(SeriesCard, { series: projection.charts.errorRate, tone: "error" }),
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(SeriesCard, { series: projection.charts.ingest, tone: "ingest" })
         ] })
       ] }) : null,
-      activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "table-card", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "table-card__header", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("h2", { children: "Series inventory" }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Badge, { "data-state": projection.explorer.rows.length > 0 ? "healthy" : "empty", children: [
+      activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Card, { className: "table-card", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "table-card__header", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h2", { children: "Series inventory" }),
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Badge, { "data-state": projection.explorer.rows.length > 0 ? "healthy" : "empty", children: [
             projection.explorer.rows.length,
             " series"
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("table", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { scope: "col", children: "Metric" }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { scope: "col", children: "Service" }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { scope: "col", children: "Latest" }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { scope: "col", children: "Status" })
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("table", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("tr", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("th", { scope: "col", children: "Metric" }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("th", { scope: "col", children: "Service" }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("th", { scope: "col", children: "Latest" }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("th", { scope: "col", children: "Status" })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("tbody", { children: projection.explorer.rows.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { colSpan: 4, className: "empty-state", children: "No retained metric series yet." }) }) : projection.explorer.rows.slice(0, 8).map((row) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { children: row.metricName }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { children: row.resourceService ?? "n/a" }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { className: "tabular", children: formatExplorerValue(row.latest, row.unit) }),
-            /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": row.status, children: row.status }) })
+          /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("tbody", { children: projection.explorer.rows.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("td", { colSpan: 4, className: "empty-state", children: "No retained metric series yet." }) }) : projection.explorer.rows.slice(0, 8).map((row) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("tr", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("td", { children: row.metricName }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("td", { children: row.resourceService ?? "n/a" }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("td", { className: "tabular", children: formatExplorerValue(row.latest, row.unit) }),
+            /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Badge, { "data-state": row.status, children: row.status }) })
           ] }, row.seriesKey)) })
         ] }) })
       ] }) : null,
-      activeTab === "payload" ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "empty-state", children: "Payload inspection arrives in a later task." }) : null,
-      activeTab === "settings" ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "empty-state", children: "Session settings arrive in a later task." }) : null,
-      projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
-        refreshError ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "warning-item", children: refreshError }) : null,
-        projection.warnings.map((warning) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "warning-item", children: warning.message }, warning.code))
+      activeTab === "payload" ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "empty-state", children: "Payload inspection arrives in a later task." }) : null,
+      activeTab === "settings" ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "empty-state", children: "Session settings arrive in a later task." }) : null,
+      projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
+        refreshError ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "warning-item", children: refreshError }) : null,
+        projection.warnings.map((warning) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "warning-item", children: warning.message }, warning.code))
       ] }) : null
     ] })
   ] });
 }
 function SeriesCard(props) {
   const latest = props.series.points.at(-1);
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "series-card", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "series-card__header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("h2", { children: props.series.label }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": latest ? latest.state : "unavailable", children: latest ? `${props.series.points.length} points` : "No data" })
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Card, { className: "series-card", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "series-card__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h2", { children: props.series.label }),
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Badge, { "data-state": latest ? latest.state : "unavailable", children: latest ? `${props.series.points.length} points` : "No data" })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChartContainer, { config: { [props.tone]: chartConfig[props.tone] }, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "series-placeholder", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "metric-value", children: latest ? formatSeriesValue(props.series, latest.value) : "Awaiting data" }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ChartContainer, { config: { [props.tone]: chartConfig[props.tone] }, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "series-placeholder", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "metric-value", children: latest ? formatSeriesValue(props.series, latest.value) : "Awaiting data" }),
+      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
         ChartTooltipContent,
         {
           label: latest ? "Latest sample" : "Series state",
@@ -19801,14 +19815,6 @@ async function refreshProjection(windowMs, setProjection, setRefreshError) {
     setRefreshError(error instanceof Error ? error.message : "Dashboard refresh failed.");
   }
 }
-function formatMetricValue(card) {
-  if (card.value === void 0) {
-    return "Unavailable";
-  }
-  return `${new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: card.unit === "%" || card.unit?.includes("/") ? 2 : 1
-  }).format(card.value)}${card.unit ? ` ${card.unit}` : ""}`;
-}
 function formatSeriesValue(series, value) {
   return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value)} ${series.unit}`;
 }
@@ -19820,9 +19826,9 @@ function formatExplorerValue(value, unit) {
 }
 
 // src/ui/dashboard/main.tsx
-var import_jsx_runtime7 = __toESM(require_jsx_runtime());
+var import_jsx_runtime8 = __toESM(require_jsx_runtime());
 (0, import_client.createRoot)(document.getElementById("root")).render(
-  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react2.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(App, {}) })
+  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react2.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(App, {}) })
 );
 /*! Bundled license information:
 

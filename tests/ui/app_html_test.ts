@@ -9,6 +9,7 @@ Deno.test("app shell renders root mount, assets, and inline projection bootstrap
   });
 
   assertStringIncludes(html, "OTEL Inspector");
+  assertStringIncludes(html, "<title>OTEL Inspector</title>");
   assertStringIncludes(html, 'id="root"');
   assertStringIncludes(html, "/assets/styles.css");
   assertStringIncludes(html, "/assets/app.js");

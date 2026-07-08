@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./components/ui/badge.tsx";
 import { Button } from "./components/ui/button.tsx";
 import { Card } from "./components/ui/card.tsx";
 import { type ChartConfig, ChartContainer, ChartTooltipContent } from "./components/ui/chart.tsx";
 import { Tabs } from "./components/ui/tabs.tsx";
-import type { ChartSeries, DashboardCard, DashboardProjection } from "./types.ts";
+import { OverviewCards } from "./components/OverviewCards.tsx";
+import type { ChartSeries, DashboardProjection } from "./types.ts";
 
 const tabs = [
   { value: "overview", label: "Overview" },
@@ -19,15 +20,6 @@ const chartConfig: ChartConfig = {
   error: { label: "Errors", color: "var(--chart-error)" },
   ingest: { label: "Ingest", color: "var(--chart-ingest)" },
 };
-
-const dashboardCards = (projection: DashboardProjection): DashboardCard[] => [
-  projection.cards.latency,
-  projection.cards.throughput,
-  projection.cards.errorRate,
-  projection.cards.activeRequests,
-  projection.cards.ingest,
-  projection.cards.dropped,
-];
 
 export function App() {
   const [projection, setProjection] = useState<DashboardProjection>(() => readInitialProjection());
@@ -47,8 +39,6 @@ export function App() {
 
     return () => clearInterval(id);
   }, [paused, projection.windowMs]);
-
-  const cards = useMemo(() => dashboardCards(projection), [projection]);
 
   return (
     <main className="workbench">
@@ -89,20 +79,7 @@ export function App() {
         {activeTab === "overview"
           ? (
             <>
-              <div className="card-grid">
-                {cards.map((card) => (
-                  <Card key={card.id} className="metric-card">
-                    <div className="metric-card__topline">
-                      <span className="metric-label">{card.label}</span>
-                      <Badge data-state={card.state}>{card.state}</Badge>
-                    </div>
-                    <p className="metric-value">
-                      {formatMetricValue(card)}
-                    </p>
-                    <p className="metric-source">{card.source}</p>
-                  </Card>
-                ))}
-              </div>
+              <OverviewCards cards={projection.cards} />
 
               <div className="chart-grid">
                 <SeriesCard series={projection.charts.latency} tone="latency" />
@@ -223,18 +200,6 @@ async function refreshProjection(
   } catch (error) {
     setRefreshError(error instanceof Error ? error.message : "Dashboard refresh failed.");
   }
-}
-
-function formatMetricValue(card: DashboardCard): string {
-  if (card.value === undefined) {
-    return "Unavailable";
-  }
-
-  return `${
-    new Intl.NumberFormat("en-US", {
-      maximumFractionDigits: card.unit === "%" || card.unit?.includes("/") ? 2 : 1,
-    }).format(card.value)
-  }${card.unit ? ` ${card.unit}` : ""}`;
 }
 
 function formatSeriesValue(series: ChartSeries, value: number): string {
