@@ -1,6 +1,6 @@
 import type { LiveTelemetrySummary } from "./contracts.ts";
 import type { MetricPoint, PrimitiveAttributeValue } from "./metric_model.ts";
-import { deriveLiveTelemetrySummary } from "./metric_derivations.ts";
+import { deriveLiveTelemetrySummary, normalizeDurationUpperBound } from "./metric_derivations.ts";
 import type { TelemetryStoreSnapshot } from "./telemetry_store.ts";
 
 export type CardState = "healthy" | "empty" | "paused" | "degraded" | "stale" | "unavailable";
@@ -84,6 +84,8 @@ export function buildDashboardProjection(
   summary: LiveTelemetrySummary,
   options: DashboardProjectionOptions = {},
 ): DashboardProjection {
+  // `summary` supplies receiver state, warnings, and the observed timestamp;
+  // overview and ingest values are recomputed from the selected window snapshot.
   const observedAtMs = options.observedAtMs ?? summary.observedAtMs;
   const windowMs = options.windowMs ?? 60_000;
   const points = snapshot.recentPoints.filter((point) => isPointInWindow(point.observedAtMs, observedAtMs, windowMs));
@@ -405,6 +407,8 @@ function chartPoint(
     route: typeof point.attributes["http.route"] === "string" ? point.attributes["http.route"] : undefined,
     statusCode: typeof point.attributes["http.response.status_code"] === "number"
       ? point.attributes["http.response.status_code"]
+      : typeof point.attributes["http.status_code"] === "number"
+      ? point.attributes["http.status_code"]
       : undefined,
     state,
   };
@@ -458,7 +462,13 @@ function metricDetailTarget(points: MetricPoint[]): DashboardCard["detailTarget"
 }
 
 function percentileUpperBound(point: MetricPoint, percentile: number): { value: number; count: number } | undefined {
-  const buckets = point.buckets?.filter((bucket) => Number.isFinite(bucket.upperBound) && bucket.count > 0) ?? [];
+  const buckets = point.buckets
+    ?.map((bucket) => ({
+      upperBound: normalizeDurationUpperBound(bucket.upperBound, point.metric.unit),
+      count: bucket.count,
+    }))
+    ?.filter((bucket) => bucket.upperBound !== undefined && bucket.count > 0)
+    .sort((left, right) => (left.upperBound as number) - (right.upperBound as number)) ?? [];
   const total = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   if (total <= 0) {
     return undefined;
@@ -469,10 +479,10 @@ function percentileUpperBound(point: MetricPoint, percentile: number): { value: 
   for (const bucket of buckets) {
     seen += bucket.count;
     if (seen >= targetRank) {
-      return { value: bucket.upperBound, count: total };
+      return Number.isFinite(bucket.upperBound!) ? { value: bucket.upperBound!, count: total } : undefined;
     }
   }
 
   const last = buckets.at(-1);
-  return last ? { value: last.upperBound, count: total } : undefined;
+  return last && Number.isFinite(last.upperBound!) ? { value: last.upperBound!, count: total } : undefined;
 }

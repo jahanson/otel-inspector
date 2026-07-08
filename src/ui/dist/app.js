@@ -19767,9 +19767,9 @@ var require_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React40 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef9 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
+      var React40 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef10 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
-        var instRef = useRef9(null);
+        var instRef = useRef10(null);
         if (null === instRef.current) {
           var inst = { hasValue: false, value: null };
           instRef.current = inst;
@@ -20994,9 +20994,9 @@ var require_use_sync_external_store_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React40.useSyncExternalStore, useRef9 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
+      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React40.useSyncExternalStore, useRef10 = React40.useRef, useEffect19 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
-        var instRef = useRef9(null);
+        var instRef = useRef10(null);
         if (null === instRef.current) {
           var inst = { hasValue: false, value: null };
           instRef.current = inst;
@@ -21119,10 +21119,16 @@ function MetricsExplorer({ rows, target }) {
   const [selectedSeriesKey, setSelectedSeriesKey] = (0, import_react.useState)(rows[0]?.seriesKey);
   const filteredRows = (0, import_react.useMemo)(() => filterExplorerRows(query, rows), [query, rows]);
   const selectedRow = filteredRows.find((row) => row.seriesKey === selectedSeriesKey) ?? filteredRows[0];
+  const appliedTarget = (0, import_react.useRef)(void 0);
   (0, import_react.useEffect)(() => {
     if (!target) {
+      appliedTarget.current = void 0;
       return;
     }
+    if (targetSame(target, appliedTarget.current)) {
+      return;
+    }
+    appliedTarget.current = target;
     const targetRow = rows.find(
       (row) => target.seriesKey && row.seriesKey === target.seriesKey || target.metricName && row.metricName === target.metricName
     );
@@ -21220,6 +21226,10 @@ function formatAttributes(attributes) {
     return "\u2014";
   }
   return entries.map(([key, value]) => `${key}=${String(value)}`).join(", ");
+}
+function targetSame(left, right) {
+  if (left === right) return true;
+  return left?.metricName === right?.metricName && left?.seriesKey === right?.seriesKey;
 }
 
 // src/ui/dashboard/components/ui/card.tsx
@@ -42735,12 +42745,17 @@ function App() {
               }
               setClearing(true);
               try {
-                await fetch("/api/dashboard/clear", {
+                const response = await fetch("/api/dashboard/clear", {
                   headers: { "x-otel-inspector-action": readActionToken() },
                   method: "POST"
                 });
+                if (!response.ok) {
+                  throw new Error(`Clear failed with ${response.status}.`);
+                }
                 await refreshProjection(windowMs, setProjection, setRefreshError);
                 setLastAction(`Session cleared at ${(/* @__PURE__ */ new Date()).toLocaleTimeString()}.`);
+              } catch (error) {
+                setRefreshError(error instanceof Error ? error.message : "Clear failed.");
               } finally {
                 setClearing(false);
               }

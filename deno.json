@@ -3,7 +3,7 @@
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
     "lint": "deno lint",
-    "ui:build": "deno run --allow-read=src/ui/dashboard,tools/build_ui.ts,node_modules --allow-write=src/ui/dist --allow-run=node_modules/.deno/@esbuild+win32-x64@0.25.8/node_modules/@esbuild/win32-x64/esbuild.exe tools/build_ui.ts",
+    "ui:build": "deno run --allow-read=src/ui/dashboard,tools/build_ui.ts,node_modules --allow-write=src/ui/dist --allow-run=node_modules/.deno/@esbuild+win32-x64@0.25.8/node_modules/@esbuild/win32-x64/esbuild.exe,node_modules/.deno/@esbuild+win32-arm64@0.25.8/node_modules/@esbuild/win32-arm64/esbuild.exe,node_modules/.deno/@esbuild+darwin-x64@0.25.8/node_modules/@esbuild/darwin-x64/bin/esbuild,node_modules/.deno/@esbuild+darwin-arm64@0.25.8/node_modules/@esbuild/darwin-arm64/bin/esbuild,node_modules/.deno/@esbuild+linux-x64@0.25.8/node_modules/@esbuild/linux-x64/bin/esbuild,node_modules/.deno/@esbuild+linux-arm64@0.25.8/node_modules/@esbuild/linux-arm64/bin/esbuild,node_modules/.deno/@esbuild+linux-arm@0.25.8/node_modules/@esbuild/linux-arm/bin/esbuild tools/build_ui.ts",
     "check": "deno check src/main.ts src/backend/receiver_worker.ts src/ui/dashboard/main.tsx tests/**/*.ts tools/**/*.ts",
     "proto:gen": "deno run --allow-env=PATH,LOCALAPPDATA,HOME,USERPROFILE --allow-read --allow-write --allow-run tools/generate_proto.ts",
     "receiver:test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests/backend/receiver_contract_test.ts",

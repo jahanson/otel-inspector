@@ -117,6 +117,10 @@ Deno.test("UI build task keeps permissions scoped to local build inputs", () => 
     uiBuild,
     "--allow-run=node_modules/.deno/@esbuild+win32-x64@0.25.8/node_modules/@esbuild/win32-x64/esbuild.exe",
   );
+  assertStringIncludes(
+    uiBuild,
+    "node_modules/.deno/@esbuild+linux-arm64@0.25.8/node_modules/@esbuild/linux-arm64/bin/esbuild",
+  );
   assertFalse(uiBuild.includes("--allow-env"));
   assertFalse(uiBuild.includes("deno run --allow-read --allow-write=src/ui/dist --allow-run --allow-env"));
 });
@@ -149,6 +153,15 @@ Deno.test("overview cards expose metric source navigation", () => {
   assertStringIncludes(explorerSource, 'target?: DashboardCard["detailTarget"]');
   assertStringIncludes(explorerSource, "target.metricName");
   assertStringIncludes(typesSource, "detailTarget");
+});
+
+Deno.test("MetricsExplorer applies inspect target only when it changes", () => {
+  const source = Deno.readTextFileSync(
+    new URL("../../src/ui/dashboard/components/MetricsExplorer.tsx", import.meta.url),
+  );
+
+  assertStringIncludes(source, "const appliedTarget = useRef");
+  assertStringIncludes(source, "targetSame(target, appliedTarget.current)");
 });
 
 Deno.test("MetricsExplorer source keeps semantic table markup and fallback values", () => {

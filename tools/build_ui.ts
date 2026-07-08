@@ -30,7 +30,7 @@ function esbuildBinary(): string {
 }
 
 function esbuildPlatform(): string {
-  const arch = Deno.build.arch === "x86_64" ? "x64" : Deno.build.arch;
+  const arch = Deno.build.arch === "x86_64" ? "x64" : Deno.build.arch === "aarch64" ? "arm64" : Deno.build.arch;
   switch (Deno.build.os) {
     case "darwin":
       return `darwin-${arch}`;

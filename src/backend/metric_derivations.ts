@@ -115,7 +115,7 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
   return undefined;
 }
 
-function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number | undefined {
+export function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number | undefined {
   if (!Number.isFinite(upperBound)) {
     return upperBound;
   }

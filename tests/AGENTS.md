@@ -6,7 +6,7 @@
 
 ## Ownership
 
-- `backend/` tests cover receiver and backend app server behavior.
+- `backend/` tests cover receiver, backend app server, and dashboard projection behavior.
 - `ui/` tests cover dashboard HTML and inline script safety.
 
 ## Local Contracts
@@ -28,5 +28,5 @@
 
 ## Child DOX Index
 
-- `backend/` — receiver and backend server tests.
+- `backend/` — receiver, backend app server, and dashboard projection tests.
 - `ui/` — dashboard shell tests.

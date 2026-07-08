@@ -11,6 +11,7 @@
 - `normalize_metrics.ts` owns decoded OTLP metrics to normalized point conversion.
 - `telemetry_store.ts` owns bounded in-memory point/export retention and eviction accounting.
 - `metric_derivations.ts` owns dashboard-ready summary derivations from retained points.
+- `dashboard_projection.ts` owns dashboard card, chart, and explorer projection from the selected window.
 - `receiver.ts` owns OTLP HTTP request validation and safe failure responses.
 - `live_bus.ts` owns receiver state, substrate ingestion, and live summary cadence.
 - `app_server.ts` serves the dashboard shell, built dashboard assets from `src/ui/dist`, summary API, dashboard projection API, and local clear action on the dashboard port.

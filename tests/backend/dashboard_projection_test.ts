@@ -177,6 +177,47 @@ Deno.test("buildDashboardProjection plots estimated latency percentiles instead 
   assertEquals(projection.charts.latency.points.map((point) => point.state), ["estimated", "estimated"]);
 });
 
+Deno.test("buildDashboardProjection converts seconds latency histograms to milliseconds", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpHistogramSeconds(2_000, [
+        { upperBound: 0.05, count: 94 },
+        { upperBound: 0.1, count: 6 },
+      ]),
+    ]),
+    summary({
+      p95Ms: 100,
+      requestRate: undefined,
+      errorRate: undefined,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertEquals(projection.charts.latency.points.map((point) => point.value), [100]);
+  assertEquals(projection.charts.latency.unit, "ms");
+});
+
+Deno.test("buildDashboardProjection skips latency points with p95 in the +Inf bucket", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpHistogram(2_000, [
+        { upperBound: 50, count: 94 },
+        { upperBound: Number.POSITIVE_INFINITY, count: 6 },
+      ]),
+    ]),
+    summary({
+      p95Ms: undefined,
+      requestRate: undefined,
+      errorRate: undefined,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertEquals(projection.charts.latency.points, []);
+});
+
 Deno.test("buildDashboardProjection keeps only points inside the selected window", () => {
   const projection = buildDashboardProjection(
     snapshot(
@@ -367,6 +408,16 @@ function httpHistogram(observedAtMs: number, buckets: Array<{ upperBound: number
     count: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
     sum: 400,
     buckets,
+  };
+}
+
+function httpHistogramSeconds(
+  observedAtMs: number,
+  buckets: Array<{ upperBound: number; count: number }>,
+): MetricPoint {
+  return {
+    ...httpHistogram(observedAtMs, buckets),
+    metric: { name: "http.server.request.duration", type: "histogram", unit: "s", temporality: "delta" },
   };
 }
 

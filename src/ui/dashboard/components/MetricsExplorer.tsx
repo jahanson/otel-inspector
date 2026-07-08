@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { DashboardCard, ExplorerRow } from "../types.ts";
 
 type MetricsExplorerProps = {
@@ -22,12 +22,18 @@ export function MetricsExplorer({ rows, target }: MetricsExplorerProps) {
   const [selectedSeriesKey, setSelectedSeriesKey] = useState<string | undefined>(rows[0]?.seriesKey);
   const filteredRows = useMemo(() => filterExplorerRows(query, rows), [query, rows]);
   const selectedRow = filteredRows.find((row) => row.seriesKey === selectedSeriesKey) ?? filteredRows[0];
+  const appliedTarget = useRef<DashboardCard["detailTarget"]>(undefined);
 
   useEffect(() => {
     if (!target) {
+      appliedTarget.current = undefined;
+      return;
+    }
+    if (targetSame(target, appliedTarget.current)) {
       return;
     }
 
+    appliedTarget.current = target;
     const targetRow = rows.find((row) =>
       (target.seriesKey && row.seriesKey === target.seriesKey) ||
       (target.metricName && row.metricName === target.metricName)
@@ -156,4 +162,12 @@ function formatAttributes(attributes: ExplorerRow["attributes"]): string {
   }
 
   return entries.map(([key, value]) => `${key}=${String(value)}`).join(", ");
+}
+
+function targetSame(
+  left: DashboardCard["detailTarget"],
+  right: DashboardCard["detailTarget"],
+): boolean {
+  if (left === right) return true;
+  return left?.metricName === right?.metricName && left?.seriesKey === right?.seriesKey;
 }

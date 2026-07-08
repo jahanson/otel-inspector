@@ -92,12 +92,17 @@ export function App() {
               }
               setClearing(true);
               try {
-                await fetch("/api/dashboard/clear", {
+                const response = await fetch("/api/dashboard/clear", {
                   headers: { "x-otel-inspector-action": readActionToken() },
                   method: "POST",
                 });
+                if (!response.ok) {
+                  throw new Error(`Clear failed with ${response.status}.`);
+                }
                 await refreshProjection(windowMs, setProjection, setRefreshError);
                 setLastAction(`Session cleared at ${new Date().toLocaleTimeString()}.`);
+              } catch (error) {
+                setRefreshError(error instanceof Error ? error.message : "Clear failed.");
               } finally {
                 setClearing(false);
               }
