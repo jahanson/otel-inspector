@@ -2,9 +2,9 @@
 project: otel-inspector-dashboard
 title: "API and Event Contracts"
 type: implementation-plan
-status: proposed-draft
+status: implemented
 created: 2026-07-05
-updated: 2026-07-05
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -22,6 +22,10 @@ type LiveTelemetrySummary = {
   warnings: Array<{ code: string; message: string }>;
 };
 ```
+
+This summary is implemented by `src/backend/metric_derivations.ts` and served by
+`src/backend/app_server.ts` at `/api/summary`. M3 UI controls and chart-specific
+projection contracts are still pending.
 
 ## Metric detail request
 

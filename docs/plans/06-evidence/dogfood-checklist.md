@@ -13,8 +13,8 @@ owner: user
 
 ## Before dogfood
 
-- [ ] `POST /v1/metrics` accepts valid protobuf fixture.
-- [ ] Malformed payloads fail safely.
+- [x] `POST /v1/metrics` accepts valid protobuf fixture.
+- [x] Malformed payloads fail safely.
 - [ ] Overview dashboard renders no-telemetry, live, paused, and degraded states.
 - [ ] Metrics Explorer filters by service/resource/metric.
 - [ ] Payload Inspector can show decoded source for selected chart point.
