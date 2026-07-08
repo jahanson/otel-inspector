@@ -21252,8 +21252,16 @@ var orderedCards = [
   "ingest",
   "dropped"
 ];
-function OverviewCards({ cards, onInspect }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key], onInspect }, cards[key].id)) });
+function OverviewCards({ cards, onInspect, redaction }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("section", { className: "overview-grid", "aria-label": "Overview cards", children: [
+    redaction && redaction.status === "blocked" && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { className: "overview-grid__redaction", "aria-live": "polite", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Badge, { "data-state": "degraded", children: [
+      redaction.hiddenAttributeValues,
+      " attribute values redacted (",
+      redaction.patternsMatched.join(", "),
+      ")"
+    ] }) }),
+    orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key], onInspect }, cards[key].id))
+  ] });
 }
 function OverviewCard({ card, onInspect }) {
   return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "overview-card", "data-state": card.state, children: [
@@ -42775,7 +42783,8 @@ function App() {
             onInspect: (card) => {
               setMetricsTarget(card.detailTarget);
               setActiveTab("metrics");
-            }
+            },
+            redaction: projection.redaction
           }
         ),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(LiveCharts, { charts: projection.charts })

@@ -20,9 +20,22 @@ const orderedCards: Array<keyof Cards> = [
   "dropped",
 ];
 
-export function OverviewCards({ cards, onInspect }: { cards: Cards; onInspect?: (card: DashboardCard) => void }) {
+export function OverviewCards(
+  { cards, onInspect, redaction }: {
+    cards: Cards;
+    onInspect?: (card: DashboardCard) => void;
+    redaction?: DashboardProjection["redaction"];
+  },
+) {
   return (
     <section className="overview-grid" aria-label="Overview cards">
+      {redaction && redaction.status === "blocked" && (
+        <div className="overview-grid__redaction" aria-live="polite">
+          <Badge data-state="degraded">
+            {redaction.hiddenAttributeValues} attribute values redacted ({redaction.patternsMatched.join(", ")})
+          </Badge>
+        </div>
+      )}
       {orderedCards.map((key) => <OverviewCard key={cards[key].id} card={cards[key]} onInspect={onInspect} />)}
     </section>
   );

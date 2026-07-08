@@ -71,6 +71,7 @@ export type DashboardProjection = {
     ingest: ChartSeries;
   };
   explorer: { rows: ExplorerRow[] };
+  redaction: LiveTelemetrySummary["redaction"];
   warnings: LiveTelemetrySummary["warnings"];
 };
 
@@ -123,6 +124,7 @@ export function buildDashboardProjection(
       ingest: ingestChart(exportsInWindow, windowSummary, windowMs),
     },
     explorer: { rows: explorerRows(points) },
+    redaction: summary.redaction,
     warnings: windowSummary.warnings,
   };
 }

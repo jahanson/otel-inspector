@@ -12,6 +12,12 @@ export type ReceiverWarning = {
   message: string;
 };
 
+export type RedactionReport = {
+  status: "passed" | "blocked";
+  hiddenAttributeValues: number;
+  patternsMatched: string[];
+};
+
 export type LiveTelemetrySummary = {
   observedAtMs: number;
   receiver: { endpoint: string; live: boolean; paused: boolean };
@@ -23,6 +29,7 @@ export type LiveTelemetrySummary = {
     requestRate?: number;
     topServices: string[];
   };
+  redaction: RedactionReport;
   warnings: Array<ReceiverWarning>;
 };
 

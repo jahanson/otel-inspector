@@ -125,6 +125,7 @@ export function App() {
                   setMetricsTarget(card.detailTarget);
                   setActiveTab("metrics");
                 }}
+                redaction={projection.redaction}
               />
               <LiveCharts charts={projection.charts} />
             </>

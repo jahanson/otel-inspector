@@ -353,6 +353,7 @@ function summary(overview: LiveTelemetrySummary["overview"]): LiveTelemetrySumma
     receiver: { endpoint: "http://127.0.0.1:4318/v1/metrics", live: true, paused: false },
     ingest: { exportsPerSec: 1, datapointsPerSec: 3, bytesPerSec: 128, dropped: 0 },
     overview,
+    redaction: { status: "passed", hiddenAttributeValues: 0, patternsMatched: [] },
     warnings: [],
   };
 }
@@ -375,18 +376,29 @@ function snapshot(
 }
 
 function httpRequestCount(observedAtMs: number, value: number, statusCode: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.response.status_code": statusCode,
+    "http.route": "/cart",
+    "http.request.method": "GET",
+  };
   return {
     ...basePoint("http.server.request.count", observedAtMs),
     metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+    rawAttributes,
     attributes: { "http.response.status_code": statusCode, "http.route": "/cart", "http.request.method": "GET" },
     value,
   };
 }
 
 function httpRequestCountWithoutStatus(observedAtMs: number, value: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.route": "/cart",
+    "http.request.method": "GET",
+  };
   return {
     ...basePoint("http.server.request.count", observedAtMs),
     metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+    rawAttributes,
     attributes: { "http.route": "/cart", "http.request.method": "GET" },
     value,
   };
@@ -401,9 +413,14 @@ function httpRequestAlias(observedAtMs: number, value: number, statusCode: numbe
 }
 
 function httpHistogram(observedAtMs: number, buckets: Array<{ upperBound: number; count: number }>): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.route": "/cart",
+    "http.request.method": "GET",
+  };
   return {
     ...basePoint("http.server.duration", observedAtMs),
     metric: { name: "http.server.duration", type: "histogram", unit: "ms", temporality: "delta" },
+    rawAttributes,
     attributes: { "http.route": "/cart", "http.request.method": "GET" },
     count: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
     sum: 400,
@@ -430,12 +447,14 @@ function httpHistogramAlias(observedAtMs: number, buckets: Array<{ upperBound: n
 }
 
 function basePoint(name: string, observedAtMs: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {};
   return {
     seriesKey: `series:${name}:${observedAtMs}`,
     observedAtMs,
     resource: { "service.name": "checkout" },
     scope: { name: "manual" },
     metric: { name, type: "gauge" },
+    rawAttributes,
     attributes: {},
     derivationStatus: "usable",
     warnings: [],
@@ -443,12 +462,17 @@ function basePoint(name: string, observedAtMs: number): MetricPoint {
 }
 
 function explorerPoint(seriesKey: string, observedAtMs: number, value: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.request.method": "GET",
+    "http.route": "/cart",
+  };
   return {
     seriesKey,
     observedAtMs,
     resource: { "service.name": "checkout" },
     scope: { name: "manual" },
     metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+    rawAttributes,
     attributes: { "http.request.method": "GET", "http.route": "/cart" },
     derivationStatus: "usable",
     warnings: [],

@@ -108,6 +108,7 @@ export function buildLiveTelemetrySummary(
       live: true,
       paused: false,
     },
+    redaction: summary.redaction,
     warnings,
   };
 }

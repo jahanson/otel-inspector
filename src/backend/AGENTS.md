@@ -8,6 +8,7 @@
 
 - `contracts.ts` defines receiver/public telemetry types.
 - `metric_model.ts` owns normalized metric point contracts and stable series keys.
+- `redaction.ts` owns sensitive attribute pattern matching and value redaction.
 - `normalize_metrics.ts` owns decoded OTLP metrics to normalized point conversion.
 - `telemetry_store.ts` owns bounded in-memory point/export retention and eviction accounting.
 - `metric_derivations.ts` owns dashboard-ready summary derivations from retained points.
@@ -35,6 +36,10 @@
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 - Clearing dashboard state requires the process-local dashboard action header and resets retained telemetry and receiver failure counters without stopping the receiver process.
+- Telemetry attributes are redacted before `MetricPoint` storage using pattern-based key matching; redacted values are replaced with `[REDACTED]`.
+- `MetricPoint` stores both `rawAttributes` (original OTLP attributes) and `attributes` (redacted attributes).
+- Series keys use `rawAttributes` for identity to preserve cardinality while redaction applies to display only.
+- Redaction reports track hidden attribute value counts and matched patterns, aggregated in `LiveTelemetrySummary.redaction`.
 
 ## Work Guidance
 

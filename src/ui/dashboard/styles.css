@@ -256,6 +256,11 @@ h2 {
   gap: var(--space-3);
 }
 
+.overview-grid__redaction {
+  grid-column: 1 / -1;
+  padding: var(--space-2) 0;
+}
+
 .card-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }

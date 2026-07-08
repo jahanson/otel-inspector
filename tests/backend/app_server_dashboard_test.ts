@@ -167,6 +167,11 @@ function seedDashboardState(state: ReturnType<typeof buildReceiverState>): void 
 }
 
 function dashboardPoint(observedAtMs: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.request.method": "GET",
+    "http.route": "/checkout",
+    "http.response.status_code": 500,
+  };
   return {
     seriesKey: "series:dashboard:request-count",
     observedAtMs,
@@ -179,6 +184,7 @@ function dashboardPoint(observedAtMs: number): MetricPoint {
       temporality: "delta",
       monotonic: true,
     },
+    rawAttributes,
     attributes: {
       "http.request.method": "GET",
       "http.route": "/checkout",

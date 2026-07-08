@@ -686,3 +686,52 @@ function encodeVarint(value: bigint): number[] {
   encoded.push(Number(current));
   return encoded;
 }
+
+Deno.test("normalizeMetricsExport redacts sensitive attribute keys", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: {
+        attributes: [
+          stringAttribute("service.name", "checkout"),
+        ],
+        droppedAttributesCount: 0,
+      },
+      scopeMetrics: [{
+        scope: { name: "manual-fixture", version: "1.0.0", attributes: [], droppedAttributesCount: 0 },
+        schemaUrl: "",
+        metrics: [{
+          name: "queue.depth",
+          description: "",
+          unit: "items",
+          data: {
+            oneofKind: "gauge",
+            gauge: {
+              dataPoints: [{
+                startTimeUnixNano: 0n,
+                timeUnixNano: 100n,
+                value: { oneofKind: "asDouble", asDouble: 7 },
+                attributes: [
+                  stringAttribute("http.headers.authorization", "Bearer secret-token"),
+                  stringAttribute("password", "supersecret"),
+                  stringAttribute("http.route", "/cart"),
+                ],
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.warnings, []);
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].rawAttributes["http.headers.authorization"], "Bearer secret-token");
+  assertEquals(result.points[0].rawAttributes["password"], "supersecret");
+  assertEquals(result.points[0].attributes["http.headers.authorization"], "[REDACTED]");
+  assertEquals(result.points[0].attributes["password"], "[REDACTED]");
+  assertEquals(result.points[0].attributes["http.route"], "/cart");
+  assertEquals(result.points[0].redaction?.status, "blocked");
+  assertEquals(result.points[0].redaction?.hiddenAttributeValues, 2);
+  assertEquals(result.points[0].redaction?.patternsMatched, ["authorization", "password"]);
+});

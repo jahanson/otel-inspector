@@ -46,6 +46,12 @@ export type ExplorerRow = {
   status: CardState;
 };
 
+export type RedactionReport = {
+  status: "passed" | "blocked";
+  hiddenAttributeValues: number;
+  patternsMatched: string[];
+};
+
 export type DashboardProjection = {
   observedAtMs: number;
   windowMs: number;
@@ -66,6 +72,7 @@ export type DashboardProjection = {
     ingest: ChartSeries;
   };
   explorer: { rows: ExplorerRow[] };
+  redaction: RedactionReport;
   warnings: Array<{ code: string; message: string }>;
 };
 

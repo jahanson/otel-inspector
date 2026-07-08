@@ -231,9 +231,15 @@ function httpRequestCount(
   temporality: "delta" | "cumulative" = "delta",
   monotonic = true,
 ): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {
+    "http.response.status_code": statusCode,
+    "http.request.method": "GET",
+    "http.route": "/cart",
+  };
   return {
     ...basePoint("http.server.request.count", observedAtMs),
     metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality, monotonic },
+    rawAttributes,
     attributes: {
       "http.response.status_code": statusCode,
       "http.request.method": "GET",
@@ -244,14 +250,85 @@ function httpRequestCount(
 }
 
 function basePoint(name: string, observedAtMs: number): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {};
   return {
     seriesKey: `series:${name}:${observedAtMs}`,
     observedAtMs,
     resource: { "service.name": "checkout" },
     scope: {},
     metric: { name, type: "gauge" },
+    rawAttributes,
     attributes: {},
     derivationStatus: "usable",
     warnings: [],
   };
 }
+
+Deno.test("deriveLiveTelemetrySummary aggregates redaction reports", () => {
+  const snapshot = {
+    totalExports: 1,
+    totalBytes: 128,
+    totalPoints: 2,
+    droppedPoints: 0,
+    recentPoints: [
+      {
+        seriesKey: "series:http.server.request.count:1000",
+        observedAtMs: 1_000,
+        resource: { "service.name": "checkout" },
+        scope: {},
+        metric: {
+          name: "http.server.request.count",
+          type: "sum" as const,
+          unit: "1",
+          temporality: "delta" as const,
+          monotonic: true,
+        },
+        rawAttributes: { "http.response.status_code": 200, "authorization": "Bearer token" } as Record<
+          string,
+          string | number | boolean
+        >,
+        attributes: { "http.response.status_code": 200, "authorization": "[REDACTED]" } as Record<
+          string,
+          string | number | boolean
+        >,
+        value: 5,
+        derivationStatus: "usable" as const,
+        warnings: [],
+        redaction: { status: "blocked" as const, hiddenAttributeValues: 1, patternsMatched: ["authorization"] },
+      },
+      {
+        seriesKey: "series:http.server.request.count:2000",
+        observedAtMs: 2_000,
+        resource: { "service.name": "checkout" },
+        scope: {},
+        metric: {
+          name: "http.server.request.count",
+          type: "sum" as const,
+          unit: "1",
+          temporality: "delta" as const,
+          monotonic: true,
+        },
+        rawAttributes: { "http.response.status_code": 200, "password": "secret" } as Record<
+          string,
+          string | number | boolean
+        >,
+        attributes: { "http.response.status_code": 200, "password": "[REDACTED]" } as Record<
+          string,
+          string | number | boolean
+        >,
+        value: 3,
+        derivationStatus: "usable" as const,
+        warnings: [],
+        redaction: { status: "blocked" as const, hiddenAttributeValues: 1, patternsMatched: ["password"] },
+      },
+    ],
+    exports: [{ observedAtMs: 1_000, bytesReceived: 128, pointCount: 2 }],
+    warnings: [],
+  };
+
+  const summary = deriveLiveTelemetrySummary(snapshot, 0, 2_000);
+
+  assertEquals(summary.redaction.status, "blocked");
+  assertEquals(summary.redaction.hiddenAttributeValues, 2);
+  assertEquals(summary.redaction.patternsMatched, ["authorization", "password"]);
+});
