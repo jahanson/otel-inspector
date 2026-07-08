@@ -42,6 +42,7 @@
 ## Verification
 
 - Run focused substrate tests for `tests/backend/metric_model_test.ts`, `tests/backend/normalize_metrics_test.ts`, `tests/backend/telemetry_store_test.ts`, `tests/backend/metric_derivations_test.ts`, `tests/backend/live_bus_substrate_test.ts`, and `tests/backend/live_bus_cadence_test.ts`.
+- Run `deno test tests/backend/app_server_dashboard_test.ts tests/backend/app_server_test.ts tests/ui/app_html_test.ts` for dashboard JSON/static routes and shell contract changes.
 - Run `deno test tests/backend/receiver_contract_test.ts` for receiver changes.
 - Run `deno task ok` before closeout.
 

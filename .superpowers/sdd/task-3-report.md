@@ -189,3 +189,26 @@ Result:
   linked worktree, then restored that repo copy and applied the intended change
   in the worktree before staging. No unintended root-repo changes remain from
   this task.
+
+## Review follow-up
+
+- Review findings addressed:
+  - strengthened `POST /api/dashboard/clear` coverage with seeded telemetry,
+    a receiver failure, and post-clear emptiness checks for summary and
+    projection warnings
+  - added method guards for `GET /api/dashboard/clear` and
+    `POST /api/dashboard`
+  - asserted `cache-control: no-store` on successful `/api/dashboard/clear`,
+    `/assets/app.js`, and `/assets/styles.css` responses
+  - updated backend DOX verification to name
+    `tests/backend/app_server_dashboard_test.ts`
+- Files changed:
+  - `.superpowers/sdd/task-3-report.md`
+  - `src/backend/AGENTS.md`
+  - `tests/backend/app_server_dashboard_test.ts`
+- Tests run:
+  - `deno test tests/backend/app_server_dashboard_test.ts tests/backend/app_server_test.ts tests/ui/app_html_test.ts` -> `ok | 7 passed | 0 failed`
+  - `deno task check` -> passed
+  - `deno task ok` -> passed, ending with `ok | 66 passed | 0 failed`
+- Commit created: yes
+- DOX pass result: read the root, source, backend, and test AGENTS chain for the touched paths; updated the backend Verification section to reflect the dashboard app-server contract test; no other DOX files required edits.
