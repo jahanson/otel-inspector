@@ -36,6 +36,10 @@ state, and clear-session behavior. Expected implementation targets are
 `src/backend/dashboard_projection.ts` and projection routes in
 `src/backend/app_server.ts`.
 
+`DashboardProjection` exposes card states, chart series, explorer rows, receiver
+status, ingest counters, and warning summaries. It is JSON-safe and intentionally
+does not expose raw protobuf request bodies.
+
 The UI must consume these projections rather than parsing raw OTLP protobuf
 trees or unbounded store snapshots.
 
