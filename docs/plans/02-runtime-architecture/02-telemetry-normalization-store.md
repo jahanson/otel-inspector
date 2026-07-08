@@ -2,9 +2,9 @@
 project: otel-inspector-dashboard
 title: "Telemetry Normalization Store"
 type: runtime-spec
-status: proposed-draft
+status: implemented
 created: 2026-07-05
-updated: 2026-07-07
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -26,25 +26,49 @@ type MetricSeriesKey = {
 ## Normalized point
 
 ```ts
+type ExponentialHistogramValue = {
+  scale: number;
+  zeroCount?: number;
+  zeroThreshold?: number;
+  positive?: { offset: number; counts: number[] };
+  negative?: { offset: number; counts: number[] };
+  min?: number;
+  max?: number;
+};
+
 type MetricPoint = {
   seriesKey: string;
-  timestampUnixNano?: string;
   observedAtMs: number;
-  name: string;
-  unit?: string;
-  type: string;
+  timestampUnixNano?: string;
+  startTimeUnixNano?: string;
+  resource: Record<string, string | number | boolean>;
+  scope: { name?: string; version?: string };
+  metric: {
+    name: string;
+    description?: string;
+    unit?: string;
+    type: "gauge" | "sum" | "histogram" | "exponential_histogram" | "summary" | "unknown";
+    temporality?: "delta" | "cumulative" | "unspecified";
+    monotonic?: boolean;
+  };
+  attributes: Record<string, string | number | boolean>;
   value?: number;
   count?: number;
   sum?: number;
   buckets?: Array<{ upperBound: number; count: number }>;
-  attributes: Record<string, string | number | boolean>;
-  resource: Record<string, unknown>;
-  scope: { name?: string; version?: string };
-  redactionStatus: 'safe' | 'redacted' | 'withheld';
+  exponentialHistogram?: ExponentialHistogramValue;
+  derivationStatus: "usable" | "unsupported" | "incomplete";
+  warnings: Array<{ code: string; message: string }>;
 };
 ```
 
 Implemented in `src/backend/metric_model.ts`, where `MetricPoint` keeps OTLP timestamps as string-safe nanosecond values and derives a deterministic `seriesKey`.
+
+Exponential histogram datapoints are retained as typed normalized records once
+the local proto/codegen surface exposes the OTLP oneof arm, but percentile
+derivation remains unavailable until a separate safe derivation design lands.
+Datapoints with inconsistent or unsafe bucket metadata stay normalized as
+`incomplete` records without retained exponential bucket details.
 
 ## Derived summaries
 

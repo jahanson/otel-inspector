@@ -2,9 +2,9 @@
 project: otel-inspector-dashboard
 title: "Ingest Pipeline"
 type: implementation-plan
-status: proposed-draft
+status: implemented
 created: 2026-07-05
-updated: 2026-07-07
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -26,6 +26,11 @@ HTTP request
 ```
 
 Valid decoded exports append normalized points and export metadata to `TelemetryStore`.
+
+The implemented backend path currently covers receiver validation, protobuf
+decode, metric normalization, bounded store append, safe `normalize-failed`
+handling, and live summary derivation. Redaction pre-scan, durable persistence,
+and UI controls remain pending.
 
 ## Failure classes
 

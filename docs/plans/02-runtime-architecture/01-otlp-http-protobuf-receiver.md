@@ -4,7 +4,7 @@ title: "OTLP HTTP Protobuf Receiver"
 type: runtime-spec
 status: implemented
 created: 2026-07-05
-updated: 2026-07-07
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -24,7 +24,7 @@ Response: ExportMetricsServiceResponse protobuf bytes or safe failure
 
 Successful metric exports return `200` with an empty
 `ExportMetricsServiceResponse` protobuf body and are counted only after decode
-succeeds. Normalization remains a separate downstream slice.
+and substrate normalization/storage both succeed.
 
 ## Rejections
 
@@ -35,6 +35,7 @@ succeeds. Normalization remains a separate downstream slice.
 | Unsupported content type | 415 | content-type-unsupported |
 | Oversize payload | 413 | payload-too-large |
 | Malformed protobuf | 400 | decode-failed |
+| Normalization/storage failure | 400 | normalize-failed |
 | Unsupported signal path | 404 | signal-unsupported |
 
 ## Signals
@@ -64,7 +65,8 @@ type ReceiverFailureResponse = {
     | "signal-unsupported"
     | "content-type-unsupported"
     | "payload-too-large"
-    | "decode-failed";
+    | "decode-failed"
+    | "normalize-failed";
   endpoint: string;
   contentType: string | null;
   bytesReceived: number;

@@ -2,9 +2,9 @@
 project: otel-inspector-dashboard
 title: "Reactive Live Bus"
 type: runtime-spec
-status: proposed-draft
+status: implemented
 created: 2026-07-05
-updated: 2026-07-07
+updated: 2026-07-08
 source_method: LINEAR_METHOD_v2.md
 owner: user
 ---
@@ -26,6 +26,10 @@ receiver ingest event
 ```
 
 The initial cadence helper is `maybeBuildLiveTelemetrySummary` in `src/backend/live_bus.ts`, with a default `250ms` minimum summary interval.
+
+The current implementation exposes deterministic summary cadence helpers for
+backend tests; browser backpressure, pause/resume, and downsampled UI views
+remain M3 dashboard work.
 
 ## Controls
 
