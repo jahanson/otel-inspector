@@ -15,7 +15,7 @@ export type ChartPoint = {
   value: number;
   seriesKey: string;
   metricName: string;
-  aggregation: "latest" | "sum" | "bucket-upper-bound" | "rate";
+  aggregation: "latest" | "sum" | "rate";
   datapointCount: number;
   service?: string;
   route?: string;
@@ -71,4 +71,5 @@ export type DashboardProjection = {
 
 declare global {
   var __OTEL_INITIAL_PROJECTION__: DashboardProjection | undefined;
+  var __OTEL_DASHBOARD_ACTION_TOKEN__: string | undefined;
 }

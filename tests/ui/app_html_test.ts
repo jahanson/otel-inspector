@@ -14,6 +14,7 @@ Deno.test("app shell renders root mount, assets, and inline projection bootstrap
   assertStringIncludes(html, "/assets/styles.css");
   assertStringIncludes(html, "/assets/app.js");
   assertStringIncludes(html, "__OTEL_INITIAL_PROJECTION__");
+  assertStringIncludes(html, "__OTEL_DASHBOARD_ACTION_TOKEN__");
 });
 
 Deno.test("app shell escapes inline projection JSON for script safety", () => {

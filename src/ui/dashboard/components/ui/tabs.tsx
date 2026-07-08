@@ -16,7 +16,6 @@ export function Tabs({ value, onValueChange, values }: TabsProps) {
           type="button"
           className="ui-tab"
           aria-selected={item.value === value}
-          aria-controls={`panel-${item.value}`}
           disabled={item.disabled}
           onClick={() => onValueChange(item.value)}
         >

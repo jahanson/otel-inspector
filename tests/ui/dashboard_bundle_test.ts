@@ -89,11 +89,46 @@ Deno.test("dashboard app exposes time window controls and guarded clear action",
 
   assertStringIncludes(source, "windowOptions");
   assertStringIncludes(source, "setWindowMs");
-  assertStringIncludes(source, "refreshProjection(option.value");
+  assertStringIncludes(source, "if (!paused)");
+  assertStringIncludes(source, "x-otel-inspector-action");
+  assertStringIncludes(source, "__OTEL_DASHBOARD_ACTION_TOKEN__");
   assertStringIncludes(source, 'aria-label="Time window"');
   assertStringIncludes(source, 'confirm("Clear retained telemetry for this dashboard session?")');
   assertStringIncludes(source, "setLastAction");
   assertStringIncludes(source, "Session cleared");
+});
+
+Deno.test("dashboard tabs do not point controls at missing inactive panels", () => {
+  const tabsSource = Deno.readTextFileSync(
+    new URL("../../src/ui/dashboard/components/ui/tabs.tsx", import.meta.url),
+  );
+  const appSource = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+
+  assertFalse(tabsSource.includes("aria-controls"));
+  assertStringIncludes(appSource, 'role="tabpanel"');
+});
+
+Deno.test("UI build task keeps permissions scoped to local build inputs", () => {
+  const config = JSON.parse(Deno.readTextFileSync(new URL("../../deno.json", import.meta.url)));
+  const uiBuild = config.tasks["ui:build"];
+
+  assertStringIncludes(uiBuild, "--allow-read=src/ui/dashboard,tools/build_ui.ts,node_modules");
+  assertStringIncludes(
+    uiBuild,
+    "--allow-run=node_modules/.deno/@esbuild+win32-x64@0.25.8/node_modules/@esbuild/win32-x64/esbuild.exe",
+  );
+  assertFalse(uiBuild.includes("--allow-env"));
+  assertFalse(uiBuild.includes("deno run --allow-read --allow-write=src/ui/dist --allow-run --allow-env"));
+});
+
+Deno.test("UI build script copies stylesheet only after the bundle succeeds", () => {
+  const source = Deno.readTextFileSync(new URL("../../tools/build_ui.ts", import.meta.url));
+  const buildIndex = source.indexOf("await command.output()");
+  const copyIndex = source.indexOf("await Deno.copyFile");
+
+  assert(buildIndex !== -1, "Expected esbuild command output.");
+  assert(copyIndex !== -1, "Expected stylesheet copy.");
+  assert(buildIndex < copyIndex, "Expected stylesheet copy after esbuild build.");
 });
 
 Deno.test("overview cards expose metric source navigation", () => {

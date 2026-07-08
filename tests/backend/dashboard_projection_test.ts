@@ -77,6 +77,106 @@ Deno.test("buildDashboardProjection creates cards charts and explorer rows from 
   assertEquals(projection.explorer.rows[0].metricName, "http.server.duration");
 });
 
+Deno.test("buildDashboardProjection only reports error rate when request points carry status codes", () => {
+  const projection = buildDashboardProjection(
+    snapshot([httpRequestCountWithoutStatus(2_000, 10)]),
+    summary({
+      p95Ms: undefined,
+      requestRate: 10,
+      errorRate: 0,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertObjectMatch(projection.cards.errorRate, {
+    id: "error-rate",
+    state: "unavailable",
+    value: undefined,
+    unit: "%",
+    source: "No HTTP status code attributes in the selected window.",
+  });
+});
+
+Deno.test("buildDashboardProjection links overview cards to retained source aliases", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpRequestAlias(2_000, 8, 200),
+      httpHistogramAlias(2_000, [
+        { upperBound: 50, count: 5 },
+        { upperBound: 100, count: 5 },
+      ]),
+      activeRequestsAlias(2_000, 4),
+    ]),
+    summary({
+      p95Ms: 100,
+      requestRate: 8,
+      errorRate: 0,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertEquals(projection.cards.latency.detailTarget, { metricName: "http.server.request.duration" });
+  assertEquals(projection.cards.throughput.detailTarget, { metricName: "http.server.requests" });
+  assertEquals(projection.cards.errorRate.detailTarget, { metricName: "http.server.requests" });
+  assertEquals(projection.cards.activeRequests.detailTarget, { metricName: "http.server.active_requests_count" });
+  assertEquals(projection.cards.ingest.detailTarget, undefined);
+});
+
+Deno.test("buildDashboardProjection labels ingest chart points as export counts", () => {
+  const projection = buildDashboardProjection(
+    snapshot([], [
+      { observedAtMs: 1_000, bytesReceived: 64, pointCount: 5 },
+      { observedAtMs: 11_000, bytesReceived: 64, pointCount: 500 },
+    ]),
+    summary({
+      p95Ms: undefined,
+      requestRate: undefined,
+      errorRate: undefined,
+      topServices: [],
+    }),
+    { observedAtMs: 11_000, windowMs: 60_000 },
+  );
+
+  assertObjectMatch(projection.charts.ingest, {
+    id: "ingest",
+    label: "Ingest per export",
+    unit: "pts/export",
+  });
+  assertEquals(
+    projection.charts.ingest.points.map((point) => [point.value, point.aggregation]),
+    [[5, "sum"], [500, "sum"]],
+  );
+});
+
+Deno.test("buildDashboardProjection plots estimated latency percentiles instead of bucket definitions", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpHistogram(2_000, [
+        { upperBound: 50, count: 95 },
+        { upperBound: 100, count: 5 },
+      ]),
+      httpHistogram(3_000, [
+        { upperBound: 50, count: 5 },
+        { upperBound: 100, count: 95 },
+      ]),
+    ]),
+    summary({
+      p95Ms: 100,
+      requestRate: undefined,
+      errorRate: undefined,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertEquals(projection.charts.latency.points.length, 2);
+  assertEquals(projection.charts.latency.points.map((point) => point.value), [50, 100]);
+  assertEquals(projection.charts.latency.points.map((point) => point.aggregation), ["latest", "latest"]);
+  assertEquals(projection.charts.latency.points.map((point) => point.state), ["estimated", "estimated"]);
+});
+
 Deno.test("buildDashboardProjection keeps only points inside the selected window", () => {
   const projection = buildDashboardProjection(
     snapshot(
@@ -242,6 +342,23 @@ function httpRequestCount(observedAtMs: number, value: number, statusCode: numbe
   };
 }
 
+function httpRequestCountWithoutStatus(observedAtMs: number, value: number): MetricPoint {
+  return {
+    ...basePoint("http.server.request.count", observedAtMs),
+    metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+    attributes: { "http.route": "/cart", "http.request.method": "GET" },
+    value,
+  };
+}
+
+function httpRequestAlias(observedAtMs: number, value: number, statusCode: number): MetricPoint {
+  return {
+    ...httpRequestCount(observedAtMs, value, statusCode),
+    seriesKey: `series:http.server.requests:${observedAtMs}`,
+    metric: { name: "http.server.requests", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+  };
+}
+
 function httpHistogram(observedAtMs: number, buckets: Array<{ upperBound: number; count: number }>): MetricPoint {
   return {
     ...basePoint("http.server.duration", observedAtMs),
@@ -250,6 +367,14 @@ function httpHistogram(observedAtMs: number, buckets: Array<{ upperBound: number
     count: buckets.reduce((sum, bucket) => sum + bucket.count, 0),
     sum: 400,
     buckets,
+  };
+}
+
+function httpHistogramAlias(observedAtMs: number, buckets: Array<{ upperBound: number; count: number }>): MetricPoint {
+  return {
+    ...httpHistogram(observedAtMs, buckets),
+    seriesKey: `series:http.server.request.duration:${observedAtMs}`,
+    metric: { name: "http.server.request.duration", type: "histogram", unit: "ms", temporality: "delta" },
   };
 }
 
@@ -285,5 +410,13 @@ function activeRequestsGauge(observedAtMs: number, value: number): MetricPoint {
     ...basePoint("http.server.active_requests", observedAtMs),
     metric: { name: "http.server.active_requests", type: "gauge", unit: "req" },
     value,
+  };
+}
+
+function activeRequestsAlias(observedAtMs: number, value: number): MetricPoint {
+  return {
+    ...activeRequestsGauge(observedAtMs, value),
+    seriesKey: `series:http.server.active_requests_count:${observedAtMs}`,
+    metric: { name: "http.server.active_requests_count", type: "gauge", unit: "req" },
   };
 }

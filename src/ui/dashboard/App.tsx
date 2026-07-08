@@ -54,18 +54,28 @@ export function App() {
           <Badge data-state={paused ? "paused" : projection.receiver.live ? "healthy" : "stale"}>
             {paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle"}
           </Badge>
-          <Button type="button" onClick={() => setPaused((value) => !value)}>
+          <Button
+            type="button"
+            onClick={() => {
+              if (paused) {
+                void refreshProjection(windowMs, setProjection, setRefreshError);
+              }
+              setPaused((value) => !value);
+            }}
+          >
             {paused ? "Resume" : "Pause"}
           </Button>
           <div className="window-controls" aria-label="Time window">
             {windowOptions.map((option) => (
               <Button
-                aria-pressed={projection.windowMs === option.value}
+                aria-pressed={windowMs === option.value}
                 className="window-controls__button"
                 key={option.value}
                 onClick={() => {
                   setWindowMs(option.value);
-                  void refreshProjection(option.value, setProjection, setRefreshError);
+                  if (!paused) {
+                    void refreshProjection(option.value, setProjection, setRefreshError);
+                  }
                 }}
                 type="button"
               >
@@ -82,7 +92,10 @@ export function App() {
               }
               setClearing(true);
               try {
-                await fetch("/api/dashboard/clear", { method: "POST" });
+                await fetch("/api/dashboard/clear", {
+                  headers: { "x-otel-inspector-action": readActionToken() },
+                  method: "POST",
+                });
                 await refreshProjection(windowMs, setProjection, setRefreshError);
                 setLastAction(`Session cleared at ${new Date().toLocaleTimeString()}.`);
               } finally {
@@ -136,6 +149,14 @@ function readInitialProjection(): DashboardProjection {
     throw new Error("Missing initial dashboard projection.");
   }
   return projection;
+}
+
+function readActionToken(): string {
+  const token = globalThis.__OTEL_DASHBOARD_ACTION_TOKEN__;
+  if (!token) {
+    throw new Error("Missing dashboard action token.");
+  }
+  return token;
 }
 
 async function refreshProjection(

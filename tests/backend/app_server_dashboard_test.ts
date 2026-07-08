@@ -1,4 +1,4 @@
-import { assertEquals, assertFalse, assertStringIncludes } from "@std/assert";
+import { assertEquals, assertFalse, assertNotEquals, assertStringIncludes } from "@std/assert";
 import { assertSpyCalls, stub } from "jsr:@std/testing@^1.0.2/mock";
 import { handleAppRequest } from "../../src/backend/app_server.ts";
 import { buildReceiverState, currentSummary } from "../../src/backend/receiver.ts";
@@ -64,6 +64,7 @@ Deno.test({
       const cssText = await css.text();
 
       assertStringIncludes(html, 'id="root"');
+      assertStringIncludes(html, "__OTEL_DASHBOARD_ACTION_TOKEN__");
       assertStringIncludes(html, "/assets/styles.css");
       assertStringIncludes(html, "/assets/app.js");
       assertSpyCalls(readStub, 2);
@@ -97,6 +98,7 @@ Deno.test("dashboard app server guards unsupported dashboard methods", async () 
 Deno.test("dashboard clear endpoint resets projection summary and warnings", async () => {
   const state = buildReceiverState(1_000);
   seedDashboardState(state);
+  const token = dashboardActionToken();
 
   const beforeClearResponse = handleAppRequest(new Request("http://127.0.0.1:4319/api/dashboard"), state);
   const beforeClear = await beforeClearResponse.json();
@@ -104,7 +106,10 @@ Deno.test("dashboard clear endpoint resets projection summary and warnings", asy
   assertEquals(beforeClear.warnings.length, 2);
 
   const response = await handleAppRequest(
-    new Request("http://127.0.0.1:4319/api/dashboard/clear", { method: "POST" }),
+    new Request("http://127.0.0.1:4319/api/dashboard/clear", {
+      headers: { "x-otel-inspector-action": token },
+      method: "POST",
+    }),
     state,
   );
   assertEquals(response.status, 200);
@@ -121,6 +126,32 @@ Deno.test("dashboard clear endpoint resets projection summary and warnings", asy
   assertEquals(summary.warnings, []);
   assertEquals(summary.overview.topServices, []);
 });
+
+Deno.test("dashboard clear endpoint requires the dashboard action token", () => {
+  const state = buildReceiverState(1_000);
+  seedDashboardState(state);
+  const missingToken = handleAppRequest(
+    new Request("http://127.0.0.1:4319/api/dashboard/clear", { method: "POST" }),
+    state,
+  );
+  const wrongToken = handleAppRequest(
+    new Request("http://127.0.0.1:4319/api/dashboard/clear", {
+      headers: { "x-otel-inspector-action": "not-the-dashboard-token" },
+      method: "POST",
+    }),
+    state,
+  );
+
+  assertEquals(missingToken.status, 403);
+  assertEquals(wrongToken.status, 403);
+  assertNotEquals(currentSummary(state).overview.topServices, []);
+});
+
+function dashboardActionToken(): string {
+  const html = handleAppRequest(new Request("http://127.0.0.1:4319/"), buildReceiverState(1_000));
+  // The token is process-local, so reading it from any served shell mirrors the browser bootstrap.
+  return String((html as Response).headers.get("x-otel-inspector-action-token"));
+}
 
 function seedDashboardState(state: ReturnType<typeof buildReceiverState>): void {
   const observedAtMs = Date.now();

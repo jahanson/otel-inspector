@@ -8,6 +8,8 @@ export const APP_SERVER = {
 } as const;
 
 const UI_DIST_DIR = new URL("../ui/dist/", import.meta.url);
+const DASHBOARD_ACTION_HEADER = "x-otel-inspector-action";
+const DASHBOARD_ACTION_TOKEN = crypto.randomUUID();
 
 export function appUrl(): string {
   return `http://${APP_SERVER.host}:${APP_SERVER.port}/`;
@@ -19,6 +21,9 @@ export function handleAppRequest(request: Request, state: ReceiverState): Respon
   if (url.pathname === "/api/dashboard/clear") {
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
+    }
+    if (request.headers.get(DASHBOARD_ACTION_HEADER) !== DASHBOARD_ACTION_TOKEN) {
+      return new Response("Forbidden", { status: 403 });
     }
 
     clearReceiverState(state);
@@ -55,12 +60,16 @@ export function handleAppRequest(request: Request, state: ReceiverState): Respon
 
   if (url.pathname === "/") {
     const summary = currentSummary(state);
-    return new Response(buildAppShell(buildDashboardProjection(state.store.snapshot(), summary)), {
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "no-store",
+    return new Response(
+      buildAppShell(buildDashboardProjection(state.store.snapshot(), summary), DASHBOARD_ACTION_TOKEN),
+      {
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-store",
+          "x-otel-inspector-action-token": DASHBOARD_ACTION_TOKEN,
+        },
       },
-    });
+    );
   }
 
   return new Response("Not found", { status: 404 });

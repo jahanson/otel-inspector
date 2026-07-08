@@ -1,5 +1,6 @@
-export function buildAppShell(initialProjection: unknown): string {
+export function buildAppShell(initialProjection: unknown, actionToken = ""): string {
   const projectionJson = serializeForInlineScript(initialProjection);
+  const actionTokenJson = serializeForInlineScript(actionToken);
 
   return `<!doctype html>
 <html lang="en">
@@ -12,6 +13,7 @@ export function buildAppShell(initialProjection: unknown): string {
   <body>
     <div id="root"></div>
     <script>globalThis.__OTEL_INITIAL_PROJECTION__ = ${projectionJson};</script>
+    <script>globalThis.__OTEL_DASHBOARD_ACTION_TOKEN__ = ${actionTokenJson};</script>
     <script type="module" src="/assets/app.js"></script>
   </body>
 </html>`;

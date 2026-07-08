@@ -20,7 +20,7 @@ export type ChartPoint = {
   value: number;
   seriesKey: string;
   metricName: string;
-  aggregation: "latest" | "sum" | "bucket-upper-bound" | "rate";
+  aggregation: "latest" | "sum" | "rate";
   datapointCount: number;
   service?: string;
   route?: string;
@@ -99,6 +99,7 @@ export function buildDashboardProjection(
   const requestPoints = points.filter(isHttpRequestCount);
   const latencyPoints = points.filter(isHttpDurationHistogram);
   const errorPoints = requestPoints.filter(isErrorStatus);
+  const statusPoints = requestPoints.filter(hasHttpStatus);
 
   return {
     observedAtMs,
@@ -108,7 +109,7 @@ export function buildDashboardProjection(
     cards: {
       latency: latencyCard(windowSummary, latencyPoints),
       throughput: throughputCard(windowSummary, requestPoints),
-      errorRate: errorRateCard(windowSummary, requestPoints),
+      errorRate: errorRateCard(windowSummary, requestPoints, statusPoints),
       activeRequests: activeRequestsCard(points),
       ingest: ingestCard(windowSummary),
       dropped: droppedCard(windowSummary),
@@ -125,6 +126,7 @@ export function buildDashboardProjection(
 }
 
 function latencyCard(summary: LiveTelemetrySummary, points: MetricPoint[]): DashboardCard {
+  const detailTarget = metricDetailTarget(points);
   if (summary.receiver.paused) {
     return card(
       "latency",
@@ -133,6 +135,7 @@ function latencyCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Dash
       summary.overview.p95Ms,
       "ms",
       "View is paused; receiver remains live.",
+      detailTarget,
     );
   }
   if (summary.overview.p95Ms === undefined) {
@@ -143,6 +146,7 @@ function latencyCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Dash
       undefined,
       "ms",
       "No usable HTTP duration histogram in the selected window.",
+      detailTarget,
     );
   }
   return card(
@@ -152,10 +156,12 @@ function latencyCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Dash
     summary.overview.p95Ms,
     "ms",
     "Bucket-derived from HTTP duration histograms.",
+    detailTarget,
   );
 }
 
 function throughputCard(summary: LiveTelemetrySummary, points: MetricPoint[]): DashboardCard {
+  const detailTarget = metricDetailTarget(points);
   if (summary.overview.requestRate === undefined) {
     return card(
       "throughput",
@@ -164,6 +170,7 @@ function throughputCard(summary: LiveTelemetrySummary, points: MetricPoint[]): D
       undefined,
       "req/s",
       "No HTTP request counter in the selected window.",
+      detailTarget,
     );
   }
   return card(
@@ -173,11 +180,17 @@ function throughputCard(summary: LiveTelemetrySummary, points: MetricPoint[]): D
     summary.overview.requestRate,
     "req/s",
     "Derived from delta monotonic HTTP request counters.",
+    detailTarget,
   );
 }
 
-function errorRateCard(summary: LiveTelemetrySummary, points: MetricPoint[]): DashboardCard {
-  if (summary.overview.errorRate === undefined) {
+function errorRateCard(
+  summary: LiveTelemetrySummary,
+  points: MetricPoint[],
+  statusPoints: MetricPoint[],
+): DashboardCard {
+  const detailTarget = metricDetailTarget(statusPoints);
+  if (summary.overview.errorRate === undefined || statusPoints.length === 0) {
     return card(
       "error-rate",
       "error rate",
@@ -185,6 +198,7 @@ function errorRateCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Da
       undefined,
       "%",
       "No HTTP status code attributes in the selected window.",
+      detailTarget,
     );
   }
   const value = Math.round(summary.overview.errorRate * 10_000) / 100;
@@ -195,6 +209,7 @@ function errorRateCard(summary: LiveTelemetrySummary, points: MetricPoint[]): Da
     value,
     "%",
     "Derived from HTTP status code attributes.",
+    detailTarget,
   );
 }
 
@@ -217,7 +232,9 @@ function activeRequestsCard(points: MetricPoint[]): DashboardCard {
       "req",
       "No active request gauge in the selected window.",
     )
-    : card("active-requests", "active requests", "healthy", active.value, "req", active.metric.name);
+    : card("active-requests", "active requests", "healthy", active.value, "req", active.metric.name, {
+      metricName: active.metric.name,
+    });
 }
 
 function isActiveRequestsGauge(point: MetricPoint): boolean {
@@ -257,24 +274,9 @@ function card(
   value: number | undefined,
   unit: string,
   source: string,
+  detailTarget?: DashboardCard["detailTarget"],
 ): DashboardCard {
-  return { id, label, state, value, unit, source, detailTarget: detailTargetForCard(id) };
-}
-
-function detailTargetForCard(id: DashboardCard["id"]): DashboardCard["detailTarget"] | undefined {
-  switch (id) {
-    case "latency":
-      return { metricName: "http.server.duration" };
-    case "throughput":
-    case "error-rate":
-      return { metricName: "http.server.request.count" };
-    case "active-requests":
-      return { metricName: "http.server.active_requests" };
-    case "ingest":
-      return { metricName: "otel.inspector.ingest.datapoints" };
-    case "dropped":
-      return undefined;
-  }
+  return { id, label, state, value, unit, source, detailTarget };
 }
 
 function latencyChart(points: MetricPoint[], windowMs: number): ChartSeries {
@@ -283,11 +285,10 @@ function latencyChart(points: MetricPoint[], windowMs: number): ChartSeries {
     label: "Latency",
     unit: "ms",
     windowMs,
-    points: points.flatMap((point) =>
-      (point.buckets ?? [])
-        .filter((bucket) => Number.isFinite(bucket.upperBound))
-        .map((bucket) => chartPoint(point, bucket.upperBound, "bucket-upper-bound", bucket.count))
-    ),
+    points: points.flatMap((point) => {
+      const p95 = percentileUpperBound(point, 0.95);
+      return p95 === undefined ? [] : [chartPoint(point, p95.value, "latest", p95.count, "estimated")];
+    }),
     unavailableReason: points.length === 0 ? "No usable HTTP duration histogram in the selected window." : undefined,
   };
 }
@@ -320,8 +321,8 @@ function ingestChart(
 ): ChartSeries {
   return {
     id: "ingest",
-    label: "Ingest",
-    unit: "pts/s",
+    label: "Ingest per export",
+    unit: "pts/export",
     windowMs,
     points: exportsInWindow.map((record) => ({
       observedAtMs: record.observedAtMs,
@@ -391,6 +392,7 @@ function chartPoint(
   value: number,
   aggregation: ChartPoint["aggregation"],
   datapointCount: number,
+  state: ChartPoint["state"] = point.derivationStatus === "usable" ? "exact" : "degraded",
 ): ChartPoint {
   return {
     observedAtMs: point.observedAtMs,
@@ -404,7 +406,7 @@ function chartPoint(
     statusCode: typeof point.attributes["http.response.status_code"] === "number"
       ? point.attributes["http.response.status_code"]
       : undefined,
-    state: point.derivationStatus === "usable" ? "exact" : "degraded",
+    state,
   };
 }
 
@@ -437,4 +439,40 @@ function isHttpDurationHistogram(point: MetricPoint): boolean {
 function isErrorStatus(point: MetricPoint): boolean {
   const status = point.attributes["http.response.status_code"] ?? point.attributes["http.status_code"];
   return typeof status === "number" && status >= 500;
+}
+
+function hasHttpStatus(point: MetricPoint): boolean {
+  const status = point.attributes["http.response.status_code"] ?? point.attributes["http.status_code"];
+  return typeof status === "number";
+}
+
+function metricDetailTarget(points: MetricPoint[]): DashboardCard["detailTarget"] | undefined {
+  const newest = points.reduce<MetricPoint | undefined>((selected, point) => {
+    if (selected === undefined || point.observedAtMs >= selected.observedAtMs) {
+      return point;
+    }
+    return selected;
+  }, undefined);
+
+  return newest ? { metricName: newest.metric.name } : undefined;
+}
+
+function percentileUpperBound(point: MetricPoint, percentile: number): { value: number; count: number } | undefined {
+  const buckets = point.buckets?.filter((bucket) => Number.isFinite(bucket.upperBound) && bucket.count > 0) ?? [];
+  const total = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
+  if (total <= 0) {
+    return undefined;
+  }
+
+  const targetRank = Math.ceil(total * percentile);
+  let seen = 0;
+  for (const bucket of buckets) {
+    seen += bucket.count;
+    if (seen >= targetRank) {
+      return { value: bucket.upperBound, count: total };
+    }
+  }
+
+  const last = buckets.at(-1);
+  return last ? { value: last.upperBound, count: total } : undefined;
 }
