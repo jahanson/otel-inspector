@@ -18,7 +18,6 @@
   --chart-ingest: var(--color-warning);
   --chart-overlay-start: rgb(255 255 255 / 2%);
   --chart-overlay-end: rgb(255 255 255 / 0%);
-  --chart-accent-transparent: rgb(123 147 255 / 0%);
   --color-warning-border: rgb(244 176 94 / 45%);
   --color-warning-surface: rgb(244 176 94 / 8%);
   --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;
@@ -274,6 +273,7 @@ h2 {
   min-height: 220px;
   width: 100%;
   border-radius: var(--radius-1);
+  --chart-accent-transparent: color-mix(in srgb, var(--chart-accent) 0%, transparent);
   background:
     linear-gradient(180deg, var(--chart-overlay-start), var(--chart-overlay-end)),
     linear-gradient(90deg, var(--chart-accent) 0 3px, var(--chart-accent-transparent) 3px 100%);

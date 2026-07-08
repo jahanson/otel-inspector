@@ -142,3 +142,41 @@
 
 - Re-checked the root DOX and `src/ui/AGENTS.md` before editing.
 - No AGENTS.md updates were needed because this fix changed implementation details only; the existing UI contract still matches the current behavior.
+
+## Review Fixes: linked stylesheet handoff and local chart transparency
+
+### Re-review findings addressed
+
+- Removed the CSS text import and `<style>` injection from `src/ui/dashboard/main.tsx` so the dashboard now relies on the linked `/assets/styles.css` handoff from `src/ui/app_shell.ts`.
+- Kept `ChartContainer` responsible for the local series accent token in `src/ui/dashboard/components/ui/chart.tsx`, while `src/ui/dashboard/styles.css` now derives `--chart-accent-transparent` from `--chart-accent` inside `.chart-container` instead of using a global latency-pinned token.
+- Regenerated `src/ui/dist/app.js` and `src/ui/dist/styles.css` with `deno task ui:build`.
+
+### Files changed
+
+- `deno.json`
+- `src/ui/AGENTS.md`
+- `src/ui/dashboard/main.tsx`
+- `src/ui/dashboard/components/ui/chart.tsx`
+- `src/ui/dashboard/styles.css`
+- `src/ui/dist/app.js`
+- `src/ui/dist/styles.css`
+- `tests/AGENTS.md`
+- `tests/ui/dashboard_bundle_test.ts`
+
+### Tests/checks run and exact pass/fail summary
+
+- `deno test --allow-read=fixtures,src/ui/dashboard,src/ui/dist tests/ui/dashboard_bundle_test.ts` - passed; `3 passed | 0 failed`
+- `deno task ui:build` - passed; emitted `src\\ui\\dist\\app.js 966.7kb`
+- `deno task check` - passed; checked `src/main.ts`, `src/backend/receiver_worker.ts`, `src/ui/dashboard/main.tsx`, 12 test files, and 4 tool files
+- `rg -n "vw" src/ui/dashboard/styles.css` - no matches
+- `rg -n -F -e 'style.textContent =' -e 'document.head.append(style)' -e 'styles_default =' -e 'import styles from \"./styles.css\"' src/ui/dist/app.js` - no matches
+- `deno task ok` - passed; `70 passed | 0 failed`
+
+### Commit created
+
+- `fix: use linked dashboard stylesheet asset`
+
+### DOX pass result
+
+- Re-checked the root, `src`, `src/ui`, and `tests` DOX chain before closeout.
+- Updated `tests/AGENTS.md` because the new UI regression test reads the dashboard source and generated bundle directly, which changes the test-task permission contract.

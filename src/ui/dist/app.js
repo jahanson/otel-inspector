@@ -3435,7 +3435,7 @@ var require_react_dom_client_development = __commonJS({
           return character.toUpperCase();
         });
       }
-      function setValueForStyle(style3, styleName, value) {
+      function setValueForStyle(style2, styleName, value) {
         var isCustomProperty = 0 === styleName.indexOf("--");
         isCustomProperty || (-1 < styleName.indexOf("-") ? warnedStyleNames.hasOwnProperty(styleName) && warnedStyleNames[styleName] || (warnedStyleNames[styleName] = true, console.error(
           "Unsupported style property %s. Did you mean %s?",
@@ -3456,7 +3456,7 @@ var require_react_dom_client_development = __commonJS({
           "`Infinity` is an invalid value for the `%s` css style property.",
           styleName
         ))));
-        null == value || "boolean" === typeof value || "" === value ? isCustomProperty ? style3.setProperty(styleName, "") : "float" === styleName ? style3.cssFloat = "" : style3[styleName] = "" : isCustomProperty ? style3.setProperty(styleName, value) : "number" !== typeof value || 0 === value || unitlessNumbers.has(styleName) ? "float" === styleName ? style3.cssFloat = value : (checkCSSPropertyStringCoercion(value, styleName), style3[styleName] = ("" + value).trim()) : style3[styleName] = value + "px";
+        null == value || "boolean" === typeof value || "" === value ? isCustomProperty ? style2.setProperty(styleName, "") : "float" === styleName ? style2.cssFloat = "" : style2[styleName] = "" : isCustomProperty ? style2.setProperty(styleName, value) : "number" !== typeof value || 0 === value || unitlessNumbers.has(styleName) ? "float" === styleName ? style2.cssFloat = value : (checkCSSPropertyStringCoercion(value, styleName), style2[styleName] = ("" + value).trim()) : style2[styleName] = value + "px";
       }
       function setValueForStyles(node, styles, prevStyles) {
         if (null != styles && "object" !== typeof styles)
@@ -4151,7 +4151,7 @@ var require_react_dom_client_development = __commonJS({
         if (!vendorPrefixes[eventName]) return eventName;
         var prefixMap = vendorPrefixes[eventName], styleProp;
         for (styleProp in prefixMap)
-          if (prefixMap.hasOwnProperty(styleProp) && styleProp in style2)
+          if (prefixMap.hasOwnProperty(styleProp) && styleProp in style)
             return prefixedEventNames[eventName] = prefixMap[styleProp];
         return eventName;
       }
@@ -17450,8 +17450,8 @@ var require_react_dom_client_development = __commonJS({
         transitionstart: makePrefixMap("Transition", "TransitionStart"),
         transitioncancel: makePrefixMap("Transition", "TransitionCancel"),
         transitionend: makePrefixMap("Transition", "TransitionEnd")
-      }, prefixedEventNames = {}, style2 = {};
-      canUseDOM && (style2 = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
+      }, prefixedEventNames = {}, style = {};
+      canUseDOM && (style = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
       var ANIMATION_END = getVendorPrefixedEventName("animationend"), ANIMATION_ITERATION = getVendorPrefixedEventName("animationiteration"), ANIMATION_START = getVendorPrefixedEventName("animationstart"), TRANSITION_RUN = getVendorPrefixedEventName("transitionrun"), TRANSITION_START = getVendorPrefixedEventName("transitionstart"), TRANSITION_CANCEL = getVendorPrefixedEventName("transitioncancel"), TRANSITION_END = getVendorPrefixedEventName("transitionend"), topLevelEventsToReactNames = /* @__PURE__ */ new Map(), simpleEventPluginEvents = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
         " "
       );
@@ -19602,7 +19602,7 @@ function Card({ className = "", ...props }) {
 // src/ui/dashboard/components/ui/chart.tsx
 var import_jsx_runtime4 = __toESM(require_jsx_runtime());
 function ChartContainer(props) {
-  const style2 = Object.entries(props.config).reduce((acc, [key, value]) => {
+  const style = Object.entries(props.config).reduce((acc, [key, value]) => {
     if (value.color) {
       acc[`--chart-${key}`] = value.color;
       if (!acc["--chart-accent"]) {
@@ -19615,7 +19615,7 @@ function ChartContainer(props) {
     "div",
     {
       className: `chart-container ${props.className ?? ""}`.trim(),
-      style: style2,
+      style,
       children: props.children
     }
   );
@@ -19819,14 +19819,8 @@ function formatExplorerValue(value, unit) {
   return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value)}${unit ? ` ${unit}` : ""}`;
 }
 
-// src/ui/dashboard/styles.css
-var styles_default = ':root {\n  color-scheme: dark;\n  --color-paper: #191d21;\n  --color-paper-2: #23292e;\n  --color-panel: #2d343a;\n  --color-panel-2: #384149;\n  --color-ink: #eff3f6;\n  --color-muted: #aab6bf;\n  --color-rule: rgba(239, 243, 246, 0.16);\n  --color-live: #59d18c;\n  --color-warning: #f4b05e;\n  --color-error: #dc695f;\n  --color-selected: #7b93ff;\n  --color-focus: #9cb0ff;\n  --chart-latency: var(--color-selected);\n  --chart-throughput: var(--color-live);\n  --chart-error: var(--color-error);\n  --chart-ingest: var(--color-warning);\n  --chart-overlay-start: rgb(255 255 255 / 2%);\n  --chart-overlay-end: rgb(255 255 255 / 0%);\n  --chart-accent-transparent: rgb(123 147 255 / 0%);\n  --color-warning-border: rgb(244 176 94 / 45%);\n  --color-warning-surface: rgb(244 176 94 / 8%);\n  --font-body: "Aptos", "Segoe UI", system-ui, sans-serif;\n  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;\n  --font-display-size: 3.25rem;\n  --font-metric-size: 1.9rem;\n  --space-1: 4px;\n  --space-2: 8px;\n  --space-3: 12px;\n  --space-4: 16px;\n  --space-5: 20px;\n  --space-6: 24px;\n  --space-8: 32px;\n  --radius-1: 6px;\n  --radius-2: 8px;\n  --dur-fast: 120ms;\n  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n}\n\nhtml,\nbody {\n  margin: 0;\n  min-height: 100%;\n  background: var(--color-paper);\n  color: var(--color-ink);\n  font-family: var(--font-body);\n}\n\nbody {\n  overflow-x: clip;\n}\n\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n}\n\nbutton,\ninput,\nselect,\ntextarea {\n  font: inherit;\n}\n\n#root {\n  min-height: 100dvh;\n}\n\n.workbench {\n  min-height: 100dvh;\n  display: grid;\n  grid-template-rows: auto auto minmax(0, 1fr);\n  gap: var(--space-4);\n  padding: var(--space-4);\n}\n\n.workbench__header,\n.series-card__header,\n.metric-card__topline,\n.table-card__header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--space-3);\n  min-width: 0;\n}\n\n.heading {\n  min-width: 0;\n}\n\n.eyebrow,\n.endpoint,\n.metric-source,\n.empty-state,\n.chart-tooltip,\nth,\ntd {\n  font-family: var(--font-mono);\n  font-size: 0.8125rem;\n}\n\n.eyebrow,\n.endpoint,\n.metric-source,\n.empty-state,\n.chart-tooltip,\nth,\ntd,\n.warning-item {\n  color: var(--color-muted);\n}\n\n.eyebrow {\n  margin: 0 0 var(--space-1);\n  text-transform: uppercase;\n  letter-spacing: 0;\n}\n\nh1,\nh2,\np {\n  margin: 0;\n}\n\nh1 {\n  font-size: var(--font-display-size);\n  line-height: 1.02;\n  overflow-wrap: anywhere;\n}\n\nh2 {\n  font-size: 1rem;\n  line-height: 1.2;\n}\n\n.endpoint {\n  margin-top: var(--space-1);\n}\n\n.toolbar,\n.ui-tabs {\n  display: flex;\n  align-items: center;\n  gap: var(--space-2);\n  flex-wrap: wrap;\n}\n\n.ui-button,\n.ui-tab {\n  min-height: 36px;\n  border: 1px solid var(--color-rule);\n  border-radius: var(--radius-1);\n  background: var(--color-panel);\n  color: var(--color-ink);\n  padding: 0 var(--space-3);\n  white-space: nowrap;\n  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),\n    transform var(--dur-fast) var(--ease-out);\n}\n\n.ui-button:hover,\n.ui-tab:hover {\n  background: var(--color-paper-2);\n}\n\n.ui-button:active,\n.ui-tab:active {\n  transform: translateY(1px);\n}\n\n.ui-button:focus-visible,\n.ui-tab:focus-visible {\n  outline: 2px solid var(--color-focus);\n  outline-offset: 2px;\n}\n\n.ui-button:disabled,\n.ui-tab:disabled {\n  cursor: not-allowed;\n  opacity: 0.55;\n}\n\n.ui-tab[aria-selected="true"] {\n  background: var(--color-panel-2);\n  border-color: var(--color-selected);\n}\n\n.ui-badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 28px;\n  max-width: 100%;\n  border: 1px solid var(--color-rule);\n  border-radius: 999px;\n  padding: 0 var(--space-2);\n  color: var(--color-ink);\n  white-space: nowrap;\n  font-family: var(--font-mono);\n  font-size: 0.75rem;\n}\n\n.ui-badge[data-state="healthy"],\n.ui-badge[data-state="live"] {\n  border-color: var(--color-live);\n}\n\n.ui-badge[data-state="degraded"],\n.ui-badge[data-state="stale"] {\n  border-color: var(--color-warning);\n}\n\n.ui-badge[data-state="paused"],\n.ui-badge[data-state="unavailable"],\n.ui-badge[data-state="empty"] {\n  border-color: var(--color-rule);\n}\n\n.ui-card {\n  border: 1px solid var(--color-rule);\n  border-radius: var(--radius-2);\n  background: var(--color-panel);\n  padding: var(--space-4);\n}\n\n.workbench__body {\n  display: grid;\n  gap: var(--space-4);\n  align-content: start;\n}\n\n.card-grid,\n.chart-grid {\n  display: grid;\n  gap: var(--space-4);\n}\n\n.card-grid {\n  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));\n}\n\n.chart-grid {\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\n}\n\n.metric-card,\n.series-card,\n.table-card {\n  display: grid;\n  gap: var(--space-3);\n}\n\n.metric-label,\n.tabular {\n  font-variant-numeric: tabular-nums;\n}\n\n.metric-value {\n  font-size: var(--font-metric-size);\n  line-height: 1.1;\n  font-variant-numeric: tabular-nums;\n}\n\n.metric-source {\n  line-height: 1.35;\n}\n\n.chart-container {\n  display: grid;\n  align-items: stretch;\n  min-height: 220px;\n  width: 100%;\n  border-radius: var(--radius-1);\n  background:\n    linear-gradient(180deg, var(--chart-overlay-start), var(--chart-overlay-end)),\n    linear-gradient(90deg, var(--chart-accent) 0 3px, var(--chart-accent-transparent) 3px 100%);\n}\n\n.series-placeholder {\n  display: grid;\n  align-content: end;\n  gap: var(--space-3);\n  min-height: 220px;\n  padding: var(--space-4);\n}\n\n.chart-tooltip {\n  display: grid;\n  gap: var(--space-1);\n}\n\n.chart-tooltip__label {\n  color: var(--color-ink);\n}\n\n.table-wrap {\n  overflow-x: auto;\n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n}\n\nth,\ntd {\n  padding: var(--space-2) 0;\n  text-align: left;\n  vertical-align: top;\n}\n\nthead tr,\ntbody tr:not(:last-child) {\n  border-bottom: 1px solid var(--color-rule);\n}\n\n.warning-list {\n  display: grid;\n  gap: var(--space-2);\n}\n\n.warning-item {\n  padding: var(--space-3) var(--space-4);\n  border: 1px solid var(--color-warning-border);\n  border-radius: var(--radius-1);\n  background: var(--color-warning-surface);\n}\n\n@media (max-width: 640px) {\n  :root {\n    --font-display-size: 2.5rem;\n    --font-metric-size: 1.5rem;\n  }\n\n  .workbench__header,\n  .series-card__header,\n  .metric-card__topline,\n  .table-card__header {\n    align-items: flex-start;\n    flex-direction: column;\n  }\n\n  .toolbar {\n    width: 100%;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation-duration: 1ms !important;\n    scroll-behavior: auto !important;\n    transition-duration: 1ms !important;\n  }\n}\n';
-
 // src/ui/dashboard/main.tsx
 var import_jsx_runtime7 = __toESM(require_jsx_runtime());
-var style = document.createElement("style");
-style.textContent = styles_default;
-document.head.append(style);
 (0, import_client.createRoot)(document.getElementById("root")).render(
   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react2.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(App, {}) })
 );

@@ -23,6 +23,7 @@
 ## Verification
 
 - Run `deno task ok` before closeout.
+- `deno task test` includes read access to `fixtures`, `src/ui/dashboard`, and `src/ui/dist` so dashboard bundle regressions can inspect source and generated assets directly.
 
 ## Child DOX Index
 
