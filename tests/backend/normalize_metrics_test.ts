@@ -158,6 +158,61 @@ Deno.test("normalizeMetricsExport decodes OTLP exponential histogram uint64 buck
   assertEquals(result.points[0].derivationStatus, "unsupported");
 });
 
+Deno.test("normalizeMetricsExport ignores exponential histogram values with no recorded value flag", () => {
+  const result = normalizeMetricsExport({
+    resourceMetrics: [{
+      resource: { attributes: [], droppedAttributesCount: 0 },
+      scopeMetrics: [{
+        scope: undefined,
+        schemaUrl: "",
+        metrics: [{
+          name: "http.server.duration.exp",
+          description: "",
+          unit: "ms",
+          data: {
+            oneofKind: "exponentialHistogram",
+            exponentialHistogram: {
+              aggregationTemporality: AggregationTemporality.DELTA,
+              dataPoints: [{
+                attributes: [stringAttribute("http.route", "/cart")],
+                startTimeUnixNano: 10n,
+                timeUnixNano: 20n,
+                count: 5n,
+                sum: 120,
+                scale: 2,
+                zeroCount: 1n,
+                positive: { offset: -1, bucketCounts: [1n, 2n] },
+                negative: { offset: 0, bucketCounts: [1n] },
+                flags: 1,
+                min: 1,
+                max: 80,
+                zeroThreshold: 0,
+              }],
+            },
+          },
+        }],
+      }],
+      schemaUrl: "",
+    }],
+  }, 2_000);
+
+  assertEquals(result.points.length, 1);
+  assertEquals(result.points[0].metric.type, "exponential_histogram");
+  assertEquals(result.points[0].metric.temporality, "delta");
+  assertEquals(result.points[0].attributes["http.route"], "/cart");
+  assertEquals(result.points[0].startTimeUnixNano, "10");
+  assertEquals(result.points[0].timestampUnixNano, "20");
+  assertEquals(result.points[0].count, undefined);
+  assertEquals(result.points[0].sum, undefined);
+  assertEquals(result.points[0].exponentialHistogram, undefined);
+  assertEquals(result.points[0].derivationStatus, "incomplete");
+  assertEquals(result.points[0].warnings, [{
+    code: "metric-no-recorded-value",
+    message: "Exponential histogram datapoint has no recorded value.",
+  }]);
+  assertEquals(result.warnings[0].code, "metric-no-recorded-value");
+});
+
 Deno.test("normalizeMetricsExport reports incomplete exponential histograms when bucket totals do not match count", () => {
   const result = normalizeMetricsExport({
     resourceMetrics: [{

@@ -27,6 +27,8 @@ export type NormalizeMetricsResult = {
   warnings: MetricWarning[];
 };
 
+const DATA_POINT_FLAGS_NO_RECORDED_VALUE_MASK = 1;
+
 export function normalizeMetricsExport(
   exportRequest: ExportMetricsServiceRequestMessage,
   observedAtMs: number,
@@ -168,6 +170,20 @@ function exponentialHistogramPoint(
   exponentialHistogram: ExponentialHistogram,
 ): MetricPoint {
   const attributes = attributesFromKeyValues(dataPoint.attributes);
+
+  if (hasNoRecordedValue(dataPoint.flags)) {
+    return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, "exponential_histogram", {
+      timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
+      startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
+      metricOverrides: { temporality: temporalityName(exponentialHistogram.aggregationTemporality) },
+      derivationStatus: "incomplete",
+      warnings: [{
+        code: "metric-no-recorded-value",
+        message: "Exponential histogram datapoint has no recorded value.",
+      }],
+    });
+  }
+
   const count = toNumberValue(dataPoint.count);
   const zeroCount = toNumberValue(dataPoint.zeroCount);
   const positive = normalizeExponentialBuckets(dataPoint.positive);
@@ -194,6 +210,10 @@ function exponentialHistogramPoint(
     derivationStatus: incomplete ? "incomplete" : "unsupported",
     warnings: [warning],
   });
+}
+
+function hasNoRecordedValue(flags: number): boolean {
+  return (flags & DATA_POINT_FLAGS_NO_RECORDED_VALUE_MASK) !== 0;
 }
 
 function normalizeExponentialBuckets(
