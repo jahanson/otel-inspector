@@ -23,7 +23,8 @@
 ## Verification
 
 - Run `deno task ok` before closeout.
-- `deno task test` includes read access to `fixtures`, `src/ui/dashboard`, and `src/ui/dist` so dashboard bundle regressions can inspect source and generated assets directly.
+- `deno task test` keeps the suite-level read scope to `fixtures` and skips `tests/ui/dashboard_bundle_test.ts`.
+- Run `deno task test:dashboard-bundle` for the dashboard bundle regression; that task grants the local `src/ui/dashboard` and `src/ui/dist` reads needed by `tests/ui/dashboard_bundle_test.ts`.
 
 ## Child DOX Index
 

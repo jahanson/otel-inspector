@@ -79,6 +79,39 @@
 
 - No open implementation concerns after the required verification passed.
 
+## Review Fixes: narrow dashboard bundle permissions and stylesheet link regression
+
+### Re-review findings addressed
+
+- Restored `deno task test` to a narrow suite-level read scope by keeping it on `fixtures` only and excluding `tests/ui/dashboard_bundle_test.ts`.
+- Added a focused `deno task test:dashboard-bundle` so the bundle/source regression can read `src/ui/dashboard` and `src/ui/dist` without broadening the whole suite.
+- Added a shell regression in `tests/backend/app_server_dashboard_test.ts` that asserts the root dashboard HTML keeps the `/assets/styles.css` link alongside `/assets/app.js`.
+- Updated `tests/AGENTS.md` so the documented test contract matches the new split-task permission model.
+
+### Files changed
+
+- `deno.json`
+- `tests/AGENTS.md`
+- `tests/backend/app_server_dashboard_test.ts`
+
+### Tests/checks run and exact pass/fail summary
+
+- `deno task test` - passed; `67 passed | 0 failed`
+- `deno task test:dashboard-bundle` - passed; `3 passed | 0 failed`
+- `deno test tests/backend/app_server_dashboard_test.ts` - passed; `5 passed | 0 failed`
+- `deno task check` - passed
+- `deno task ok` - passed; `67 passed | 0 failed` from the suite run, then the focused dashboard bundle task passed with `3 passed | 0 failed`
+
+### Commit created
+
+- `fix: narrow dashboard bundle permissions`
+
+### DOX pass result
+
+- Re-read the root DOX plus `tests/AGENTS.md` before editing.
+- Updated `tests/AGENTS.md` because the test-task permission contract changed and the docs needed to stop claiming broad suite reads.
+- No source or UI DOX files needed updates for this fix.
+
 ## Review Fixes: dashboard asset build follow-up
 
 ### Review findings addressed

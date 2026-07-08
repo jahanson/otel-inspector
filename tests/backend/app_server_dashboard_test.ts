@@ -64,6 +64,7 @@ Deno.test({
       const cssText = await css.text();
 
       assertStringIncludes(html, 'id="root"');
+      assertStringIncludes(html, "/assets/styles.css");
       assertStringIncludes(html, "/assets/app.js");
       assertSpyCalls(readStub, 2);
       assertStringIncludes(String(readStub.calls[0].args[0]), "src/ui/dist/app.js");
