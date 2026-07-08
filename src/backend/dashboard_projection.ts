@@ -117,7 +117,7 @@ export function buildDashboardProjection(
       latency: latencyChart(latencyPoints, windowMs),
       throughput: throughputChart(requestPoints, windowMs),
       errorRate: errorRateChart(requestPoints, errorPoints, windowMs),
-      ingest: ingestChart(exportsInWindow, summary, windowMs),
+      ingest: ingestChart(exportsInWindow, windowSummary, windowMs),
     },
     explorer: { rows: explorerRows(points) },
     warnings: windowSummary.warnings,

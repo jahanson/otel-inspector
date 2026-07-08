@@ -176,6 +176,9 @@ Deno.test("buildDashboardProjection keeps cards and ingest empty-state within th
   assertEquals(projection.charts.throughput.points, []);
   assertEquals(projection.charts.errorRate.points, []);
   assertEquals(projection.charts.ingest.points, []);
+  assertObjectMatch(projection.charts.ingest, {
+    unavailableReason: "No accepted exports yet.",
+  });
   assertEquals(projection.explorer.rows, []);
 });
 
