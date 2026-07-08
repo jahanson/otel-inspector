@@ -43,3 +43,35 @@
 ## Issues or Concerns
 
 - None.
+
+## Review Fix Follow-Up
+
+### Review findings addressed
+
+- Replaced the overview tab's extra metrics/chart/table bodies with a single `OverviewCards` render on `activeTab === "overview"` and one shared empty-state fallback for every other tab.
+- Swapped the overview card value formatter to `Intl.NumberFormat` with significant-digit formatting so small non-zero values remain visible and large values keep grouping separators.
+- Regenerated the dashboard bundle with `deno task ui:build`; `src/ui/dist/app.js` changed, and `src/ui/dist/styles.css` rebuilt with no content diff.
+
+### Files changed
+
+- `src/ui/dashboard/App.tsx`
+- `src/ui/dashboard/components/OverviewCards.tsx`
+- `src/ui/dist/app.js`
+- `.superpowers/sdd/task-5-report.md`
+
+### Tests and checks
+
+- `deno task ui:build` - pass
+- `deno test tests/ui/app_html_test.ts` - pass
+- `deno task check` - pass
+- `deno task ok` - pass
+- `rg -n "vw|transition-all" src/ui/dashboard/styles.css` - expected no matches, exited 1 with no output
+
+### Commit created
+
+- `fix: align overview tab fallback`
+
+### DOX pass result
+
+- Re-read the applicable DOX chain for the workspace before editing: root `AGENTS.md`, `src/AGENTS.md`, and `src/ui/AGENTS.md`.
+- No AGENTS files needed updates because this fix stayed within the existing UI and report contracts.

@@ -5,6 +5,11 @@ import { Card } from "./ui/card.tsx";
 
 type Cards = DashboardProjection["cards"];
 
+const valueFormatter = new Intl.NumberFormat("en-US", {
+  maximumSignificantDigits: 6,
+  useGrouping: true,
+});
+
 const orderedCards: Array<keyof Cards> = [
   "latency",
   "throughput",
@@ -41,5 +46,5 @@ function OverviewCard({ card }: { card: DashboardCard }) {
 }
 
 function formatValue(value: number): string {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, "");
+  return valueFormatter.format(value);
 }
