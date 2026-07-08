@@ -100,7 +100,7 @@ Result after adding `"recharts": "npm:recharts@3.0.0"` to `deno.json`:
 
 ## Commit created
 
-- Pending at report append time; commit will be created after this update.
+- `8b17dac` `fix: disable live chart animations`
 
 ## DOX pass result
 
