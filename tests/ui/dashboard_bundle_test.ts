@@ -64,6 +64,12 @@ Deno.test("overview tab renders LiveCharts after OverviewCards", () => {
   const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
 
   assertStringIncludes(source, 'import { LiveCharts } from "./charts/LiveCharts.tsx";');
-  assertStringIncludes(source, "<OverviewCards cards={projection.cards} />");
-  assertStringIncludes(source, "<LiveCharts charts={projection.charts} />");
+  const overviewBranchStart = source.indexOf('activeTab === "overview"');
+  const overviewCardsIndex = source.indexOf("<OverviewCards cards={projection.cards} />", overviewBranchStart);
+  const liveChartsIndex = source.indexOf("<LiveCharts charts={projection.charts} />", overviewBranchStart);
+
+  assert(overviewBranchStart !== -1, "Expected the overview branch to exist.");
+  assert(overviewCardsIndex !== -1, "Expected OverviewCards in the overview branch.");
+  assert(liveChartsIndex !== -1, "Expected LiveCharts in the overview branch.");
+  assert(overviewCardsIndex < liveChartsIndex, "Expected LiveCharts to render after OverviewCards.");
 });

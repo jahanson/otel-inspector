@@ -120,6 +120,7 @@ function TelemetryChart(
                     <Line
                       dataKey="value"
                       dot={false}
+                      isAnimationActive={false}
                       stroke={colorToken}
                       strokeWidth={2}
                       type="monotone"
@@ -167,6 +168,7 @@ function TelemetryChart(
                     />
                     <Area
                       dataKey="value"
+                      isAnimationActive={false}
                       fill={`url(#${series.id}-fill)`}
                       stroke={colorToken}
                       strokeWidth={2}

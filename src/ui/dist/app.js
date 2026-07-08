@@ -42453,6 +42453,7 @@ function TelemetryChart(props) {
         {
           dataKey: "value",
           dot: false,
+          isAnimationActive: false,
           stroke: colorToken,
           strokeWidth: 2,
           type: "monotone"
@@ -42508,6 +42509,7 @@ function TelemetryChart(props) {
         Area,
         {
           dataKey: "value",
+          isAnimationActive: false,
           fill: `url(#${series.id}-fill)`,
           stroke: colorToken,
           strokeWidth: 2,

@@ -78,3 +78,31 @@ Result after adding `"recharts": "npm:recharts@3.0.0"` to `deno.json`:
 ## Any issues or concerns
 
 - No blocking issues.
+
+## Review findings addressed
+
+- Disabled Recharts animations on the overview `Line` and `Area` series with `isAnimationActive={false}` so the live charts stay reduced-motion-safe during refreshes.
+- Strengthened the overview ordering regression so it checks that `LiveCharts` appears after `OverviewCards` within the `overview` branch of `src/ui/dashboard/App.tsx`.
+
+## Files changed
+
+- `src/ui/dashboard/charts/LiveCharts.tsx`
+- `tests/ui/dashboard_bundle_test.ts`
+- `src/ui/dist/app.js`
+
+## Tests and checks
+
+- `deno task ui:build` — pass
+- `deno task test:dashboard-bundle` — pass, 5 tests passed / 0 failed
+- `deno task check` — pass
+- `deno task ok` — pass
+- `rg -n "vw|transition-all" src/ui/dashboard/styles.css` — no matches, exit code 1 as expected
+
+## Commit created
+
+- Pending at report append time; commit will be created after this update.
+
+## DOX pass result
+
+- Re-read the applicable DOX chain for the touched paths: root `AGENTS.md`, `src/ui/AGENTS.md`, and `tests/AGENTS.md`.
+- No AGENTS updates were needed because this task changed implementation, generated assets, and test coverage only.
