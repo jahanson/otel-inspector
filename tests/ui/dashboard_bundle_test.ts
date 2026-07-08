@@ -73,3 +73,13 @@ Deno.test("overview tab renders LiveCharts after OverviewCards", () => {
   assert(liveChartsIndex !== -1, "Expected LiveCharts in the overview branch.");
   assert(overviewCardsIndex < liveChartsIndex, "Expected LiveCharts to render after OverviewCards.");
 });
+
+Deno.test("metrics tab renders MetricsExplorer from explorer rows and keeps fallback text", () => {
+  const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+
+  assertStringIncludes(source, 'import { MetricsExplorer } from "./components/MetricsExplorer.tsx";');
+  assertStringIncludes(source, "projection.explorer.rows");
+  assertStringIncludes(source, 'activeTab === "metrics"');
+  assertStringIncludes(source, "<MetricsExplorer rows={projection.explorer.rows} />");
+  assertStringIncludes(source, "This dashboard tab is not implemented yet.");
+});

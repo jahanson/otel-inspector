@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge } from "./components/ui/badge.tsx";
 import { Button } from "./components/ui/button.tsx";
 import { Tabs } from "./components/ui/tabs.tsx";
+import { MetricsExplorer } from "./components/MetricsExplorer.tsx";
 import { OverviewCards } from "./components/OverviewCards.tsx";
 import { LiveCharts } from "./charts/LiveCharts.tsx";
 import type { DashboardProjection } from "./types.ts";
@@ -75,6 +76,8 @@ export function App() {
               <LiveCharts charts={projection.charts} />
             </>
           )
+          : activeTab === "metrics"
+          ? <MetricsExplorer rows={projection.explorer.rows} />
           : <p className="empty-state">This dashboard tab is not implemented yet.</p>}
 
         {projection.warnings.length > 0 || refreshError

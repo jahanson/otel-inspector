@@ -1300,7 +1300,7 @@ var require_react_dom_development = __commonJS({
         return dispatcher;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React39 = require_react(), Internals = {
+      var React40 = require_react(), Internals = {
         d: {
           f: noop7,
           r: function() {
@@ -1318,7 +1318,7 @@ var require_react_dom_development = __commonJS({
         },
         p: 0,
         findDOMNode: null
-      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React39.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React40.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
       "function" === typeof Map && null != Map.prototype && "function" === typeof Map.prototype.forEach && "function" === typeof Set && null != Set.prototype && "function" === typeof Set.prototype.clear && "function" === typeof Set.prototype.forEach || console.error(
         "React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://reactjs.org/link/react-polyfills"
       );
@@ -2860,7 +2860,7 @@ var require_react_dom_client_development = __commonJS({
         "number" === type && getActiveElement(node.ownerDocument) === node || node.defaultValue === "" + value || (node.defaultValue = "" + value);
       }
       function validateOptionProps(element, props) {
-        null == props.value && ("object" === typeof props.children && null !== props.children ? React39.Children.forEach(props.children, function(child) {
+        null == props.value && ("object" === typeof props.children && null !== props.children ? React40.Children.forEach(props.children, function(child) {
           null == child || "string" === typeof child || "number" === typeof child || "bigint" === typeof child || didWarnInvalidChild || (didWarnInvalidChild = true, console.error(
             "Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>."
           ));
@@ -16442,14 +16442,14 @@ var require_react_dom_client_development = __commonJS({
         ));
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var Scheduler = require_scheduler(), React39 = require_react(), ReactDOM = require_react_dom(), assign2 = Object.assign, REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE2 = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE2 = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
+      var Scheduler = require_scheduler(), React40 = require_react(), ReactDOM = require_react_dom(), assign2 = Object.assign, REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE2 = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE2 = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
       Symbol.for("react.scope");
       var REACT_ACTIVITY_TYPE = Symbol.for("react.activity");
       Symbol.for("react.legacy_hidden");
       Symbol.for("react.tracing_marker");
       var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel");
       Symbol.for("react.view_transition");
-      var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React39.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
+      var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React40.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
         pending: false,
         data: null,
         method: null,
@@ -19163,7 +19163,7 @@ var require_react_dom_client_development = __commonJS({
         }
       };
       (function() {
-        var isomorphicReactPackageVersion = React39.version;
+        var isomorphicReactPackageVersion = React40.version;
         if ("19.1.0" !== isomorphicReactPackageVersion)
           throw Error(
             'Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.1.0\nLearn more: https://react.dev/warnings/version-mismatch")
@@ -19516,20 +19516,20 @@ var require_react_jsx_runtime_development = __commonJS({
       function validateChildKeys(node) {
         "object" === typeof node && null !== node && node.$$typeof === REACT_ELEMENT_TYPE && node._store && (node._store.validated = 1);
       }
-      var React39 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
+      var React40 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
       Symbol.for("react.provider");
-      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE2 = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE2 = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React39.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, isArrayImpl = Array.isArray, createTask = console.createTask ? console.createTask : function() {
+      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE2 = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE2 = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React40.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, isArrayImpl = Array.isArray, createTask = console.createTask ? console.createTask : function() {
         return null;
       };
-      React39 = {
+      React40 = {
         "react-stack-bottom-frame": function(callStackForError) {
           return callStackForError();
         }
       };
       var specialPropKeyWarningShown;
       var didWarnAboutElementRef = {};
-      var unknownOwnerDebugStack = React39["react-stack-bottom-frame"].bind(
-        React39,
+      var unknownOwnerDebugStack = React40["react-stack-bottom-frame"].bind(
+        React40,
         UnknownOwner
       )();
       var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
@@ -19691,7 +19691,7 @@ var require_use_sync_external_store_shim_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       function useSyncExternalStore$2(subscribe, getSnapshot) {
-        didWarnOld18Alpha || void 0 === React39.startTransition || (didWarnOld18Alpha = true, console.error(
+        didWarnOld18Alpha || void 0 === React40.startTransition || (didWarnOld18Alpha = true, console.error(
           "You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release."
         ));
         var value = getSnapshot();
@@ -19701,7 +19701,7 @@ var require_use_sync_external_store_shim_development = __commonJS({
             "The result of getSnapshot should be cached to avoid an infinite loop"
           ), didWarnUncachedGetSnapshot = true);
         }
-        cachedValue = useState11({
+        cachedValue = useState12({
           inst: { value, getSnapshot }
         });
         var inst = cachedValue[0].inst, forceUpdate = cachedValue[1];
@@ -19739,8 +19739,8 @@ var require_use_sync_external_store_shim_development = __commonJS({
         return getSnapshot();
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React39 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useState11 = React39.useState, useEffect18 = React39.useEffect, useLayoutEffect3 = React39.useLayoutEffect, useDebugValue2 = React39.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
-      exports.useSyncExternalStore = void 0 !== React39.useSyncExternalStore ? React39.useSyncExternalStore : shim;
+      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useState12 = React40.useState, useEffect18 = React40.useEffect, useLayoutEffect3 = React40.useLayoutEffect, useDebugValue2 = React40.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+      exports.useSyncExternalStore = void 0 !== React40.useSyncExternalStore ? React40.useSyncExternalStore : shim;
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
     })();
   }
@@ -19767,14 +19767,14 @@ var require_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React39 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef9 = React39.useRef, useEffect18 = React39.useEffect, useMemo6 = React39.useMemo, useDebugValue2 = React39.useDebugValue;
+      var React40 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = shim.useSyncExternalStore, useRef9 = React40.useRef, useEffect18 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
         var instRef = useRef9(null);
         if (null === instRef.current) {
           var inst = { hasValue: false, value: null };
           instRef.current = inst;
         } else inst = instRef.current;
-        instRef = useMemo6(
+        instRef = useMemo7(
           function() {
             function memoizedSelector(nextSnapshot) {
               if (!hasMemo) {
@@ -20994,14 +20994,14 @@ var require_use_sync_external_store_with_selector_development = __commonJS({
         return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React39 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React39.useSyncExternalStore, useRef9 = React39.useRef, useEffect18 = React39.useEffect, useMemo6 = React39.useMemo, useDebugValue2 = React39.useDebugValue;
+      var React40 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is3, useSyncExternalStore2 = React40.useSyncExternalStore, useRef9 = React40.useRef, useEffect18 = React40.useEffect, useMemo7 = React40.useMemo, useDebugValue2 = React40.useDebugValue;
       exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual2) {
         var instRef = useRef9(null);
         if (null === instRef.current) {
           var inst = { hasValue: false, value: null };
           instRef.current = inst;
         } else inst = instRef.current;
-        instRef = useMemo6(
+        instRef = useMemo7(
           function() {
             function memoizedSelector(nextSnapshot) {
               if (!hasMemo) {
@@ -21065,11 +21065,11 @@ var require_with_selector2 = __commonJS({
 });
 
 // src/ui/dashboard/main.tsx
-var import_react47 = __toESM(require_react());
+var import_react48 = __toESM(require_react());
 var import_client = __toESM(require_client());
 
 // src/ui/dashboard/App.tsx
-var import_react46 = __toESM(require_react());
+var import_react47 = __toESM(require_react());
 
 // src/ui/dashboard/components/ui/badge.tsx
 var import_jsx_runtime = __toESM(require_jsx_runtime());
@@ -21103,14 +21103,78 @@ function Tabs({ value, onValueChange, values }) {
   )) });
 }
 
-// src/ui/dashboard/components/ui/card.tsx
+// src/ui/dashboard/components/MetricsExplorer.tsx
+var import_react = __toESM(require_react());
 var import_jsx_runtime4 = __toESM(require_jsx_runtime());
+var numberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 3,
+  useGrouping: true
+});
+var seenFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit"
+});
+function MetricsExplorer({ rows }) {
+  const [query, setQuery] = (0, import_react.useState)("");
+  const filteredRows = (0, import_react.useMemo)(() => filterExplorerRows(query, rows), [query, rows]);
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("section", { className: "explorer", "aria-label": "Metrics Explorer", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { className: "explorer__filter", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: "Filter metrics" }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+        "input",
+        {
+          "aria-label": "Filter metrics",
+          onChange: (event) => setQuery(event.currentTarget.value),
+          placeholder: "service, metric, attribute",
+          value: query
+        }
+      )
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "explorer__table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("table", { className: "explorer__table", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Metric" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Type" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Unit" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Latest" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Service" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Status" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Last seen" })
+      ] }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("tbody", { children: filteredRows.map((row) => /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Metric", children: row.metricName }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Type", children: row.metricType }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Unit", children: row.unit ?? "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Latest", children: row.latest === void 0 ? "\u2014" : formatNumber(row.latest) }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Service", children: row.resourceService ?? "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Status", children: row.status }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Last seen", children: seenFormatter.format(row.lastObservedAtMs) })
+      ] }, row.seriesKey)) })
+    ] }) }),
+    filteredRows.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "empty-state explorer__empty", children: "No metrics match the current filter." }) : null
+  ] });
+}
+function filterExplorerRows(query, rows) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) {
+    return rows;
+  }
+  return rows.filter(
+    (row) => row.metricName.toLowerCase().includes(needle) || row.metricType.toLowerCase().includes(needle) || (row.resourceService ?? "").toLowerCase().includes(needle) || JSON.stringify(row.attributes).toLowerCase().includes(needle)
+  );
+}
+function formatNumber(value) {
+  return numberFormatter.format(value);
+}
+
+// src/ui/dashboard/components/ui/card.tsx
+var import_jsx_runtime5 = __toESM(require_jsx_runtime());
 function Card({ className = "", ...props }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("section", { className: `ui-card ${className}`.trim(), ...props });
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("section", { className: `ui-card ${className}`.trim(), ...props });
 }
 
 // src/ui/dashboard/components/OverviewCards.tsx
-var import_jsx_runtime5 = __toESM(require_jsx_runtime());
+var import_jsx_runtime6 = __toESM(require_jsx_runtime());
 var valueFormatter = new Intl.NumberFormat("en-US", {
   maximumSignificantDigits: 6,
   useGrouping: true
@@ -21124,19 +21188,19 @@ var orderedCards = [
   "dropped"
 ];
 function OverviewCards({ cards }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(OverviewCard, { card: cards[key] }, cards[key].id)) });
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("section", { className: "overview-grid", "aria-label": "Overview cards", children: orderedCards.map((key) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(OverviewCard, { card: cards[key] }, cards[key].id)) });
 }
 function OverviewCard({ card }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card, { className: "overview-card", "data-state": card.state, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "overview-card__topline", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "overview-card__label", children: card.label }),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Badge, { "data-state": card.state, className: "overview-card__state", children: card.state })
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Card, { className: "overview-card", "data-state": card.state, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "overview-card__topline", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__label", children: card.label }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Badge, { "data-state": card.state, className: "overview-card__state", children: card.state })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("p", { className: "overview-card__value-row", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "overview-card__value", children: card.value === void 0 ? "\u2014" : formatValue(card.value) }),
-      card.unit ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "overview-card__unit", children: card.unit }) : null
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("p", { className: "overview-card__value-row", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__value", children: card.value === void 0 ? "\u2014" : formatValue(card.value) }),
+      card.unit ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "overview-card__unit", children: card.unit }) : null
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "overview-card__source", children: card.source })
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { className: "overview-card__source", children: card.source })
   ] });
 }
 function formatValue(value) {
@@ -21144,8 +21208,8 @@ function formatValue(value) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/container/Surface.js
-var React = __toESM(require_react());
-var import_react3 = __toESM(require_react());
+var React2 = __toESM(require_react());
+var import_react4 = __toESM(require_react());
 
 // node_modules/.deno/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
 function r(e) {
@@ -21283,7 +21347,7 @@ function getWithPath(object, path2, defaultValue) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/ReactUtils.js
-var import_react2 = __toESM(require_react());
+var import_react3 = __toESM(require_react());
 var import_react_is = __toESM(require_react_is());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/DataUtils.js
@@ -21375,7 +21439,7 @@ var upperFirst = (value) => {
 };
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/types.js
-var import_react = __toESM(require_react());
+var import_react2 = __toESM(require_react());
 var SVGContainerPropKeys = ["viewBox", "children"];
 var SVGElementPropKeys = [
   "aria-activedescendant",
@@ -21699,7 +21763,7 @@ var adaptEventHandlers = (props, newHandler) => {
     return null;
   }
   var inputProps = props;
-  if (/* @__PURE__ */ (0, import_react.isValidElement)(props)) {
+  if (/* @__PURE__ */ (0, import_react2.isValidElement)(props)) {
     inputProps = props.props;
   }
   if (typeof inputProps !== "object" && typeof inputProps !== "function") {
@@ -21749,7 +21813,7 @@ var toArray = (children) => {
     return lastResult;
   }
   var result = [];
-  import_react2.Children.forEach(children, (child) => {
+  import_react3.Children.forEach(children, (child) => {
     if (isNullish(child)) return;
     if ((0, import_react_is.isFragment)(child)) {
       result = result.concat(toArray(child.props.children));
@@ -21793,7 +21857,7 @@ var filterProps = (props, includeEvents, svgElementType) => {
     return null;
   }
   var inputProps = props;
-  if (/* @__PURE__ */ (0, import_react2.isValidElement)(props)) {
+  if (/* @__PURE__ */ (0, import_react3.isValidElement)(props)) {
     inputProps = props.props;
   }
   if (typeof inputProps !== "object" && typeof inputProps !== "function") {
@@ -21838,7 +21902,7 @@ function _objectWithoutPropertiesLoose(r2, e) {
   }
   return t;
 }
-var Surface = /* @__PURE__ */ (0, import_react3.forwardRef)((props, ref) => {
+var Surface = /* @__PURE__ */ (0, import_react4.forwardRef)((props, ref) => {
   var {
     children,
     width,
@@ -21856,18 +21920,18 @@ var Surface = /* @__PURE__ */ (0, import_react3.forwardRef)((props, ref) => {
     y: 0
   };
   var layerClass = clsx("recharts-surface", className);
-  return /* @__PURE__ */ React.createElement("svg", _extends({}, filterProps(others, true, "svg"), {
+  return /* @__PURE__ */ React2.createElement("svg", _extends({}, filterProps(others, true, "svg"), {
     className: layerClass,
     width,
     height,
     style,
     viewBox: "".concat(svgView.x, " ").concat(svgView.y, " ").concat(svgView.width, " ").concat(svgView.height),
     ref
-  }), /* @__PURE__ */ React.createElement("title", null, title), /* @__PURE__ */ React.createElement("desc", null, desc), children);
+  }), /* @__PURE__ */ React2.createElement("title", null, title), /* @__PURE__ */ React2.createElement("desc", null, desc), children);
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/container/Layer.js
-var React2 = __toESM(require_react());
+var React3 = __toESM(require_react());
 var _excluded2 = ["children", "className"];
 function _extends2() {
   return _extends2 = Object.assign ? Object.assign.bind() : function(n) {
@@ -21896,13 +21960,13 @@ function _objectWithoutPropertiesLoose2(r2, e) {
   }
   return t;
 }
-var Layer = /* @__PURE__ */ React2.forwardRef((props, ref) => {
+var Layer = /* @__PURE__ */ React3.forwardRef((props, ref) => {
   var {
     children,
     className
   } = props, others = _objectWithoutProperties2(props, _excluded2);
   var layerClass = clsx("recharts-layer", className);
-  return /* @__PURE__ */ React2.createElement("g", _extends2({
+  return /* @__PURE__ */ React3.createElement("g", _extends2({
     className: layerClass
   }, filterProps(others, true), {
     ref
@@ -21910,8 +21974,8 @@ var Layer = /* @__PURE__ */ React2.forwardRef((props, ref) => {
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/legendPortalContext.js
-var import_react4 = __toESM(require_react());
-var LegendPortalContext = /* @__PURE__ */ (0, import_react4.createContext)(null);
+var import_react5 = __toESM(require_react());
+var LegendPortalContext = /* @__PURE__ */ (0, import_react5.createContext)(null);
 
 // node_modules/.deno/es-toolkit@1.49.0/node_modules/es-toolkit/dist/array/flatten.mjs
 function flatten(arr, depth = 1) {
@@ -23333,16 +23397,16 @@ function getUniqPayload(payload, option, defaultUniqBy2) {
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/hooks.js
 var import_with_selector = __toESM(require_with_selector());
-var import_react6 = __toESM(require_react());
+var import_react7 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/RechartsReduxContext.js
-var import_react5 = __toESM(require_react());
-var RechartsReduxContext = /* @__PURE__ */ (0, import_react5.createContext)(null);
+var import_react6 = __toESM(require_react());
+var RechartsReduxContext = /* @__PURE__ */ (0, import_react6.createContext)(null);
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/hooks.js
 var noopDispatch = (a) => a;
 var useAppDispatch = () => {
-  var context = (0, import_react6.useContext)(RechartsReduxContext);
+  var context = (0, import_react7.useContext)(RechartsReduxContext);
   if (context) {
     return context.store.dispatch;
   }
@@ -23353,7 +23417,7 @@ var noop = () => {
 var addNestedSubNoop = () => noop;
 var refEquality = (a, b) => a === b;
 function useAppSelector(selector) {
-  var context = (0, import_react6.useContext)(RechartsReduxContext);
+  var context = (0, import_react7.useContext)(RechartsReduxContext);
   return (0, import_with_selector.useSyncExternalStoreWithSelector)(context ? context.subscription.addNestedSub : addNestedSubNoop, context ? context.store.getState : noop, context ? context.store.getState : noop, context ? selector : noop, refEquality);
 }
 
@@ -23678,17 +23742,17 @@ var selectAllLegendPayload2DArray = (state) => state.legend.payload;
 var selectLegendPayload = createSelector([selectAllLegendPayload2DArray], (payloads) => payloads.flat(1));
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/useElementOffset.js
-var import_react7 = __toESM(require_react());
+var import_react8 = __toESM(require_react());
 var EPS = 1;
 function useElementOffset() {
   var extraDependencies = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : [];
-  var [lastBoundingBox, setLastBoundingBox] = (0, import_react7.useState)({
+  var [lastBoundingBox, setLastBoundingBox] = (0, import_react8.useState)({
     height: 0,
     left: 0,
     top: 0,
     width: 0
   });
-  var updateBoundingBox = (0, import_react7.useCallback)((node) => {
+  var updateBoundingBox = (0, import_react8.useCallback)((node) => {
     if (node != null) {
       var rect = node.getBoundingClientRect();
       var box = {
@@ -23711,7 +23775,7 @@ function useElementOffset() {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/chartLayoutContext.js
-var import_react10 = __toESM(require_react());
+var import_react11 = __toESM(require_react());
 
 // node_modules/.deno/redux@5.0.1/node_modules/redux/dist/redux.mjs
 var $$observable = /* @__PURE__ */ (() => typeof Symbol === "function" && Symbol.observable || "@@observable")();
@@ -26520,7 +26584,7 @@ var {
 var chartLayoutReducer = chartLayoutSlice.reducer;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/PolarUtils.js
-var import_react8 = __toESM(require_react());
+var import_react9 = __toESM(require_react());
 function ownKeys(e, r2) {
   var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
@@ -27261,10 +27325,10 @@ var selectAxisViewBox = createSelector(selectChartWidth, selectChartHeight, (wid
 }));
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/PanoramaContext.js
-var React3 = __toESM(require_react());
-var import_react9 = __toESM(require_react());
-var PanoramaContext = /* @__PURE__ */ (0, import_react9.createContext)(null);
-var useIsPanorama = () => (0, import_react9.useContext)(PanoramaContext) != null;
+var React4 = __toESM(require_react());
+var import_react10 = __toESM(require_react());
+var PanoramaContext = /* @__PURE__ */ (0, import_react10.createContext)(null);
+var useIsPanorama = () => (0, import_react10.useContext)(PanoramaContext) != null;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/selectors/brushSelectors.js
 var selectBrushSettings = (state) => state.brush;
@@ -28087,12 +28151,12 @@ var {
 var legendReducer = legendSlice.reducer;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/Tooltip.js
-var React12 = __toESM(require_react());
-var import_react17 = __toESM(require_react());
+var React13 = __toESM(require_react());
+var import_react18 = __toESM(require_react());
 var import_react_dom = __toESM(require_react_dom());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/DefaultTooltipContent.js
-var React4 = __toESM(require_react());
+var React5 = __toESM(require_react());
 function _extends3() {
   return _extends3 = Object.assign ? Object.assign.bind() : function(n) {
     for (var e = 1; e < arguments.length; e++) {
@@ -28193,22 +28257,22 @@ var DefaultTooltipContent = (props) => {
         }, itemStyle);
         return (
           // eslint-disable-next-line react/no-array-index-key
-          /* @__PURE__ */ React4.createElement("li", {
+          /* @__PURE__ */ React5.createElement("li", {
             className: "recharts-tooltip-item",
             key: "tooltip-item-".concat(i),
             style: finalItemStyle
-          }, isNumOrStr(finalName) ? /* @__PURE__ */ React4.createElement("span", {
+          }, isNumOrStr(finalName) ? /* @__PURE__ */ React5.createElement("span", {
             className: "recharts-tooltip-item-name"
-          }, finalName) : null, isNumOrStr(finalName) ? /* @__PURE__ */ React4.createElement("span", {
+          }, finalName) : null, isNumOrStr(finalName) ? /* @__PURE__ */ React5.createElement("span", {
             className: "recharts-tooltip-item-separator"
-          }, separator) : null, /* @__PURE__ */ React4.createElement("span", {
+          }, separator) : null, /* @__PURE__ */ React5.createElement("span", {
             className: "recharts-tooltip-item-value"
-          }, finalValue), /* @__PURE__ */ React4.createElement("span", {
+          }, finalValue), /* @__PURE__ */ React5.createElement("span", {
             className: "recharts-tooltip-item-unit"
           }, entry.unit || ""))
         );
       });
-      return /* @__PURE__ */ React4.createElement("ul", {
+      return /* @__PURE__ */ React5.createElement("ul", {
         className: "recharts-tooltip-item-list",
         style: listStyle
       }, items);
@@ -28236,18 +28300,18 @@ var DefaultTooltipContent = (props) => {
     role: "status",
     "aria-live": "assertive"
   } : {};
-  return /* @__PURE__ */ React4.createElement("div", _extends3({
+  return /* @__PURE__ */ React5.createElement("div", _extends3({
     className: wrapperCN,
     style: finalStyle
-  }, accessibilityAttributes), /* @__PURE__ */ React4.createElement("p", {
+  }, accessibilityAttributes), /* @__PURE__ */ React5.createElement("p", {
     className: labelCN,
     style: finalLabelStyle
-  }, /* @__PURE__ */ React4.isValidElement(finalLabel) ? finalLabel : "".concat(finalLabel)), renderContent2());
+  }, /* @__PURE__ */ React5.isValidElement(finalLabel) ? finalLabel : "".concat(finalLabel)), renderContent2());
 };
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/TooltipBoundingBox.js
-var React5 = __toESM(require_react());
-var import_react11 = __toESM(require_react());
+var React6 = __toESM(require_react());
+var import_react12 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/tooltip/translate.js
 var CSS_CLASS_PREFIX = "recharts-tooltip-wrapper";
@@ -28411,7 +28475,7 @@ function _toPrimitive5(t, r2) {
   }
   return ("string" === r2 ? String : Number)(t);
 }
-var TooltipBoundingBox = class extends import_react11.PureComponent {
+var TooltipBoundingBox = class extends import_react12.PureComponent {
   constructor() {
     super(...arguments);
     _defineProperty5(this, "state", {
@@ -28499,7 +28563,7 @@ var TooltipBoundingBox = class extends import_react11.PureComponent {
     }, wrapperStyle);
     return (
       // This element allow listening to the `Escape` key. See https://github.com/recharts/recharts/pull/2925
-      /* @__PURE__ */ React5.createElement("div", {
+      /* @__PURE__ */ React6.createElement("div", {
         // @ts-expect-error typescript library does not recognize xmlns attribute, but it's required for an HTML chunk inside SVG.
         xmlns: "http://www.w3.org/1999/xhtml",
         tabIndex: -1,
@@ -28521,11 +28585,11 @@ var Global = {
 var useAccessibilityLayer = () => useAppSelector((state) => state.rootProps.accessibilityLayer);
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/Cursor.js
-var React11 = __toESM(require_react());
-var import_react14 = __toESM(require_react());
+var React12 = __toESM(require_react());
+var import_react15 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/shape/Curve.js
-var React6 = __toESM(require_react());
+var React7 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/isWellBehavedNumber.js
 function isWellBehavedNumber(n) {
@@ -28656,7 +28720,7 @@ var Curve = (props) => {
     return null;
   }
   var realPath = points && points.length ? getPath(props) : path2;
-  return /* @__PURE__ */ React6.createElement("path", _extends4({}, filterProps(props, false), adaptEventHandlers(props), {
+  return /* @__PURE__ */ React7.createElement("path", _extends4({}, filterProps(props, false), adaptEventHandlers(props), {
     className: clsx("recharts-curve", className),
     d: realPath === null ? void 0 : realPath,
     ref: pathRef
@@ -28664,7 +28728,7 @@ var Curve = (props) => {
 };
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/shape/Cross.js
-var React7 = __toESM(require_react());
+var React8 = __toESM(require_react());
 var _excluded3 = ["x", "y", "top", "left", "width", "height", "className"];
 function _extends5() {
   return _extends5 = Object.assign ? Object.assign.bind() : function(n) {
@@ -28755,7 +28819,7 @@ var Cross = (_ref) => {
   if (!isNumber(x2) || !isNumber(y2) || !isNumber(width) || !isNumber(height) || !isNumber(top) || !isNumber(left)) {
     return null;
   }
-  return /* @__PURE__ */ React7.createElement("path", _extends5({}, filterProps(props, true), {
+  return /* @__PURE__ */ React8.createElement("path", _extends5({}, filterProps(props, true), {
     className: clsx("recharts-cross", className),
     d: getPath2(x2, y2, width, height, top, left)
   }));
@@ -28775,8 +28839,8 @@ function getCursorRectangle(layout, activeCoordinate, offset, tooltipAxisBandSiz
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/shape/Rectangle.js
-var React9 = __toESM(require_react());
-var import_react13 = __toESM(require_react());
+var React10 = __toESM(require_react());
+var import_react14 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/resolveDefaultProps.js
 function ownKeys8(e, r2) {
@@ -28831,8 +28895,8 @@ function resolveDefaultProps(realProps, defaultProps5) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/animation/Animate.js
-var React8 = __toESM(require_react());
-var import_react12 = __toESM(require_react());
+var React9 = __toESM(require_react());
+var import_react13 = __toESM(require_react());
 
 // node_modules/.deno/es-toolkit@1.49.0/node_modules/es-toolkit/dist/function/noop.mjs
 function noop3() {
@@ -29410,7 +29474,7 @@ function _toPrimitive11(t, r2) {
 function createDefaultAnimationManager() {
   return createAnimateManager(new RequestAnimationFrameTimeoutController());
 }
-var AnimateImpl = class extends import_react12.PureComponent {
+var AnimateImpl = class extends import_react13.PureComponent {
   constructor(props, context) {
     super(props, context);
     _defineProperty11(this, "mounted", false);
@@ -29603,7 +29667,7 @@ var AnimateImpl = class extends import_react12.PureComponent {
       onAnimationReStart,
       animationManager
     } = _this$props, others = _objectWithoutProperties4(_this$props, _excluded4);
-    var count = import_react12.Children.count(children);
+    var count = import_react13.Children.count(children);
     var stateStyle = this.state.style;
     if (typeof children === "function") {
       return children(stateStyle);
@@ -29616,16 +29680,16 @@ var AnimateImpl = class extends import_react12.PureComponent {
         style = {},
         className
       } = container.props;
-      var res = /* @__PURE__ */ (0, import_react12.cloneElement)(container, _objectSpread11(_objectSpread11({}, others), {}, {
+      var res = /* @__PURE__ */ (0, import_react13.cloneElement)(container, _objectSpread11(_objectSpread11({}, others), {}, {
         style: _objectSpread11(_objectSpread11({}, style), stateStyle),
         className
       }));
       return res;
     };
     if (count === 1) {
-      return cloneContainer(import_react12.Children.only(children));
+      return cloneContainer(import_react13.Children.only(children));
     }
-    return /* @__PURE__ */ React8.createElement("div", null, import_react12.Children.map(children, (child) => cloneContainer(child)));
+    return /* @__PURE__ */ React9.createElement("div", null, import_react13.Children.map(children, (child) => cloneContainer(child)));
   }
 };
 _defineProperty11(AnimateImpl, "displayName", "Animate");
@@ -29641,11 +29705,11 @@ _defineProperty11(AnimateImpl, "defaultProps", {
   onAnimationStart: () => {
   }
 });
-var AnimationManagerContext = /* @__PURE__ */ (0, import_react12.createContext)(null);
+var AnimationManagerContext = /* @__PURE__ */ (0, import_react13.createContext)(null);
 function Animate(props) {
   var _ref, _props$animationManag;
-  var contextAnimationManager = (0, import_react12.useContext)(AnimationManagerContext);
-  return /* @__PURE__ */ React8.createElement(AnimateImpl, _extends6({}, props, {
+  var contextAnimationManager = (0, import_react13.useContext)(AnimationManagerContext);
+  return /* @__PURE__ */ React9.createElement(AnimateImpl, _extends6({}, props, {
     animationManager: (_ref = (_props$animationManag = props.animationManager) !== null && _props$animationManag !== void 0 ? _props$animationManag : contextAnimationManager) !== null && _ref !== void 0 ? _ref : createDefaultAnimationManager()
   }));
 }
@@ -29713,9 +29777,9 @@ var defaultProps = {
 };
 var Rectangle = (rectangleProps) => {
   var props = resolveDefaultProps(rectangleProps, defaultProps);
-  var pathRef = (0, import_react13.useRef)(null);
-  var [totalLength, setTotalLength] = (0, import_react13.useState)(-1);
-  (0, import_react13.useEffect)(() => {
+  var pathRef = (0, import_react14.useRef)(null);
+  var [totalLength, setTotalLength] = (0, import_react14.useState)(-1);
+  (0, import_react14.useEffect)(() => {
     if (pathRef.current && pathRef.current.getTotalLength) {
       try {
         var pathTotalLength = pathRef.current.getTotalLength();
@@ -29746,12 +29810,12 @@ var Rectangle = (rectangleProps) => {
   }
   var layerClass = clsx("recharts-rectangle", className);
   if (!isUpdateAnimationActive) {
-    return /* @__PURE__ */ React9.createElement("path", _extends7({}, filterProps(props, true), {
+    return /* @__PURE__ */ React10.createElement("path", _extends7({}, filterProps(props, true), {
       className: layerClass,
       d: getRectanglePath(x2, y2, width, height, radius)
     }));
   }
-  return /* @__PURE__ */ React9.createElement(Animate, {
+  return /* @__PURE__ */ React10.createElement(Animate, {
     canBegin: totalLength > 0,
     from: {
       width,
@@ -29775,7 +29839,7 @@ var Rectangle = (rectangleProps) => {
       x: currX,
       y: currY
     } = _ref;
-    return /* @__PURE__ */ React9.createElement(Animate, {
+    return /* @__PURE__ */ React10.createElement(Animate, {
       canBegin: totalLength > 0,
       from: "0px ".concat(totalLength === -1 ? 1 : totalLength, "px"),
       to: "".concat(totalLength, "px 0px"),
@@ -29784,7 +29848,7 @@ var Rectangle = (rectangleProps) => {
       duration: animationDuration,
       isActive: isAnimationActive,
       easing: animationEasing
-    }, /* @__PURE__ */ React9.createElement("path", _extends7({}, filterProps(props, true), {
+    }, /* @__PURE__ */ React10.createElement("path", _extends7({}, filterProps(props, true), {
       className: layerClass,
       d: getRectanglePath(currX, currY, currWidth, currHeight, radius),
       ref: pathRef
@@ -29814,7 +29878,7 @@ function getRadialCursorPoints(activeCoordinate) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/shape/Sector.js
-var React10 = __toESM(require_react());
+var React11 = __toESM(require_react());
 function _extends8() {
   return _extends8 = Object.assign ? Object.assign.bind() : function(n) {
     for (var e = 1; e < arguments.length; e++) {
@@ -30024,7 +30088,7 @@ var Sector = (sectorProps) => {
       endAngle
     });
   }
-  return /* @__PURE__ */ React10.createElement("path", _extends8({}, filterProps(props, true), {
+  return /* @__PURE__ */ React11.createElement("path", _extends8({}, filterProps(props, true), {
     className: layerClass,
     d: path2
   }));
@@ -35327,14 +35391,14 @@ function CursorInternal(props) {
     payloadIndex: activeTooltipIndex,
     className: clsx("recharts-tooltip-cursor", extraClassName)
   });
-  return /* @__PURE__ */ (0, import_react14.isValidElement)(cursor) ? /* @__PURE__ */ (0, import_react14.cloneElement)(cursor, cursorProps) : /* @__PURE__ */ (0, import_react14.createElement)(cursorComp, cursorProps);
+  return /* @__PURE__ */ (0, import_react15.isValidElement)(cursor) ? /* @__PURE__ */ (0, import_react15.cloneElement)(cursor, cursorProps) : /* @__PURE__ */ (0, import_react15.createElement)(cursorComp, cursorProps);
 }
 function Cursor(props) {
   var tooltipAxisBandSize = useTooltipAxisBandSize();
   var offset = useOffset();
   var layout = useChartLayout();
   var chartName = useChartName();
-  return /* @__PURE__ */ React11.createElement(CursorInternal, _extends9({}, props, {
+  return /* @__PURE__ */ React12.createElement(CursorInternal, _extends9({}, props, {
     coordinate: props.coordinate,
     index: props.index,
     payload: props.payload,
@@ -35346,12 +35410,12 @@ function Cursor(props) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/tooltipPortalContext.js
-var import_react15 = __toESM(require_react());
-var TooltipPortalContext = /* @__PURE__ */ (0, import_react15.createContext)(null);
-var useTooltipPortal = () => (0, import_react15.useContext)(TooltipPortalContext);
+var import_react16 = __toESM(require_react());
+var TooltipPortalContext = /* @__PURE__ */ (0, import_react16.createContext)(null);
+var useTooltipPortal = () => (0, import_react16.useContext)(TooltipPortalContext);
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/synchronisation/useChartSynchronisation.js
-var import_react16 = __toESM(require_react());
+var import_react17 = __toESM(require_react());
 
 // node_modules/.deno/eventemitter3@5.0.4/node_modules/eventemitter3/index.mjs
 var import_index = __toESM(require_eventemitter3(), 1);
@@ -35456,7 +35520,7 @@ function useTooltipSyncEventsListener() {
   var layout = useChartLayout();
   var viewBox = useViewBox();
   var className = useAppSelector((state) => state.rootProps.className);
-  (0, import_react16.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     if (mySyncId == null) {
       return noop4;
     }
@@ -35531,7 +35595,7 @@ function useBrushSyncEventsListener() {
   var mySyncId = useAppSelector(selectSyncId);
   var myEventEmitter = useAppSelector(selectEventEmitter);
   var dispatch = useAppDispatch();
-  (0, import_react16.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     if (mySyncId == null) {
       return noop4;
     }
@@ -35551,7 +35615,7 @@ function useBrushSyncEventsListener() {
 }
 function useSynchronisedEventsFromOtherCharts() {
   var dispatch = useAppDispatch();
-  (0, import_react16.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     dispatch(createEventEmitter());
   }, [dispatch]);
   useTooltipSyncEventsListener();
@@ -35564,7 +35628,7 @@ function useTooltipChartSynchronisation(tooltipEventType, trigger, activeCoordin
   var syncMethod = useAppSelector(selectSyncMethod);
   var tooltipState = useAppSelector(selectSynchronisedTooltipState);
   var isReceivingSynchronisation = tooltipState === null || tooltipState === void 0 ? void 0 : tooltipState.active;
-  (0, import_react16.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     if (isReceivingSynchronisation) {
       return;
     }
@@ -35628,13 +35692,13 @@ function defaultUniqBy(entry) {
   return entry.dataKey;
 }
 function renderContent(content, props) {
-  if (/* @__PURE__ */ React12.isValidElement(content)) {
-    return /* @__PURE__ */ React12.cloneElement(content, props);
+  if (/* @__PURE__ */ React13.isValidElement(content)) {
+    return /* @__PURE__ */ React13.cloneElement(content, props);
   }
   if (typeof content === "function") {
-    return /* @__PURE__ */ React12.createElement(content, props);
+    return /* @__PURE__ */ React13.createElement(content, props);
   }
-  return /* @__PURE__ */ React12.createElement(DefaultTooltipContent, props);
+  return /* @__PURE__ */ React13.createElement(DefaultTooltipContent, props);
 }
 var emptyPayload = [];
 var defaultTooltipProps = {
@@ -35687,7 +35751,7 @@ function Tooltip(outsideProps) {
   } = props;
   var dispatch = useAppDispatch();
   var defaultIndexAsString = typeof defaultIndex === "number" ? String(defaultIndex) : defaultIndex;
-  (0, import_react17.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     dispatch(setTooltipSettingsState({
       shared,
       trigger,
@@ -35724,7 +35788,7 @@ function Tooltip(outsideProps) {
     finalPayload = getUniqPayload(payload.filter((entry) => entry.value != null && (entry.hide !== true || props.includeHidden)), payloadUniqBy, defaultUniqBy);
   }
   var hasPayload = finalPayload.length > 0;
-  var tooltipElement = /* @__PURE__ */ React12.createElement(TooltipBoundingBox, {
+  var tooltipElement = /* @__PURE__ */ React13.createElement(TooltipBoundingBox, {
     allowEscapeViewBox,
     animationDuration,
     animationEasing,
@@ -35749,7 +35813,7 @@ function Tooltip(outsideProps) {
     coordinate,
     accessibilityLayer
   })));
-  return /* @__PURE__ */ React12.createElement(React12.Fragment, null, /* @__PURE__ */ (0, import_react_dom.createPortal)(tooltipElement, tooltipPortal), finalIsActive && /* @__PURE__ */ React12.createElement(Cursor, {
+  return /* @__PURE__ */ React13.createElement(React13.Fragment, null, /* @__PURE__ */ (0, import_react_dom.createPortal)(tooltipElement, tooltipPortal), finalIsActive && /* @__PURE__ */ React13.createElement(Cursor, {
     cursor,
     tooltipEventType,
     coordinate,
@@ -35759,8 +35823,8 @@ function Tooltip(outsideProps) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/ResponsiveContainer.js
-var React13 = __toESM(require_react());
-var import_react18 = __toESM(require_react());
+var React14 = __toESM(require_react());
+var import_react19 = __toESM(require_react());
 
 // node_modules/.deno/es-toolkit@1.49.0/node_modules/es-toolkit/dist/function/debounce.mjs
 function debounce(func, debounceMs, { signal, edges } = {}) {
@@ -35922,7 +35986,7 @@ function _toPrimitive18(t, r2) {
   }
   return ("string" === r2 ? String : Number)(t);
 }
-var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, ref) => {
+var ResponsiveContainer = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref, ref) => {
   var {
     aspect,
     initialDimension = {
@@ -35945,15 +36009,15 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
     onResize,
     style = {}
   } = _ref;
-  var containerRef = (0, import_react18.useRef)(null);
-  var onResizeRef = (0, import_react18.useRef)();
+  var containerRef = (0, import_react19.useRef)(null);
+  var onResizeRef = (0, import_react19.useRef)();
   onResizeRef.current = onResize;
-  (0, import_react18.useImperativeHandle)(ref, () => containerRef.current);
-  var [sizes, setSizes] = (0, import_react18.useState)({
+  (0, import_react19.useImperativeHandle)(ref, () => containerRef.current);
+  var [sizes, setSizes] = (0, import_react19.useState)({
     containerWidth: initialDimension.width,
     containerHeight: initialDimension.height
   });
-  var setContainerSize = (0, import_react18.useCallback)((newWidth, newHeight) => {
+  var setContainerSize = (0, import_react19.useCallback)((newWidth, newHeight) => {
     setSizes((prevState) => {
       var roundedWidth = Math.round(newWidth);
       var roundedHeight = Math.round(newHeight);
@@ -35966,7 +36030,7 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
       };
     });
   }, []);
-  (0, import_react18.useEffect)(() => {
+  (0, import_react19.useEffect)(() => {
     var callback = (entries) => {
       var _onResizeRef$current;
       var {
@@ -35993,7 +36057,7 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
       observer.disconnect();
     };
   }, [setContainerSize, debounce3]);
-  var chartContent = (0, import_react18.useMemo)(() => {
+  var chartContent = (0, import_react19.useMemo)(() => {
     var {
       containerWidth,
       containerHeight
@@ -36016,8 +36080,8 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
       }
     }
     warn(calculatedWidth > 0 || calculatedHeight > 0, "The width(%s) and height(%s) of chart should be greater than 0,\n       please check the style of container, or the props width(%s) and height(%s),\n       or add a minWidth(%s) or minHeight(%s) or use aspect(%s) to control the\n       height and width.", calculatedWidth, calculatedHeight, width, height, minWidth, minHeight, aspect);
-    return React13.Children.map(children, (child) => {
-      return /* @__PURE__ */ (0, import_react18.cloneElement)(child, {
+    return React14.Children.map(children, (child) => {
+      return /* @__PURE__ */ (0, import_react19.cloneElement)(child, {
         width: calculatedWidth,
         height: calculatedHeight,
         // calculate the actual size and override it.
@@ -36030,7 +36094,7 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
       });
     });
   }, [aspect, children, height, maxHeight, minHeight, minWidth, sizes, width]);
-  return /* @__PURE__ */ React13.createElement("div", {
+  return /* @__PURE__ */ React14.createElement("div", {
     id: id ? "".concat(id) : void 0,
     className: clsx("recharts-responsive-container", className),
     style: _objectSpread18(_objectSpread18({}, style), {}, {
@@ -36045,8 +36109,8 @@ var ResponsiveContainer = /* @__PURE__ */ (0, import_react18.forwardRef)((_ref, 
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/Text.js
-var React14 = __toESM(require_react());
-var import_react19 = __toESM(require_react());
+var React15 = __toESM(require_react());
+var import_react20 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/DOMUtils.js
 function ownKeys19(e, r2) {
@@ -36465,7 +36529,7 @@ var getWordsByLines = (_ref4) => {
   return getWordsWithoutCalculate(children);
 };
 var DEFAULT_FILL = "#808080";
-var Text = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref5, ref) => {
+var Text = /* @__PURE__ */ (0, import_react20.forwardRef)((_ref5, ref) => {
   var {
     x: propsX = 0,
     y: propsY = 0,
@@ -36478,7 +36542,7 @@ var Text = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref5, ref) => {
     verticalAnchor = "end",
     fill = DEFAULT_FILL
   } = _ref5, props = _objectWithoutProperties5(_ref5, _excluded5);
-  var wordsByLines = (0, import_react19.useMemo)(() => {
+  var wordsByLines = (0, import_react20.useMemo)(() => {
     return getWordsByLines({
       breakAll: props.breakAll,
       children: props.children,
@@ -36526,7 +36590,7 @@ var Text = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref5, ref) => {
   if (transforms.length) {
     textProps.transform = transforms.join(" ");
   }
-  return /* @__PURE__ */ React14.createElement("text", _extends10({}, filterProps(textProps, true), {
+  return /* @__PURE__ */ React15.createElement("text", _extends10({}, filterProps(textProps, true), {
     ref,
     x: x2,
     y: y2,
@@ -36538,7 +36602,7 @@ var Text = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref5, ref) => {
     return (
       // duplicate words will cause duplicate keys
       // eslint-disable-next-line react/no-array-index-key
-      /* @__PURE__ */ React14.createElement("tspan", {
+      /* @__PURE__ */ React15.createElement("tspan", {
         x: x2,
         dy: index === 0 ? startDy : lineHeight,
         key: "".concat(words, "-").concat(index)
@@ -36549,8 +36613,8 @@ var Text = /* @__PURE__ */ (0, import_react19.forwardRef)((_ref5, ref) => {
 Text.displayName = "Text";
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/Label.js
-var React15 = __toESM(require_react());
-var import_react20 = __toESM(require_react());
+var React16 = __toESM(require_react());
+var import_react21 = __toESM(require_react());
 var _excluded6 = ["offset"];
 function _objectWithoutProperties6(e, t) {
   if (null == e) return {};
@@ -36671,13 +36735,13 @@ var renderRadialLabel = (labelProps, label, attrs) => {
   var endPoint = polarToCartesian(cx, cy, radius, labelAngle + (direction ? 1 : -1) * 359);
   var path2 = "M".concat(startPoint.x, ",").concat(startPoint.y, "\n    A").concat(radius, ",").concat(radius, ",0,1,").concat(direction ? 0 : 1, ",\n    ").concat(endPoint.x, ",").concat(endPoint.y);
   var id = isNullish(labelProps.id) ? uniqueId("recharts-radial-line-") : labelProps.id;
-  return /* @__PURE__ */ React15.createElement("text", _extends11({}, attrs, {
+  return /* @__PURE__ */ React16.createElement("text", _extends11({}, attrs, {
     dominantBaseline: "central",
     className: clsx("recharts-radial-bar-label", className)
-  }), /* @__PURE__ */ React15.createElement("defs", null, /* @__PURE__ */ React15.createElement("path", {
+  }), /* @__PURE__ */ React16.createElement("defs", null, /* @__PURE__ */ React16.createElement("path", {
     id,
     d: path2
-  })), /* @__PURE__ */ React15.createElement("textPath", {
+  })), /* @__PURE__ */ React16.createElement("textPath", {
     xlinkHref: "#".concat(id)
   }, label));
 };
@@ -36914,16 +36978,16 @@ function Label(_ref) {
     textBreakAll,
     labelRef
   } = props;
-  if (!viewBox || isNullish(value) && isNullish(children) && !/* @__PURE__ */ (0, import_react20.isValidElement)(content) && typeof content !== "function") {
+  if (!viewBox || isNullish(value) && isNullish(children) && !/* @__PURE__ */ (0, import_react21.isValidElement)(content) && typeof content !== "function") {
     return null;
   }
-  if (/* @__PURE__ */ (0, import_react20.isValidElement)(content)) {
-    return /* @__PURE__ */ (0, import_react20.cloneElement)(content, props);
+  if (/* @__PURE__ */ (0, import_react21.isValidElement)(content)) {
+    return /* @__PURE__ */ (0, import_react21.cloneElement)(content, props);
   }
   var label;
   if (typeof content === "function") {
-    label = /* @__PURE__ */ (0, import_react20.createElement)(content, props);
-    if (/* @__PURE__ */ (0, import_react20.isValidElement)(label)) {
+    label = /* @__PURE__ */ (0, import_react21.createElement)(content, props);
+    if (/* @__PURE__ */ (0, import_react21.isValidElement)(label)) {
       return label;
     }
   } else {
@@ -36935,7 +36999,7 @@ function Label(_ref) {
     return renderRadialLabel(props, label, attrs);
   }
   var positionAttrs = isPolarLabel ? getAttrsOfPolarLabel(props) : getAttrsOfCartesianLabel(props);
-  return /* @__PURE__ */ React15.createElement(Text, _extends11({
+  return /* @__PURE__ */ React16.createElement(Text, _extends11({
     ref: labelRef,
     className: clsx("recharts-label", className)
   }, attrs, positionAttrs, {
@@ -37017,35 +37081,35 @@ var parseLabel = (label, viewBox, labelRef) => {
     labelRef
   };
   if (label === true) {
-    return /* @__PURE__ */ React15.createElement(Label, _extends11({
+    return /* @__PURE__ */ React16.createElement(Label, _extends11({
       key: "label-implicit"
     }, commonProps));
   }
   if (isNumOrStr(label)) {
-    return /* @__PURE__ */ React15.createElement(Label, _extends11({
+    return /* @__PURE__ */ React16.createElement(Label, _extends11({
       key: "label-implicit",
       value: label
     }, commonProps));
   }
-  if (/* @__PURE__ */ (0, import_react20.isValidElement)(label)) {
+  if (/* @__PURE__ */ (0, import_react21.isValidElement)(label)) {
     if (label.type === Label) {
-      return /* @__PURE__ */ (0, import_react20.cloneElement)(label, _objectSpread20({
+      return /* @__PURE__ */ (0, import_react21.cloneElement)(label, _objectSpread20({
         key: "label-implicit"
       }, commonProps));
     }
-    return /* @__PURE__ */ React15.createElement(Label, _extends11({
+    return /* @__PURE__ */ React16.createElement(Label, _extends11({
       key: "label-implicit",
       content: label
     }, commonProps));
   }
   if (isLabelContentAFunction(label)) {
-    return /* @__PURE__ */ React15.createElement(Label, _extends11({
+    return /* @__PURE__ */ React16.createElement(Label, _extends11({
       key: "label-implicit",
       content: label
     }, commonProps));
   }
   if (label && typeof label === "object") {
-    return /* @__PURE__ */ React15.createElement(Label, _extends11({}, label, {
+    return /* @__PURE__ */ React16.createElement(Label, _extends11({}, label, {
       key: "label-implicit"
     }, commonProps));
   }
@@ -37062,7 +37126,7 @@ var renderCallByParent = function renderCallByParent2(parentProps, viewBox) {
   } = parentProps;
   var parentViewBox = parseViewBox(parentProps);
   var explicitChildren = findAllByType(children, Label).map((child, index) => {
-    return /* @__PURE__ */ (0, import_react20.cloneElement)(child, {
+    return /* @__PURE__ */ (0, import_react21.cloneElement)(child, {
       viewBox: viewBox || parentViewBox,
       // eslint-disable-next-line react/no-array-index-key
       key: "label-".concat(index)
@@ -37078,8 +37142,8 @@ Label.parseViewBox = parseViewBox;
 Label.renderCallByParent = renderCallByParent;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/LabelList.js
-var React16 = __toESM(require_react());
-var import_react21 = __toESM(require_react());
+var React17 = __toESM(require_react());
+var import_react22 = __toESM(require_react());
 
 // node_modules/.deno/es-toolkit@1.49.0/node_modules/es-toolkit/dist/array/last.mjs
 function last(arr) {
@@ -37180,14 +37244,14 @@ function LabelList(_ref) {
   if (!data || !data.length) {
     return null;
   }
-  return /* @__PURE__ */ React16.createElement(Layer, {
+  return /* @__PURE__ */ React17.createElement(Layer, {
     className: "recharts-label-list"
   }, data.map((entry, index) => {
     var value = isNullish(dataKey) ? valueAccessor(entry, index) : getValueByDataKey(entry && entry.payload, dataKey);
     var idProps = isNullish(id) ? {} : {
       id: "".concat(id, "-").concat(index)
     };
-    return /* @__PURE__ */ React16.createElement(Label, _extends12({}, filterProps(entry, true), others, idProps, {
+    return /* @__PURE__ */ React17.createElement(Label, _extends12({}, filterProps(entry, true), others, idProps, {
       parentViewBox: entry.parentViewBox,
       value,
       textBreakAll,
@@ -37205,20 +37269,20 @@ function parseLabelList(label, data) {
     return null;
   }
   if (label === true) {
-    return /* @__PURE__ */ React16.createElement(LabelList, {
+    return /* @__PURE__ */ React17.createElement(LabelList, {
       key: "labelList-implicit",
       data
     });
   }
-  if (/* @__PURE__ */ React16.isValidElement(label) || isLabelContentAFunction(label)) {
-    return /* @__PURE__ */ React16.createElement(LabelList, {
+  if (/* @__PURE__ */ React17.isValidElement(label) || isLabelContentAFunction(label)) {
+    return /* @__PURE__ */ React17.createElement(LabelList, {
       key: "labelList-implicit",
       data,
       content: label
     });
   }
   if (typeof label === "object") {
-    return /* @__PURE__ */ React16.createElement(LabelList, _extends12({
+    return /* @__PURE__ */ React17.createElement(LabelList, _extends12({
       data
     }, label, {
       key: "labelList-implicit"
@@ -37234,7 +37298,7 @@ function renderCallByParent3(parentProps, data) {
   var {
     children
   } = parentProps;
-  var explicitChildren = findAllByType(children, LabelList).map((child, index) => /* @__PURE__ */ (0, import_react21.cloneElement)(child, {
+  var explicitChildren = findAllByType(children, LabelList).map((child, index) => /* @__PURE__ */ (0, import_react22.cloneElement)(child, {
     data,
     // eslint-disable-next-line react/no-array-index-key
     key: "labelList-".concat(index)
@@ -37248,7 +37312,7 @@ function renderCallByParent3(parentProps, data) {
 LabelList.renderCallByParent = renderCallByParent3;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/shape/Dot.js
-var React17 = __toESM(require_react());
+var React18 = __toESM(require_react());
 function _extends13() {
   return _extends13 = Object.assign ? Object.assign.bind() : function(n) {
     for (var e = 1; e < arguments.length; e++) {
@@ -37267,7 +37331,7 @@ var Dot = (props) => {
   } = props;
   var layerClass = clsx("recharts-dot", className);
   if (cx === +cx && cy === +cy && r2 === +r2) {
-    return /* @__PURE__ */ React17.createElement("circle", _extends13({}, filterProps(props, false), adaptEventHandlers(props), {
+    return /* @__PURE__ */ React18.createElement("circle", _extends13({}, filterProps(props, false), adaptEventHandlers(props), {
       className: layerClass,
       cx,
       cy,
@@ -37309,7 +37373,7 @@ var {
 var polarAxisReducer = polarAxisSlice.reducer;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/SetGraphicalItem.js
-var import_react22 = __toESM(require_react());
+var import_react23 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/graphicalItemsSlice.js
 var initialState6 = {
@@ -37398,7 +37462,7 @@ function _toPrimitive22(t, r2) {
 }
 function SetCartesianGraphicalItem(props) {
   var dispatch = useAppDispatch();
-  (0, import_react22.useEffect)(() => {
+  (0, import_react23.useEffect)(() => {
     var settings = _objectSpread22(_objectSpread22({}, props), {}, {
       stackId: getNormalizedStackId(props.stackId)
     });
@@ -37411,7 +37475,7 @@ function SetCartesianGraphicalItem(props) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/SetTooltipEntrySettings.js
-var import_react23 = __toESM(require_react());
+var import_react24 = __toESM(require_react());
 function SetTooltipEntrySettings(_ref) {
   var {
     fn,
@@ -37419,7 +37483,7 @@ function SetTooltipEntrySettings(_ref) {
   } = _ref;
   var dispatch = useAppDispatch();
   var isPanorama = useIsPanorama();
-  (0, import_react23.useEffect)(() => {
+  (0, import_react24.useEffect)(() => {
     if (isPanorama) {
       return void 0;
     }
@@ -37433,7 +37497,7 @@ function SetTooltipEntrySettings(_ref) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/SetLegendPayload.js
-var import_react24 = __toESM(require_react());
+var import_react25 = __toESM(require_react());
 var noop5 = () => {
 };
 function SetLegendPayload(_ref) {
@@ -37442,7 +37506,7 @@ function SetLegendPayload(_ref) {
   } = _ref;
   var dispatch = useAppDispatch();
   var isPanorama = useIsPanorama();
-  (0, import_react24.useEffect)(() => {
+  (0, import_react25.useEffect)(() => {
     if (isPanorama) {
       return noop5;
     }
@@ -37455,11 +37519,11 @@ function SetLegendPayload(_ref) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/useAnimationId.js
-var import_react25 = __toESM(require_react());
+var import_react26 = __toESM(require_react());
 function useAnimationId(input) {
   var prefix = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "animation-";
-  var animationId = (0, import_react25.useRef)(uniqueId(prefix));
-  var prevProps = (0, import_react25.useRef)(input);
+  var animationId = (0, import_react26.useRef)(uniqueId(prefix));
+  var prevProps = (0, import_react26.useRef)(input);
   if (prevProps.current !== input) {
     animationId.current = uniqueId(prefix);
     prevProps.current = input;
@@ -37468,8 +37532,8 @@ function useAnimationId(input) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/component/ActivePoints.js
-var React18 = __toESM(require_react());
-var import_react26 = __toESM(require_react());
+var React19 = __toESM(require_react());
+var import_react27 = __toESM(require_react());
 function ownKeys23(e, r2) {
   var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
@@ -37532,14 +37596,14 @@ var renderActivePoint = (_ref) => {
     value: point4.value
   }, filterProps(activeDot, false)), adaptEventHandlers(activeDot));
   var dot;
-  if (/* @__PURE__ */ (0, import_react26.isValidElement)(activeDot)) {
-    dot = /* @__PURE__ */ (0, import_react26.cloneElement)(activeDot, dotProps);
+  if (/* @__PURE__ */ (0, import_react27.isValidElement)(activeDot)) {
+    dot = /* @__PURE__ */ (0, import_react27.cloneElement)(activeDot, dotProps);
   } else if (typeof activeDot === "function") {
     dot = activeDot(dotProps);
   } else {
-    dot = /* @__PURE__ */ React18.createElement(Dot, dotProps);
+    dot = /* @__PURE__ */ React19.createElement(Dot, dotProps);
   }
-  return /* @__PURE__ */ React18.createElement(Layer, {
+  return /* @__PURE__ */ React19.createElement(Layer, {
     className: "recharts-active-dot"
   }, dot);
 };
@@ -37577,12 +37641,12 @@ function ActivePoints(_ref2) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/ErrorBar.js
-var React20 = __toESM(require_react());
-var import_react28 = __toESM(require_react());
+var React21 = __toESM(require_react());
+var import_react29 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/CartesianGraphicalItemContext.js
-var React19 = __toESM(require_react());
-var import_react27 = __toESM(require_react());
+var React20 = __toESM(require_react());
+var import_react28 = __toESM(require_react());
 var _excluded8 = ["children"];
 function _objectWithoutProperties8(e, t) {
   if (null == e) return {};
@@ -37604,7 +37668,7 @@ function _objectWithoutPropertiesLoose8(r2, e) {
 }
 var noop6 = () => {
 };
-var ErrorBarDirectionDispatchContext = /* @__PURE__ */ (0, import_react27.createContext)({
+var ErrorBarDirectionDispatchContext = /* @__PURE__ */ (0, import_react28.createContext)({
   addErrorBar: noop6,
   removeErrorBar: noop6
 });
@@ -37619,16 +37683,16 @@ var initialContextState = {
   }),
   errorBarOffset: 0
 };
-var ErrorBarContext = /* @__PURE__ */ (0, import_react27.createContext)(initialContextState);
+var ErrorBarContext = /* @__PURE__ */ (0, import_react28.createContext)(initialContextState);
 function SetErrorBarContext(props) {
   var {
     children
   } = props, rest = _objectWithoutProperties8(props, _excluded8);
-  return /* @__PURE__ */ React19.createElement(ErrorBarContext.Provider, {
+  return /* @__PURE__ */ React20.createElement(ErrorBarContext.Provider, {
     value: rest
   }, children);
 }
-var useErrorBarContext = () => (0, import_react27.useContext)(ErrorBarContext);
+var useErrorBarContext = () => (0, import_react28.useContext)(ErrorBarContext);
 var CartesianGraphicalItemContext = (_ref) => {
   var {
     children,
@@ -37642,20 +37706,20 @@ var CartesianGraphicalItemContext = (_ref) => {
     type,
     barSize
   } = _ref;
-  var [errorBars, updateErrorBars] = React19.useState([]);
-  var addErrorBar = (0, import_react27.useCallback)((errorBar) => {
+  var [errorBars, updateErrorBars] = React20.useState([]);
+  var addErrorBar = (0, import_react28.useCallback)((errorBar) => {
     updateErrorBars((prev) => [...prev, errorBar]);
   }, [updateErrorBars]);
-  var removeErrorBar = (0, import_react27.useCallback)((errorBar) => {
+  var removeErrorBar = (0, import_react28.useCallback)((errorBar) => {
     updateErrorBars((prev) => prev.filter((eb) => eb !== errorBar));
   }, [updateErrorBars]);
   var isPanorama = useIsPanorama();
-  return /* @__PURE__ */ React19.createElement(ErrorBarDirectionDispatchContext.Provider, {
+  return /* @__PURE__ */ React20.createElement(ErrorBarDirectionDispatchContext.Provider, {
     value: {
       addErrorBar,
       removeErrorBar
     }
-  }, /* @__PURE__ */ React19.createElement(SetCartesianGraphicalItem, {
+  }, /* @__PURE__ */ React20.createElement(SetCartesianGraphicalItem, {
     type,
     data,
     xAxisId,
@@ -37673,8 +37737,8 @@ function ReportErrorBarSettings(props) {
   var {
     addErrorBar,
     removeErrorBar
-  } = (0, import_react27.useContext)(ErrorBarDirectionDispatchContext);
-  (0, import_react27.useEffect)(() => {
+  } = (0, import_react28.useContext)(ErrorBarDirectionDispatchContext);
+  (0, import_react28.useEffect)(() => {
     addErrorBar(props);
     return () => {
       removeErrorBar(props);
@@ -37838,14 +37902,14 @@ function ErrorBarImpl(props) {
       });
     }
     var transformOrigin = "".concat(x2 + offset, "px ").concat(y2 + offset, "px");
-    return /* @__PURE__ */ React20.createElement(Layer, _extends14({
+    return /* @__PURE__ */ React21.createElement(Layer, _extends14({
       className: "recharts-errorBar",
       key: "bar-".concat(lineCoordinates.map((c) => "".concat(c.x1, "-").concat(c.x2, "-").concat(c.y1, "-").concat(c.y2)))
     }, svgProps), lineCoordinates.map((coordinates) => {
       var lineStyle = isAnimationActive ? {
         transformOrigin: "".concat(coordinates.x1 - 5, "px")
       } : void 0;
-      return /* @__PURE__ */ React20.createElement(Animate, {
+      return /* @__PURE__ */ React21.createElement(Animate, {
         from: {
           transform: "scaleY(0)",
           transformOrigin
@@ -37862,18 +37926,18 @@ function ErrorBarImpl(props) {
         style: {
           transformOrigin
         }
-      }, /* @__PURE__ */ React20.createElement("line", _extends14({}, coordinates, {
+      }, /* @__PURE__ */ React21.createElement("line", _extends14({}, coordinates, {
         style: lineStyle
       })));
     }));
   });
-  return /* @__PURE__ */ React20.createElement(Layer, {
+  return /* @__PURE__ */ React21.createElement(Layer, {
     className: "recharts-errorBars"
   }, errorBars);
 }
-var ErrorBarPreferredDirection = /* @__PURE__ */ (0, import_react28.createContext)(void 0);
+var ErrorBarPreferredDirection = /* @__PURE__ */ (0, import_react29.createContext)(void 0);
 function useErrorBarDirection(directionFromProps) {
-  var preferredDirection = (0, import_react28.useContext)(ErrorBarPreferredDirection);
+  var preferredDirection = (0, import_react29.useContext)(ErrorBarPreferredDirection);
   if (directionFromProps != null) {
     return directionFromProps;
   }
@@ -37887,7 +37951,7 @@ function SetErrorBarPreferredDirection(_ref) {
     direction,
     children
   } = _ref;
-  return /* @__PURE__ */ React20.createElement(ErrorBarPreferredDirection.Provider, {
+  return /* @__PURE__ */ React21.createElement(ErrorBarPreferredDirection.Provider, {
     value: direction
   }, children);
 }
@@ -37910,10 +37974,10 @@ function ErrorBarInternal(props) {
     animationDuration,
     animationEasing
   } = resolveDefaultProps(props, errorBarDefaultProps);
-  return /* @__PURE__ */ React20.createElement(React20.Fragment, null, /* @__PURE__ */ React20.createElement(ReportErrorBarSettings, {
+  return /* @__PURE__ */ React21.createElement(React21.Fragment, null, /* @__PURE__ */ React21.createElement(ReportErrorBarSettings, {
     dataKey: props.dataKey,
     direction: realDirection
-  }), /* @__PURE__ */ React20.createElement(ErrorBarImpl, _extends14({}, props, {
+  }), /* @__PURE__ */ React21.createElement(ErrorBarImpl, _extends14({}, props, {
     direction: realDirection,
     width,
     isAnimationActive,
@@ -37922,16 +37986,16 @@ function ErrorBarInternal(props) {
     animationEasing
   })));
 }
-var ErrorBar = class extends import_react28.Component {
+var ErrorBar = class extends import_react29.Component {
   render() {
-    return /* @__PURE__ */ React20.createElement(ErrorBarInternal, this.props);
+    return /* @__PURE__ */ React21.createElement(ErrorBarInternal, this.props);
   }
 };
 _defineProperty24(ErrorBar, "defaultProps", errorBarDefaultProps);
 _defineProperty24(ErrorBar, "displayName", "ErrorBar");
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/GraphicalItemClipPath.js
-var React21 = __toESM(require_react());
+var React22 = __toESM(require_react());
 function useNeedsClip(xAxisId, yAxisId) {
   var _xAxis$allowDataOverf, _yAxis$allowDataOverf;
   var xAxis = useAppSelector((state) => selectXAxisSettings(state, xAxisId));
@@ -37966,9 +38030,9 @@ function GraphicalItemClipPath(_ref) {
     width,
     height
   } = offset;
-  return /* @__PURE__ */ React21.createElement("clipPath", {
+  return /* @__PURE__ */ React22.createElement("clipPath", {
     id: "clipPath-".concat(clipPathId)
-  }, /* @__PURE__ */ React21.createElement("rect", {
+  }, /* @__PURE__ */ React22.createElement("rect", {
     x: needClipX ? left : left - width / 2,
     y: needClipY ? top : top - height / 2,
     width: needClipX ? width : width * 2,
@@ -37977,14 +38041,14 @@ function GraphicalItemClipPath(_ref) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/context/chartDataContext.js
-var import_react29 = __toESM(require_react());
+var import_react30 = __toESM(require_react());
 var ChartDataContextProvider = (props) => {
   var {
     chartData
   } = props;
   var dispatch = useAppDispatch();
   var isPanorama = useIsPanorama();
-  (0, import_react29.useEffect)(() => {
+  (0, import_react30.useEffect)(() => {
     if (isPanorama) {
       return () => {
       };
@@ -38173,14 +38237,14 @@ var {
 var referenceElementsReducer = referenceElementsSlice.reducer;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/container/ClipPathProvider.js
-var React22 = __toESM(require_react());
-var import_react30 = __toESM(require_react());
-var ClipPathIdContext = /* @__PURE__ */ (0, import_react30.createContext)(void 0);
+var React23 = __toESM(require_react());
+var import_react31 = __toESM(require_react());
+var ClipPathIdContext = /* @__PURE__ */ (0, import_react31.createContext)(void 0);
 var ClipPathProvider = (_ref) => {
   var {
     children
   } = _ref;
-  var [clipPathId] = (0, import_react30.useState)("".concat(uniqueId("recharts"), "-clip"));
+  var [clipPathId] = (0, import_react31.useState)("".concat(uniqueId("recharts"), "-clip"));
   var offset = useOffset();
   if (offset == null) {
     return null;
@@ -38191,11 +38255,11 @@ var ClipPathProvider = (_ref) => {
     height,
     width
   } = offset;
-  return /* @__PURE__ */ React22.createElement(ClipPathIdContext.Provider, {
+  return /* @__PURE__ */ React23.createElement(ClipPathIdContext.Provider, {
     value: clipPathId
-  }, /* @__PURE__ */ React22.createElement("defs", null, /* @__PURE__ */ React22.createElement("clipPath", {
+  }, /* @__PURE__ */ React23.createElement("defs", null, /* @__PURE__ */ React23.createElement("clipPath", {
     id: clipPathId
-  }, /* @__PURE__ */ React22.createElement("rect", {
+  }, /* @__PURE__ */ React23.createElement("rect", {
     x: left,
     y: top,
     height,
@@ -38204,8 +38268,8 @@ var ClipPathProvider = (_ref) => {
 };
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/CartesianAxis.js
-var React23 = __toESM(require_react());
-var import_react31 = __toESM(require_react());
+var React24 = __toESM(require_react());
+var import_react32 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/ShallowEqual.js
 function shallowEqual(a, b) {
@@ -38577,10 +38641,10 @@ function _toPrimitive27(t, r2) {
   }
   return ("string" === r2 ? String : Number)(t);
 }
-var CartesianAxis = class _CartesianAxis extends import_react31.Component {
+var CartesianAxis = class _CartesianAxis extends import_react32.Component {
   constructor(props) {
     super(props);
-    this.tickRefs = /* @__PURE__ */ React23.createRef();
+    this.tickRefs = /* @__PURE__ */ React24.createRef();
     this.tickRefs.current = [];
     this.state = {
       fontSize: "",
@@ -38724,15 +38788,15 @@ var CartesianAxis = class _CartesianAxis extends import_react31.Component {
         y2: y2 + height
       });
     }
-    return /* @__PURE__ */ React23.createElement("line", _extends15({}, props, {
+    return /* @__PURE__ */ React24.createElement("line", _extends15({}, props, {
       className: clsx("recharts-cartesian-axis-line", get(axisLine, "className"))
     }));
   }
   static renderTickItem(option, props, value) {
     var tickItem;
     var combinedClassName = clsx(props.className, "recharts-cartesian-axis-tick-value");
-    if (/* @__PURE__ */ React23.isValidElement(option)) {
-      tickItem = /* @__PURE__ */ React23.cloneElement(option, _objectSpread25(_objectSpread25({}, props), {}, {
+    if (/* @__PURE__ */ React24.isValidElement(option)) {
+      tickItem = /* @__PURE__ */ React24.cloneElement(option, _objectSpread25(_objectSpread25({}, props), {}, {
         className: combinedClassName
       }));
     } else if (typeof option === "function") {
@@ -38744,7 +38808,7 @@ var CartesianAxis = class _CartesianAxis extends import_react31.Component {
       if (typeof option !== "boolean") {
         className = clsx(className, option.className);
       }
-      tickItem = /* @__PURE__ */ React23.createElement(Text, _extends15({}, props, {
+      tickItem = /* @__PURE__ */ React24.createElement(Text, _extends15({}, props, {
         className
       }), value);
     }
@@ -38793,14 +38857,14 @@ var CartesianAxis = class _CartesianAxis extends import_react31.Component {
         visibleTicksCount: finalTicks.length,
         tickFormatter
       });
-      return /* @__PURE__ */ React23.createElement(Layer, _extends15({
+      return /* @__PURE__ */ React24.createElement(Layer, _extends15({
         className: "recharts-cartesian-axis-tick",
         key: "tick-".concat(entry.value, "-").concat(entry.coordinate, "-").concat(entry.tickCoord)
-      }, adaptEventsOfChild(this.props, entry, i)), tickLine && /* @__PURE__ */ React23.createElement("line", _extends15({}, tickLineProps, lineCoord, {
+      }, adaptEventsOfChild(this.props, entry, i)), tickLine && /* @__PURE__ */ React24.createElement("line", _extends15({}, tickLineProps, lineCoord, {
         className: clsx("recharts-cartesian-axis-tick-line", get(tickLine, "className"))
       })), tick && _CartesianAxis.renderTickItem(tick, tickProps, "".concat(typeof tickFormatter === "function" ? tickFormatter(entry.value, i) : entry.value).concat(unit2 || "")));
     });
-    return items.length > 0 ? /* @__PURE__ */ React23.createElement("g", {
+    return items.length > 0 ? /* @__PURE__ */ React24.createElement("g", {
       className: "recharts-cartesian-axis-ticks"
     }, items) : null;
   }
@@ -38821,7 +38885,7 @@ var CartesianAxis = class _CartesianAxis extends import_react31.Component {
     if (width != null && width <= 0 || height != null && height <= 0) {
       return null;
     }
-    return /* @__PURE__ */ React23.createElement(Layer, {
+    return /* @__PURE__ */ React24.createElement(Layer, {
       className: clsx("recharts-cartesian-axis", className),
       ref: (_ref2) => {
         if (_ref2) {
@@ -38872,7 +38936,7 @@ _defineProperty27(CartesianAxis, "defaultProps", {
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/CartesianGrid.js
-var React24 = __toESM(require_react());
+var React25 = __toESM(require_react());
 var _excluded11 = ["x1", "y1", "x2", "y2", "key"];
 var _excluded25 = ["offset"];
 var _excluded32 = ["xAxisId", "yAxisId"];
@@ -38957,7 +39021,7 @@ var Background = (props) => {
     height,
     ry
   } = props;
-  return /* @__PURE__ */ React24.createElement("rect", {
+  return /* @__PURE__ */ React25.createElement("rect", {
     x: x2,
     y: y2,
     ry,
@@ -38971,8 +39035,8 @@ var Background = (props) => {
 };
 function renderLineItem(option, props) {
   var lineItem;
-  if (/* @__PURE__ */ React24.isValidElement(option)) {
-    lineItem = /* @__PURE__ */ React24.cloneElement(option, props);
+  if (/* @__PURE__ */ React25.isValidElement(option)) {
+    lineItem = /* @__PURE__ */ React25.cloneElement(option, props);
   } else if (typeof option === "function") {
     lineItem = option(props);
   } else {
@@ -38986,7 +39050,7 @@ function renderLineItem(option, props) {
     var _filterProps = filterProps(others, false), {
       offset: __
     } = _filterProps, restOfFilteredProps = _objectWithoutProperties11(_filterProps, _excluded25);
-    lineItem = /* @__PURE__ */ React24.createElement("line", _extends16({}, restOfFilteredProps, {
+    lineItem = /* @__PURE__ */ React25.createElement("line", _extends16({}, restOfFilteredProps, {
       x1,
       y1,
       x2,
@@ -39022,7 +39086,7 @@ function HorizontalGridLines(props) {
     });
     return renderLineItem(horizontal, lineItemProps);
   });
-  return /* @__PURE__ */ React24.createElement("g", {
+  return /* @__PURE__ */ React25.createElement("g", {
     className: "recharts-cartesian-grid-horizontal"
   }, items);
 }
@@ -39051,7 +39115,7 @@ function VerticalGridLines(props) {
     });
     return renderLineItem(vertical, lineItemProps);
   });
-  return /* @__PURE__ */ React24.createElement("g", {
+  return /* @__PURE__ */ React25.createElement("g", {
     className: "recharts-cartesian-grid-vertical"
   }, items);
 }
@@ -39080,7 +39144,7 @@ function HorizontalStripes(props) {
       return null;
     }
     var colorIndex = i % horizontalFill.length;
-    return /* @__PURE__ */ React24.createElement("rect", {
+    return /* @__PURE__ */ React25.createElement("rect", {
       key: "react-".concat(i),
       y: entry,
       x: x2,
@@ -39092,7 +39156,7 @@ function HorizontalStripes(props) {
       className: "recharts-cartesian-grid-bg"
     });
   });
-  return /* @__PURE__ */ React24.createElement("g", {
+  return /* @__PURE__ */ React25.createElement("g", {
     className: "recharts-cartesian-gridstripes-horizontal"
   }, items);
 }
@@ -39121,7 +39185,7 @@ function VerticalStripes(props) {
       return null;
     }
     var colorIndex = i % verticalFill.length;
-    return /* @__PURE__ */ React24.createElement("rect", {
+    return /* @__PURE__ */ React25.createElement("rect", {
       key: "react-".concat(i),
       x: entry,
       y: y2,
@@ -39133,7 +39197,7 @@ function VerticalStripes(props) {
       className: "recharts-cartesian-grid-bg"
     });
   });
-  return /* @__PURE__ */ React24.createElement("g", {
+  return /* @__PURE__ */ React25.createElement("g", {
     className: "recharts-cartesian-gridstripes-vertical"
   }, items);
 }
@@ -39249,9 +39313,9 @@ function CartesianGrid(props) {
       verticalPoints = _generatorResult;
     }
   }
-  return /* @__PURE__ */ React24.createElement("g", {
+  return /* @__PURE__ */ React25.createElement("g", {
     className: "recharts-cartesian-grid"
-  }, /* @__PURE__ */ React24.createElement(Background, {
+  }, /* @__PURE__ */ React25.createElement(Background, {
     fill: propsIncludingDefaults.fill,
     fillOpacity: propsIncludingDefaults.fillOpacity,
     x: propsIncludingDefaults.x,
@@ -39259,16 +39323,16 @@ function CartesianGrid(props) {
     width: propsIncludingDefaults.width,
     height: propsIncludingDefaults.height,
     ry: propsIncludingDefaults.ry
-  }), /* @__PURE__ */ React24.createElement(HorizontalStripes, _extends16({}, propsIncludingDefaults, {
+  }), /* @__PURE__ */ React25.createElement(HorizontalStripes, _extends16({}, propsIncludingDefaults, {
     horizontalPoints
-  })), /* @__PURE__ */ React24.createElement(VerticalStripes, _extends16({}, propsIncludingDefaults, {
+  })), /* @__PURE__ */ React25.createElement(VerticalStripes, _extends16({}, propsIncludingDefaults, {
     verticalPoints
-  })), /* @__PURE__ */ React24.createElement(HorizontalGridLines, _extends16({}, propsIncludingDefaults, {
+  })), /* @__PURE__ */ React25.createElement(HorizontalGridLines, _extends16({}, propsIncludingDefaults, {
     offset,
     horizontalPoints,
     xAxis,
     yAxis
-  })), /* @__PURE__ */ React24.createElement(VerticalGridLines, _extends16({}, propsIncludingDefaults, {
+  })), /* @__PURE__ */ React25.createElement(VerticalGridLines, _extends16({}, propsIncludingDefaults, {
     offset,
     verticalPoints,
     xAxis,
@@ -39278,8 +39342,8 @@ function CartesianGrid(props) {
 CartesianGrid.displayName = "CartesianGrid";
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/Line.js
-var React25 = __toESM(require_react());
-var import_react32 = __toESM(require_react());
+var React26 = __toESM(require_react());
+var import_react33 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/selectors/lineSelectors.js
 var selectXAxisWithScale = (state, xAxisId, _yAxisId, isPanorama) => selectAxisWithScale(state, "xAxis", xAxisId, isPanorama);
@@ -39477,13 +39541,13 @@ var getStrokeDasharray = (length, totalLength, lines) => {
 };
 function renderDotItem(option, props) {
   var dotItem;
-  if (/* @__PURE__ */ React25.isValidElement(option)) {
-    dotItem = /* @__PURE__ */ React25.cloneElement(option, props);
+  if (/* @__PURE__ */ React26.isValidElement(option)) {
+    dotItem = /* @__PURE__ */ React26.cloneElement(option, props);
   } else if (typeof option === "function") {
     dotItem = option(props);
   } else {
     var className = clsx("recharts-line-dot", typeof option !== "boolean" ? option.className : "");
-    dotItem = /* @__PURE__ */ React25.createElement(Dot, _extends17({}, props, {
+    dotItem = /* @__PURE__ */ React26.createElement(Dot, _extends17({}, props, {
       className
     }));
   }
@@ -39533,7 +39597,7 @@ function Dots(_ref) {
   var dotsProps = {
     clipPath: needClip ? "url(#clipPath-".concat(clipDot ? "" : "dots-").concat(clipPathId, ")") : null
   };
-  return /* @__PURE__ */ React25.createElement(Layer, _extends17({
+  return /* @__PURE__ */ React26.createElement(Layer, _extends17({
     className: "recharts-line-dots",
     key: "dots"
   }, dotsProps), dots);
@@ -39563,9 +39627,9 @@ function StaticCurve(_ref2) {
     connectNulls,
     strokeDasharray: strokeDasharray !== null && strokeDasharray !== void 0 ? strokeDasharray : props.strokeDasharray
   });
-  return /* @__PURE__ */ React25.createElement(React25.Fragment, null, (points === null || points === void 0 ? void 0 : points.length) > 1 && /* @__PURE__ */ React25.createElement(Curve, _extends17({}, curveProps, {
+  return /* @__PURE__ */ React26.createElement(React26.Fragment, null, (points === null || points === void 0 ? void 0 : points.length) > 1 && /* @__PURE__ */ React26.createElement(Curve, _extends17({}, curveProps, {
     pathRef
-  })), /* @__PURE__ */ React25.createElement(Dots, {
+  })), /* @__PURE__ */ React26.createElement(Dots, {
     points,
     clipPathId,
     props
@@ -39601,14 +39665,14 @@ function CurveWithAnimation(_ref3) {
   } = props;
   var prevPoints = previousPointsRef.current;
   var animationId = useAnimationId(props, "recharts-line-");
-  var [isAnimating, setIsAnimating] = (0, import_react32.useState)(false);
-  var handleAnimationEnd = (0, import_react32.useCallback)(() => {
+  var [isAnimating, setIsAnimating] = (0, import_react33.useState)(false);
+  var handleAnimationEnd = (0, import_react33.useCallback)(() => {
     if (typeof onAnimationEnd === "function") {
       onAnimationEnd();
     }
     setIsAnimating(false);
   }, [onAnimationEnd]);
-  var handleAnimationStart = (0, import_react32.useCallback)(() => {
+  var handleAnimationStart = (0, import_react33.useCallback)(() => {
     if (typeof onAnimationStart === "function") {
       onAnimationStart();
     }
@@ -39616,7 +39680,7 @@ function CurveWithAnimation(_ref3) {
   }, [onAnimationStart]);
   var totalLength = getTotalLength(pathRef.current);
   var startingPoint = longestAnimatedLengthRef.current;
-  return /* @__PURE__ */ React25.createElement(Animate, {
+  return /* @__PURE__ */ React26.createElement(Animate, {
     begin: animationBegin,
     duration: animationDuration,
     isActive: isAnimationActive,
@@ -39670,7 +39734,7 @@ function CurveWithAnimation(_ref3) {
         });
       });
       previousPointsRef.current = stepData;
-      return /* @__PURE__ */ React25.createElement(StaticCurve, {
+      return /* @__PURE__ */ React26.createElement(StaticCurve, {
         props,
         points: stepData,
         clipPathId,
@@ -39683,7 +39747,7 @@ function CurveWithAnimation(_ref3) {
       previousPointsRef.current = points;
       longestAnimatedLengthRef.current = curLength;
     }
-    return /* @__PURE__ */ React25.createElement(StaticCurve, {
+    return /* @__PURE__ */ React26.createElement(StaticCurve, {
       props,
       points,
       clipPathId,
@@ -39702,12 +39766,12 @@ function RenderCurve(_ref5) {
     points,
     isAnimationActive
   } = props;
-  var previousPointsRef = (0, import_react32.useRef)(null);
-  var longestAnimatedLengthRef = (0, import_react32.useRef)(0);
-  var pathRef = (0, import_react32.useRef)(null);
+  var previousPointsRef = (0, import_react33.useRef)(null);
+  var longestAnimatedLengthRef = (0, import_react33.useRef)(0);
+  var pathRef = (0, import_react33.useRef)(null);
   var prevPoints = previousPointsRef.current;
   if (isAnimationActive && points && points.length && prevPoints !== points) {
-    return /* @__PURE__ */ React25.createElement(CurveWithAnimation, {
+    return /* @__PURE__ */ React26.createElement(CurveWithAnimation, {
       props,
       clipPathId,
       previousPointsRef,
@@ -39715,7 +39779,7 @@ function RenderCurve(_ref5) {
       pathRef
     });
   }
-  return /* @__PURE__ */ React25.createElement(StaticCurve, {
+  return /* @__PURE__ */ React26.createElement(StaticCurve, {
     props,
     points,
     clipPathId,
@@ -39732,7 +39796,7 @@ var errorBarDataPointFormatter = (dataPoint, dataKey) => {
     errorVal: getValueByDataKey(dataPoint.payload, dataKey)
   };
 };
-var LineWithState = class extends import_react32.Component {
+var LineWithState = class extends import_react33.Component {
   constructor() {
     super(...arguments);
     _defineProperty29(this, "id", uniqueId("recharts-line-"));
@@ -39768,31 +39832,31 @@ var LineWithState = class extends import_react32.Component {
     };
     var clipDot = isClipDot(dot);
     var dotSize = r2 * 2 + strokeWidth;
-    return /* @__PURE__ */ React25.createElement(React25.Fragment, null, /* @__PURE__ */ React25.createElement(Layer, {
+    return /* @__PURE__ */ React26.createElement(React26.Fragment, null, /* @__PURE__ */ React26.createElement(Layer, {
       className: layerClass
-    }, needClip && /* @__PURE__ */ React25.createElement("defs", null, /* @__PURE__ */ React25.createElement(GraphicalItemClipPath, {
+    }, needClip && /* @__PURE__ */ React26.createElement("defs", null, /* @__PURE__ */ React26.createElement(GraphicalItemClipPath, {
       clipPathId,
       xAxisId,
       yAxisId
-    }), !clipDot && /* @__PURE__ */ React25.createElement("clipPath", {
+    }), !clipDot && /* @__PURE__ */ React26.createElement("clipPath", {
       id: "clipPath-dots-".concat(clipPathId)
-    }, /* @__PURE__ */ React25.createElement("rect", {
+    }, /* @__PURE__ */ React26.createElement("rect", {
       x: left - dotSize / 2,
       y: top - dotSize / 2,
       width: width + dotSize,
       height: height + dotSize
-    }))), /* @__PURE__ */ React25.createElement(RenderCurve, {
+    }))), /* @__PURE__ */ React26.createElement(RenderCurve, {
       props: this.props,
       clipPathId
-    }), /* @__PURE__ */ React25.createElement(SetErrorBarPreferredDirection, {
+    }), /* @__PURE__ */ React26.createElement(SetErrorBarPreferredDirection, {
       direction: layout === "horizontal" ? "y" : "x"
-    }, /* @__PURE__ */ React25.createElement(SetErrorBarContext, {
+    }, /* @__PURE__ */ React26.createElement(SetErrorBarContext, {
       xAxisId,
       yAxisId,
       data: points,
       dataPointFormatter: errorBarDataPointFormatter,
       errorBarOffset: 0
-    }, this.props.children))), /* @__PURE__ */ React25.createElement(ActivePoints, {
+    }, this.props.children))), /* @__PURE__ */ React26.createElement(ActivePoints, {
       activeDot: this.props.activeDot,
       points,
       mainColor: this.props.stroke,
@@ -39845,7 +39909,7 @@ function LineImpl(props) {
   } = useOffset();
   var layout = useChartLayout();
   var isPanorama = useIsPanorama();
-  var lineSettings = (0, import_react32.useMemo)(() => ({
+  var lineSettings = (0, import_react33.useMemo)(() => ({
     dataKey: props.dataKey,
     data: props.data
   }), [props.dataKey, props.data]);
@@ -39853,7 +39917,7 @@ function LineImpl(props) {
   if (layout !== "horizontal" && layout !== "vertical") {
     return null;
   }
-  return /* @__PURE__ */ React25.createElement(LineWithState, _extends17({}, everythingElse, {
+  return /* @__PURE__ */ React26.createElement(LineWithState, _extends17({}, everythingElse, {
     connectNulls,
     dot,
     activeDot,
@@ -39917,9 +39981,9 @@ function computeLinePoints(_ref6) {
     };
   });
 }
-var Line = class extends import_react32.PureComponent {
+var Line = class extends import_react33.PureComponent {
   render() {
-    return /* @__PURE__ */ React25.createElement(CartesianGraphicalItemContext, {
+    return /* @__PURE__ */ React26.createElement(CartesianGraphicalItemContext, {
       type: "line",
       data: this.props.data,
       xAxisId: this.props.xAxisId,
@@ -39929,20 +39993,20 @@ var Line = class extends import_react32.PureComponent {
       stackId: void 0,
       hide: this.props.hide,
       barSize: void 0
-    }, /* @__PURE__ */ React25.createElement(SetLegendPayload, {
+    }, /* @__PURE__ */ React26.createElement(SetLegendPayload, {
       legendPayload: computeLegendPayloadFromAreaData(this.props)
-    }), /* @__PURE__ */ React25.createElement(SetTooltipEntrySettings, {
+    }), /* @__PURE__ */ React26.createElement(SetTooltipEntrySettings, {
       fn: getTooltipEntrySettings,
       args: this.props
-    }), /* @__PURE__ */ React25.createElement(LineImpl, this.props));
+    }), /* @__PURE__ */ React26.createElement(LineImpl, this.props));
   }
 };
 _defineProperty29(Line, "displayName", "Line");
 _defineProperty29(Line, "defaultProps", defaultLineProps);
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/Area.js
-var React26 = __toESM(require_react());
-var import_react33 = __toESM(require_react());
+var React27 = __toESM(require_react());
+var import_react34 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/selectors/areaSelectors.js
 var selectXAxisWithScale2 = (state, xAxisId, _yAxisId, isPanorama) => selectAxisWithScale(state, "xAxis", xAxisId, isPanorama);
@@ -40141,13 +40205,13 @@ function getTooltipEntrySettings2(props) {
 }
 var renderDotItem2 = (option, props) => {
   var dotItem;
-  if (/* @__PURE__ */ React26.isValidElement(option)) {
-    dotItem = /* @__PURE__ */ React26.cloneElement(option, props);
+  if (/* @__PURE__ */ React27.isValidElement(option)) {
+    dotItem = /* @__PURE__ */ React27.cloneElement(option, props);
   } else if (typeof option === "function") {
     dotItem = option(props);
   } else {
     var className = clsx("recharts-area-dot", typeof option !== "boolean" ? option.className : "");
-    dotItem = /* @__PURE__ */ React26.createElement(Dot, _extends18({}, props, {
+    dotItem = /* @__PURE__ */ React27.createElement(Dot, _extends18({}, props, {
       className
     }));
   }
@@ -40197,7 +40261,7 @@ function Dots2(_ref) {
   var dotsProps = {
     clipPath: needClip ? "url(#clipPath-".concat(clipDot ? "" : "dots-").concat(clipPathId, ")") : void 0
   };
-  return /* @__PURE__ */ React26.createElement(Layer, _extends18({
+  return /* @__PURE__ */ React27.createElement(Layer, _extends18({
     className: "recharts-area-dots"
   }, dotsProps), dots);
 }
@@ -40217,9 +40281,9 @@ function StaticArea(_ref2) {
     connectNulls,
     isRange
   } = props, others = _objectWithoutProperties13(props, _excluded13);
-  return /* @__PURE__ */ React26.createElement(React26.Fragment, null, (points === null || points === void 0 ? void 0 : points.length) > 1 && /* @__PURE__ */ React26.createElement(Layer, {
+  return /* @__PURE__ */ React27.createElement(React27.Fragment, null, (points === null || points === void 0 ? void 0 : points.length) > 1 && /* @__PURE__ */ React27.createElement(Layer, {
     clipPath: needClip ? "url(#clipPath-".concat(clipPathId, ")") : void 0
-  }, /* @__PURE__ */ React26.createElement(Curve, _extends18({}, filterProps(others, true), {
+  }, /* @__PURE__ */ React27.createElement(Curve, _extends18({}, filterProps(others, true), {
     points,
     connectNulls,
     type,
@@ -40227,21 +40291,21 @@ function StaticArea(_ref2) {
     layout,
     stroke: "none",
     className: "recharts-area-area"
-  })), stroke !== "none" && /* @__PURE__ */ React26.createElement(Curve, _extends18({}, filterProps(props, false), {
+  })), stroke !== "none" && /* @__PURE__ */ React27.createElement(Curve, _extends18({}, filterProps(props, false), {
     className: "recharts-area-curve",
     layout,
     type,
     connectNulls,
     fill: "none",
     points
-  })), stroke !== "none" && isRange && /* @__PURE__ */ React26.createElement(Curve, _extends18({}, filterProps(props, false), {
+  })), stroke !== "none" && isRange && /* @__PURE__ */ React27.createElement(Curve, _extends18({}, filterProps(props, false), {
     className: "recharts-area-curve",
     layout,
     type,
     connectNulls,
     fill: "none",
     points: baseLine
-  }))), /* @__PURE__ */ React26.createElement(Dots2, {
+  }))), /* @__PURE__ */ React27.createElement(Dots2, {
     points,
     props,
     clipPathId
@@ -40267,7 +40331,7 @@ function VerticalRect(_ref3) {
     maxX = Math.max(...baseLine.map((entry) => entry.x || 0), maxX);
   }
   if (isNumber(maxX)) {
-    return /* @__PURE__ */ React26.createElement("rect", {
+    return /* @__PURE__ */ React27.createElement("rect", {
       x: 0,
       y: startY < endY ? startY : startY - height,
       width: maxX + (strokeWidth ? parseInt("".concat(strokeWidth), 10) : 1),
@@ -40296,7 +40360,7 @@ function HorizontalRect(_ref4) {
     maxY = Math.max(...baseLine.map((entry) => entry.y || 0), maxY);
   }
   if (isNumber(maxY)) {
-    return /* @__PURE__ */ React26.createElement("rect", {
+    return /* @__PURE__ */ React27.createElement("rect", {
       x: startX < endX ? startX : startX - width,
       y: 0,
       width,
@@ -40314,14 +40378,14 @@ function ClipRect(_ref5) {
     strokeWidth
   } = _ref5;
   if (layout === "vertical") {
-    return /* @__PURE__ */ React26.createElement(VerticalRect, {
+    return /* @__PURE__ */ React27.createElement(VerticalRect, {
       alpha: alpha2,
       points,
       baseLine,
       strokeWidth
     });
   }
-  return /* @__PURE__ */ React26.createElement(HorizontalRect, {
+  return /* @__PURE__ */ React27.createElement(HorizontalRect, {
     alpha: alpha2,
     points,
     baseLine,
@@ -40347,14 +40411,14 @@ function AreaWithAnimation(_ref6) {
     onAnimationEnd
   } = props;
   var animationId = useAnimationId(props, "recharts-area-");
-  var [isAnimating, setIsAnimating] = (0, import_react33.useState)(true);
-  var handleAnimationEnd = (0, import_react33.useCallback)(() => {
+  var [isAnimating, setIsAnimating] = (0, import_react34.useState)(true);
+  var handleAnimationEnd = (0, import_react34.useCallback)(() => {
     if (typeof onAnimationEnd === "function") {
       onAnimationEnd();
     }
     setIsAnimating(false);
   }, [onAnimationEnd]);
-  var handleAnimationStart = (0, import_react33.useCallback)(() => {
+  var handleAnimationStart = (0, import_react34.useCallback)(() => {
     if (typeof onAnimationStart === "function") {
       onAnimationStart();
     }
@@ -40362,7 +40426,7 @@ function AreaWithAnimation(_ref6) {
   }, [onAnimationStart]);
   var prevPoints = previousPointsRef.current;
   var prevBaseLine = previousBaselineRef.current;
-  return /* @__PURE__ */ React26.createElement(Animate, {
+  return /* @__PURE__ */ React27.createElement(Animate, {
     begin: animationBegin,
     duration: animationDuration,
     isActive: isAnimationActive,
@@ -40424,7 +40488,7 @@ function AreaWithAnimation(_ref6) {
         previousPointsRef.current = stepPoints;
         previousBaselineRef.current = stepBaseLine;
       }
-      return /* @__PURE__ */ React26.createElement(StaticArea, {
+      return /* @__PURE__ */ React27.createElement(StaticArea, {
         points: stepPoints,
         baseLine: stepBaseLine,
         needClip,
@@ -40437,17 +40501,17 @@ function AreaWithAnimation(_ref6) {
       previousPointsRef.current = points;
       previousBaselineRef.current = baseLine;
     }
-    return /* @__PURE__ */ React26.createElement(Layer, null, /* @__PURE__ */ React26.createElement("defs", null, /* @__PURE__ */ React26.createElement("clipPath", {
+    return /* @__PURE__ */ React27.createElement(Layer, null, /* @__PURE__ */ React27.createElement("defs", null, /* @__PURE__ */ React27.createElement("clipPath", {
       id: "animationClipPath-".concat(clipPathId)
-    }, /* @__PURE__ */ React26.createElement(ClipRect, {
+    }, /* @__PURE__ */ React27.createElement(ClipRect, {
       alpha: t,
       points,
       baseLine,
       layout: props.layout,
       strokeWidth: props.strokeWidth
-    }))), /* @__PURE__ */ React26.createElement(Layer, {
+    }))), /* @__PURE__ */ React27.createElement(Layer, {
       clipPath: "url(#animationClipPath-".concat(clipPathId, ")")
-    }, /* @__PURE__ */ React26.createElement(StaticArea, {
+    }, /* @__PURE__ */ React27.createElement(StaticArea, {
       points,
       baseLine,
       needClip,
@@ -40468,8 +40532,8 @@ function RenderArea(_ref8) {
     baseLine,
     isAnimationActive
   } = props;
-  var previousPointsRef = (0, import_react33.useRef)(null);
-  var previousBaselineRef = (0, import_react33.useRef)();
+  var previousPointsRef = (0, import_react34.useRef)(null);
+  var previousBaselineRef = (0, import_react34.useRef)();
   var prevPoints = previousPointsRef.current;
   var prevBaseLine = previousBaselineRef.current;
   if (isAnimationActive && /*
@@ -40478,7 +40542,7 @@ function RenderArea(_ref8) {
    * We still get to keep the last shape of the animation in the refs above.
    */
   points && points.length && (prevPoints !== points || prevBaseLine !== baseLine)) {
-    return /* @__PURE__ */ React26.createElement(AreaWithAnimation, {
+    return /* @__PURE__ */ React27.createElement(AreaWithAnimation, {
       needClip,
       clipPathId,
       props,
@@ -40486,7 +40550,7 @@ function RenderArea(_ref8) {
       previousBaselineRef
     });
   }
-  return /* @__PURE__ */ React26.createElement(StaticArea, {
+  return /* @__PURE__ */ React27.createElement(StaticArea, {
     points,
     baseLine,
     needClip,
@@ -40495,7 +40559,7 @@ function RenderArea(_ref8) {
     showLabels: true
   });
 }
-var AreaWithState = class extends import_react33.PureComponent {
+var AreaWithState = class extends import_react34.PureComponent {
   constructor() {
     super(...arguments);
     _defineProperty30(this, "id", uniqueId("recharts-area-"));
@@ -40531,29 +40595,29 @@ var AreaWithState = class extends import_react33.PureComponent {
     };
     var clipDot = isClipDot(dot);
     var dotSize = r2 * 2 + strokeWidth;
-    return /* @__PURE__ */ React26.createElement(React26.Fragment, null, /* @__PURE__ */ React26.createElement(Layer, {
+    return /* @__PURE__ */ React27.createElement(React27.Fragment, null, /* @__PURE__ */ React27.createElement(Layer, {
       className: layerClass
-    }, needClip && /* @__PURE__ */ React26.createElement("defs", null, /* @__PURE__ */ React26.createElement(GraphicalItemClipPath, {
+    }, needClip && /* @__PURE__ */ React27.createElement("defs", null, /* @__PURE__ */ React27.createElement(GraphicalItemClipPath, {
       clipPathId,
       xAxisId,
       yAxisId
-    }), !clipDot && /* @__PURE__ */ React26.createElement("clipPath", {
+    }), !clipDot && /* @__PURE__ */ React27.createElement("clipPath", {
       id: "clipPath-dots-".concat(clipPathId)
-    }, /* @__PURE__ */ React26.createElement("rect", {
+    }, /* @__PURE__ */ React27.createElement("rect", {
       x: left - dotSize / 2,
       y: top - dotSize / 2,
       width: width + dotSize,
       height: height + dotSize
-    }))), /* @__PURE__ */ React26.createElement(RenderArea, {
+    }))), /* @__PURE__ */ React27.createElement(RenderArea, {
       needClip,
       clipPathId,
       props: this.props
-    })), /* @__PURE__ */ React26.createElement(ActivePoints, {
+    })), /* @__PURE__ */ React27.createElement(ActivePoints, {
       points,
       mainColor: getLegendItemColor(this.props.stroke, this.props.fill),
       itemDataKey: this.props.dataKey,
       activeDot: this.props.activeDot
-    }), this.props.isRange && Array.isArray(baseLine) && /* @__PURE__ */ React26.createElement(ActivePoints, {
+    }), this.props.isRange && Array.isArray(baseLine) && /* @__PURE__ */ React27.createElement(ActivePoints, {
       points: baseLine,
       mainColor: getLegendItemColor(this.props.stroke, this.props.fill),
       itemDataKey: this.props.dataKey,
@@ -40601,7 +40665,7 @@ function AreaImpl(props) {
     needClip
   } = useNeedsClip(xAxisId, yAxisId);
   var isPanorama = useIsPanorama();
-  var areaSettings = (0, import_react33.useMemo)(() => ({
+  var areaSettings = (0, import_react34.useMemo)(() => ({
     baseValue: props.baseValue,
     stackId: props.stackId,
     connectNulls,
@@ -40625,7 +40689,7 @@ function AreaImpl(props) {
   if (chartName !== "AreaChart" && chartName !== "ComposedChart") {
     return null;
   }
-  return /* @__PURE__ */ React26.createElement(AreaWithState, _extends18({}, everythingElse, {
+  return /* @__PURE__ */ React27.createElement(AreaWithState, _extends18({}, everythingElse, {
     activeDot,
     animationBegin,
     animationDuration,
@@ -40765,9 +40829,9 @@ function computeArea(_ref9) {
     isRange
   };
 }
-var Area = class extends import_react33.PureComponent {
+var Area = class extends import_react34.PureComponent {
   render() {
-    return /* @__PURE__ */ React26.createElement(CartesianGraphicalItemContext, {
+    return /* @__PURE__ */ React27.createElement(CartesianGraphicalItemContext, {
       type: "area",
       data: this.props.data,
       dataKey: this.props.dataKey,
@@ -40777,12 +40841,12 @@ var Area = class extends import_react33.PureComponent {
       stackId: this.props.stackId,
       hide: this.props.hide,
       barSize: void 0
-    }, /* @__PURE__ */ React26.createElement(SetLegendPayload, {
+    }, /* @__PURE__ */ React27.createElement(SetLegendPayload, {
       legendPayload: computeLegendPayloadFromAreaData2(this.props)
-    }), /* @__PURE__ */ React26.createElement(SetTooltipEntrySettings, {
+    }), /* @__PURE__ */ React27.createElement(SetTooltipEntrySettings, {
       fn: getTooltipEntrySettings2,
       args: this.props
-    }), /* @__PURE__ */ React26.createElement(AreaImpl, this.props));
+    }), /* @__PURE__ */ React27.createElement(AreaImpl, this.props));
   }
 };
 _defineProperty30(Area, "displayName", "Area");
@@ -40879,8 +40943,8 @@ var {
 var cartesianAxisReducer = cartesianAxisSlice.reducer;
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/XAxis.js
-var React27 = __toESM(require_react());
-var import_react34 = __toESM(require_react());
+var React28 = __toESM(require_react());
+var import_react35 = __toESM(require_react());
 var _excluded14 = ["dangerouslySetInnerHTML", "ticks"];
 function _defineProperty32(e, r2, t) {
   return (r2 = _toPropertyKey32(r2)) in e ? Object.defineProperty(e, r2, { value: t, enumerable: true, configurable: true, writable: true }) : e[r2] = t, e;
@@ -40928,7 +40992,7 @@ function _objectWithoutPropertiesLoose14(r2, e) {
 }
 function SetXAxisSettings(settings) {
   var dispatch = useAppDispatch();
-  (0, import_react34.useEffect)(() => {
+  (0, import_react35.useEffect)(() => {
     dispatch(addXAxis(settings));
     return () => {
       dispatch(removeXAxis(settings));
@@ -40955,7 +41019,7 @@ var XAxisImpl = (props) => {
     dangerouslySetInnerHTML,
     ticks: ticks2
   } = props, allOtherProps = _objectWithoutProperties14(props, _excluded14);
-  return /* @__PURE__ */ React27.createElement(CartesianAxis, _extends19({}, allOtherProps, {
+  return /* @__PURE__ */ React28.createElement(CartesianAxis, _extends19({}, allOtherProps, {
     scale,
     x: position.x,
     y: position.y,
@@ -40968,7 +41032,7 @@ var XAxisImpl = (props) => {
 };
 var XAxisSettingsDispatcher = (props) => {
   var _props$interval, _props$includeHidden, _props$angle, _props$minTickGap, _props$tick;
-  return /* @__PURE__ */ React27.createElement(React27.Fragment, null, /* @__PURE__ */ React27.createElement(SetXAxisSettings, {
+  return /* @__PURE__ */ React28.createElement(React28.Fragment, null, /* @__PURE__ */ React28.createElement(SetXAxisSettings, {
     interval: (_props$interval = props.interval) !== null && _props$interval !== void 0 ? _props$interval : "preserveEnd",
     id: props.xAxisId,
     scale: props.scale,
@@ -40993,11 +41057,11 @@ var XAxisSettingsDispatcher = (props) => {
     minTickGap: (_props$minTickGap = props.minTickGap) !== null && _props$minTickGap !== void 0 ? _props$minTickGap : 5,
     tick: (_props$tick = props.tick) !== null && _props$tick !== void 0 ? _props$tick : true,
     tickFormatter: props.tickFormatter
-  }), /* @__PURE__ */ React27.createElement(XAxisImpl, props));
+  }), /* @__PURE__ */ React28.createElement(XAxisImpl, props));
 };
-var XAxis = class extends import_react34.Component {
+var XAxis = class extends import_react35.Component {
   render() {
-    return /* @__PURE__ */ React27.createElement(XAxisSettingsDispatcher, this.props);
+    return /* @__PURE__ */ React28.createElement(XAxisSettingsDispatcher, this.props);
   }
 };
 _defineProperty32(XAxis, "displayName", "XAxis");
@@ -41018,8 +41082,8 @@ _defineProperty32(XAxis, "defaultProps", {
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/cartesian/YAxis.js
-var React28 = __toESM(require_react());
-var import_react35 = __toESM(require_react());
+var React29 = __toESM(require_react());
+var import_react36 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/YAxisUtils.js
 var getCalculatedYAxisWidth = (_ref) => {
@@ -41097,7 +41161,7 @@ function _objectWithoutPropertiesLoose15(r2, e) {
 }
 function SetYAxisSettings(settings) {
   var dispatch = useAppDispatch();
-  (0, import_react35.useEffect)(() => {
+  (0, import_react36.useEffect)(() => {
     dispatch(addYAxis(settings));
     return () => {
       dispatch(removeYAxis(settings));
@@ -41113,8 +41177,8 @@ var YAxisImpl = (props) => {
     width,
     label
   } = props;
-  var cartesianAxisRef = (0, import_react35.useRef)(null);
-  var labelRef = (0, import_react35.useRef)(null);
+  var cartesianAxisRef = (0, import_react36.useRef)(null);
+  var labelRef = (0, import_react36.useRef)(null);
   var viewBox = useAppSelector(selectAxisViewBox);
   var isPanorama = useIsPanorama();
   var dispatch = useAppDispatch();
@@ -41123,9 +41187,9 @@ var YAxisImpl = (props) => {
   var axisSize = useAppSelector((state) => selectYAxisSize(state, yAxisId));
   var position = useAppSelector((state) => selectYAxisPosition(state, yAxisId));
   var cartesianTickItems = useAppSelector((state) => selectTicksOfAxis(state, axisType, yAxisId, isPanorama));
-  (0, import_react35.useLayoutEffect)(() => {
+  (0, import_react36.useLayoutEffect)(() => {
     var _axisComponent$tickRe;
-    if (width !== "auto" || !axisSize || isLabelContentAFunction(label) || /* @__PURE__ */ (0, import_react35.isValidElement)(label)) return;
+    if (width !== "auto" || !axisSize || isLabelContentAFunction(label) || /* @__PURE__ */ (0, import_react36.isValidElement)(label)) return;
     var axisComponent = cartesianAxisRef.current;
     var tickNodes = axisComponent === null || axisComponent === void 0 || (_axisComponent$tickRe = axisComponent.tickRefs) === null || _axisComponent$tickRe === void 0 ? void 0 : _axisComponent$tickRe.current;
     var {
@@ -41161,7 +41225,7 @@ var YAxisImpl = (props) => {
     dangerouslySetInnerHTML,
     ticks: ticks2
   } = props, allOtherProps = _objectWithoutProperties15(props, _excluded15);
-  return /* @__PURE__ */ React28.createElement(CartesianAxis, _extends20({}, allOtherProps, {
+  return /* @__PURE__ */ React29.createElement(CartesianAxis, _extends20({}, allOtherProps, {
     ref: cartesianAxisRef,
     labelRef,
     scale,
@@ -41176,7 +41240,7 @@ var YAxisImpl = (props) => {
 };
 var YAxisSettingsDispatcher = (props) => {
   var _props$interval, _props$includeHidden, _props$angle, _props$minTickGap, _props$tick;
-  return /* @__PURE__ */ React28.createElement(React28.Fragment, null, /* @__PURE__ */ React28.createElement(SetYAxisSettings, {
+  return /* @__PURE__ */ React29.createElement(React29.Fragment, null, /* @__PURE__ */ React29.createElement(SetYAxisSettings, {
     interval: (_props$interval = props.interval) !== null && _props$interval !== void 0 ? _props$interval : "preserveEnd",
     id: props.yAxisId,
     scale: props.scale,
@@ -41201,7 +41265,7 @@ var YAxisSettingsDispatcher = (props) => {
     minTickGap: (_props$minTickGap = props.minTickGap) !== null && _props$minTickGap !== void 0 ? _props$minTickGap : 5,
     tick: (_props$tick = props.tick) !== null && _props$tick !== void 0 ? _props$tick : true,
     tickFormatter: props.tickFormatter
-  }), /* @__PURE__ */ React28.createElement(YAxisImpl, props));
+  }), /* @__PURE__ */ React29.createElement(YAxisImpl, props));
 };
 var YAxisDefaultProps = {
   allowDataOverflow: implicitYAxis.allowDataOverflow,
@@ -41218,28 +41282,28 @@ var YAxisDefaultProps = {
   width: implicitYAxis.width,
   yAxisId: 0
 };
-var YAxis = class extends import_react35.Component {
+var YAxis = class extends import_react36.Component {
   render() {
-    return /* @__PURE__ */ React28.createElement(YAxisSettingsDispatcher, this.props);
+    return /* @__PURE__ */ React29.createElement(YAxisSettingsDispatcher, this.props);
   }
 };
 _defineProperty33(YAxis, "displayName", "YAxis");
 _defineProperty33(YAxis, "defaultProps", YAxisDefaultProps);
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/LineChart.js
+var React36 = __toESM(require_react());
+var import_react45 = __toESM(require_react());
+
+// node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/CartesianChart.js
 var React35 = __toESM(require_react());
 var import_react44 = __toESM(require_react());
 
-// node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/CartesianChart.js
-var React34 = __toESM(require_react());
-var import_react43 = __toESM(require_react());
-
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/RechartsStoreProvider.js
-var React30 = __toESM(require_react());
-var import_react36 = __toESM(require_react());
+var React31 = __toESM(require_react());
+var import_react37 = __toESM(require_react());
 
 // node_modules/.deno/react-redux@9.3.0/node_modules/react-redux/dist/react-redux.mjs
-var React29 = __toESM(require_react(), 1);
+var React30 = __toESM(require_react(), 1);
 var import_with_selector2 = __toESM(require_with_selector2(), 1);
 var REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref");
 var REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo");
@@ -41379,7 +41443,7 @@ var canUseDOM = () => !!(typeof window !== "undefined" && typeof window.document
 var isDOM = /* @__PURE__ */ canUseDOM();
 var isRunningInReactNative = () => typeof navigator !== "undefined" && navigator.product === "ReactNative";
 var isReactNative = /* @__PURE__ */ isRunningInReactNative();
-var getUseIsomorphicLayoutEffect = () => isDOM || isReactNative ? React29.useLayoutEffect : React29.useEffect;
+var getUseIsomorphicLayoutEffect = () => isDOM || isReactNative ? React30.useLayoutEffect : React30.useEffect;
 var useIsomorphicLayoutEffect = /* @__PURE__ */ getUseIsomorphicLayoutEffect();
 var FORWARD_REF_STATICS = {
   $$typeof: true,
@@ -41407,24 +41471,24 @@ var gT = typeof globalThis !== "undefined" ? globalThis : (
   {}
 );
 function getContext() {
-  if (!React29.createContext) return {};
+  if (!React30.createContext) return {};
   const contextMap = gT[ContextKey] ??= /* @__PURE__ */ new Map();
-  let realContext = contextMap.get(React29.createContext);
+  let realContext = contextMap.get(React30.createContext);
   if (!realContext) {
-    realContext = React29.createContext(
+    realContext = React30.createContext(
       null
     );
     if (true) {
       realContext.displayName = "ReactRedux";
     }
-    contextMap.set(React29.createContext, realContext);
+    contextMap.set(React30.createContext, realContext);
   }
   return realContext;
 }
 var ReactReduxContext = /* @__PURE__ */ getContext();
 function Provider(providerProps) {
   const { children, context, serverState, store } = providerProps;
-  const contextValue = React29.useMemo(() => {
+  const contextValue = React30.useMemo(() => {
     const subscription = createSubscription(store);
     const baseContextValue = {
       store,
@@ -41441,7 +41505,7 @@ function Provider(providerProps) {
       });
     }
   }, [store, serverState]);
-  const previousState = React29.useMemo(() => store.getState(), [store]);
+  const previousState = React30.useMemo(() => store.getState(), [store]);
   useIsomorphicLayoutEffect(() => {
     const { subscription } = contextValue;
     subscription.onStateChange = subscription.notifyNestedSubs;
@@ -41455,7 +41519,7 @@ function Provider(providerProps) {
     };
   }, [contextValue, previousState]);
   const Context = context || ReactReduxContext;
-  return /* @__PURE__ */ React29.createElement(Context.Provider, { value: contextValue }, children);
+  return /* @__PURE__ */ React30.createElement(Context.Provider, { value: contextValue }, children);
 }
 var Provider_default = Provider;
 
@@ -41783,7 +41847,7 @@ function RechartsStoreProvider(_ref) {
     reduxStoreName
   } = _ref;
   var isPanorama = useIsPanorama();
-  var storeRef = (0, import_react36.useRef)(null);
+  var storeRef = (0, import_react37.useRef)(null);
   if (isPanorama) {
     return children;
   }
@@ -41791,14 +41855,14 @@ function RechartsStoreProvider(_ref) {
     storeRef.current = createRechartsStore(preloadedState, reduxStoreName);
   }
   var nonNullContext = RechartsReduxContext;
-  return /* @__PURE__ */ React30.createElement(Provider_default, {
+  return /* @__PURE__ */ React31.createElement(Provider_default, {
     context: nonNullContext,
     store: storeRef.current
   }, children);
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/ReportMainChartProps.js
-var import_react37 = __toESM(require_react());
+var import_react38 = __toESM(require_react());
 function ReportMainChartProps(_ref) {
   var {
     layout,
@@ -41808,7 +41872,7 @@ function ReportMainChartProps(_ref) {
   } = _ref;
   var dispatch = useAppDispatch();
   var isPanorama = useIsPanorama();
-  (0, import_react37.useEffect)(() => {
+  (0, import_react38.useEffect)(() => {
     if (!isPanorama) {
       dispatch(setLayout(layout));
       dispatch(setChartSize({
@@ -41822,22 +41886,22 @@ function ReportMainChartProps(_ref) {
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/state/ReportChartProps.js
-var import_react38 = __toESM(require_react());
+var import_react39 = __toESM(require_react());
 function ReportChartProps(props) {
   var dispatch = useAppDispatch();
-  (0, import_react38.useEffect)(() => {
+  (0, import_react39.useEffect)(() => {
     dispatch(updateOptions(props));
   }, [dispatch, props]);
   return null;
 }
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/CategoricalChart.js
-var React33 = __toESM(require_react());
-var import_react42 = __toESM(require_react());
+var React34 = __toESM(require_react());
+var import_react43 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/container/RootSurface.js
-var React31 = __toESM(require_react());
-var import_react39 = __toESM(require_react());
+var React32 = __toESM(require_react());
+var import_react40 = __toESM(require_react());
 var _excluded16 = ["children"];
 function _objectWithoutProperties16(e, t) {
   if (null == e) return {};
@@ -41870,7 +41934,7 @@ var FULL_WIDTH_AND_HEIGHT = {
   width: "100%",
   height: "100%"
 };
-var MainChartSurface = /* @__PURE__ */ (0, import_react39.forwardRef)((props, ref) => {
+var MainChartSurface = /* @__PURE__ */ (0, import_react40.forwardRef)((props, ref) => {
   var width = useChartWidth();
   var height = useChartHeight();
   var hasAccessibilityLayer = useAccessibilityLayer();
@@ -41894,7 +41958,7 @@ var MainChartSurface = /* @__PURE__ */ (0, import_react39.forwardRef)((props, re
   } else {
     role = hasAccessibilityLayer ? "application" : void 0;
   }
-  return /* @__PURE__ */ React31.createElement(Surface, _extends21({}, otherAttributes, {
+  return /* @__PURE__ */ React32.createElement(Surface, _extends21({}, otherAttributes, {
     title,
     desc,
     role,
@@ -41919,37 +41983,37 @@ var BrushPanoramaSurface = (_ref) => {
     y: y2,
     x: x2
   } = brushDimensions;
-  return /* @__PURE__ */ React31.createElement(Surface, {
+  return /* @__PURE__ */ React32.createElement(Surface, {
     width,
     height,
     x: x2,
     y: y2
   }, children);
 };
-var RootSurface = /* @__PURE__ */ (0, import_react39.forwardRef)((_ref2, ref) => {
+var RootSurface = /* @__PURE__ */ (0, import_react40.forwardRef)((_ref2, ref) => {
   var {
     children
   } = _ref2, rest = _objectWithoutProperties16(_ref2, _excluded16);
   var isPanorama = useIsPanorama();
   if (isPanorama) {
-    return /* @__PURE__ */ React31.createElement(BrushPanoramaSurface, null, children);
+    return /* @__PURE__ */ React32.createElement(BrushPanoramaSurface, null, children);
   }
-  return /* @__PURE__ */ React31.createElement(MainChartSurface, _extends21({
+  return /* @__PURE__ */ React32.createElement(MainChartSurface, _extends21({
     ref
   }, rest), children);
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/RechartsWrapper.js
-var React32 = __toESM(require_react());
-var import_react41 = __toESM(require_react());
+var React33 = __toESM(require_react());
+var import_react42 = __toESM(require_react());
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/util/useReportScale.js
-var import_react40 = __toESM(require_react());
+var import_react41 = __toESM(require_react());
 function useReportScale() {
   var dispatch = useAppDispatch();
-  var [ref, setRef] = (0, import_react40.useState)(null);
+  var [ref, setRef] = (0, import_react41.useState)(null);
   var scale = useAppSelector(selectContainerScale);
-  (0, import_react40.useEffect)(() => {
+  (0, import_react41.useEffect)(() => {
     if (ref == null) {
       return;
     }
@@ -42001,7 +42065,7 @@ function _toPrimitive34(t, r2) {
   }
   return ("string" === r2 ? String : Number)(t);
 }
-var RechartsWrapper = /* @__PURE__ */ (0, import_react41.forwardRef)((_ref, ref) => {
+var RechartsWrapper = /* @__PURE__ */ (0, import_react42.forwardRef)((_ref, ref) => {
   var {
     children,
     className,
@@ -42021,11 +42085,11 @@ var RechartsWrapper = /* @__PURE__ */ (0, import_react41.forwardRef)((_ref, ref)
     width
   } = _ref;
   var dispatch = useAppDispatch();
-  var [tooltipPortal, setTooltipPortal] = (0, import_react41.useState)(null);
-  var [legendPortal, setLegendPortal] = (0, import_react41.useState)(null);
+  var [tooltipPortal, setTooltipPortal] = (0, import_react42.useState)(null);
+  var [legendPortal, setLegendPortal] = (0, import_react42.useState)(null);
   useSynchronisedEventsFromOtherCharts();
   var setScaleRef = useReportScale();
-  var innerRef = (0, import_react41.useCallback)((node) => {
+  var innerRef = (0, import_react42.useCallback)((node) => {
     setScaleRef(node);
     if (typeof ref === "function") {
       ref(node);
@@ -42033,88 +42097,88 @@ var RechartsWrapper = /* @__PURE__ */ (0, import_react41.forwardRef)((_ref, ref)
     setTooltipPortal(node);
     setLegendPortal(node);
   }, [setScaleRef, ref, setTooltipPortal, setLegendPortal]);
-  var myOnClick = (0, import_react41.useCallback)((e) => {
+  var myOnClick = (0, import_react42.useCallback)((e) => {
     dispatch(mouseClickAction(e));
     dispatch(externalEventAction({
       handler: onClick,
       reactEvent: e
     }));
   }, [dispatch, onClick]);
-  var myOnMouseEnter = (0, import_react41.useCallback)((e) => {
+  var myOnMouseEnter = (0, import_react42.useCallback)((e) => {
     dispatch(mouseMoveAction(e));
     dispatch(externalEventAction({
       handler: onMouseEnter,
       reactEvent: e
     }));
   }, [dispatch, onMouseEnter]);
-  var myOnMouseLeave = (0, import_react41.useCallback)((e) => {
+  var myOnMouseLeave = (0, import_react42.useCallback)((e) => {
     dispatch(mouseLeaveChart());
     dispatch(externalEventAction({
       handler: onMouseLeave,
       reactEvent: e
     }));
   }, [dispatch, onMouseLeave]);
-  var myOnMouseMove = (0, import_react41.useCallback)((e) => {
+  var myOnMouseMove = (0, import_react42.useCallback)((e) => {
     dispatch(mouseMoveAction(e));
     dispatch(externalEventAction({
       handler: onMouseMove,
       reactEvent: e
     }));
   }, [dispatch, onMouseMove]);
-  var onFocus = (0, import_react41.useCallback)(() => {
+  var onFocus = (0, import_react42.useCallback)(() => {
     dispatch(focusAction());
   }, [dispatch]);
-  var onKeyDown = (0, import_react41.useCallback)((e) => {
+  var onKeyDown = (0, import_react42.useCallback)((e) => {
     dispatch(keyDownAction(e.key));
   }, [dispatch]);
-  var myOnContextMenu = (0, import_react41.useCallback)((e) => {
+  var myOnContextMenu = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onContextMenu,
       reactEvent: e
     }));
   }, [dispatch, onContextMenu]);
-  var myOnDoubleClick = (0, import_react41.useCallback)((e) => {
+  var myOnDoubleClick = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onDoubleClick,
       reactEvent: e
     }));
   }, [dispatch, onDoubleClick]);
-  var myOnMouseDown = (0, import_react41.useCallback)((e) => {
+  var myOnMouseDown = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onMouseDown,
       reactEvent: e
     }));
   }, [dispatch, onMouseDown]);
-  var myOnMouseUp = (0, import_react41.useCallback)((e) => {
+  var myOnMouseUp = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onMouseUp,
       reactEvent: e
     }));
   }, [dispatch, onMouseUp]);
-  var myOnTouchStart = (0, import_react41.useCallback)((e) => {
+  var myOnTouchStart = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onTouchStart,
       reactEvent: e
     }));
   }, [dispatch, onTouchStart]);
-  var myOnTouchMove = (0, import_react41.useCallback)((e) => {
+  var myOnTouchMove = (0, import_react42.useCallback)((e) => {
     dispatch(touchEventAction(e));
     dispatch(externalEventAction({
       handler: onTouchMove,
       reactEvent: e
     }));
   }, [dispatch, onTouchMove]);
-  var myOnTouchEnd = (0, import_react41.useCallback)((e) => {
+  var myOnTouchEnd = (0, import_react42.useCallback)((e) => {
     dispatch(externalEventAction({
       handler: onTouchEnd,
       reactEvent: e
     }));
   }, [dispatch, onTouchEnd]);
-  return /* @__PURE__ */ React32.createElement(TooltipPortalContext.Provider, {
+  return /* @__PURE__ */ React33.createElement(TooltipPortalContext.Provider, {
     value: tooltipPortal
-  }, /* @__PURE__ */ React32.createElement(LegendPortalContext.Provider, {
+  }, /* @__PURE__ */ React33.createElement(LegendPortalContext.Provider, {
     value: legendPortal
-  }, /* @__PURE__ */ React32.createElement("div", {
+  }, /* @__PURE__ */ React33.createElement("div", {
     className: clsx("recharts-wrapper", className),
     style: _objectSpread30({
       position: "relative",
@@ -42160,7 +42224,7 @@ function _objectWithoutPropertiesLoose17(r2, e) {
   }
   return t;
 }
-var CategoricalChart = /* @__PURE__ */ (0, import_react42.forwardRef)((props, ref) => {
+var CategoricalChart = /* @__PURE__ */ (0, import_react43.forwardRef)((props, ref) => {
   var {
     children,
     className,
@@ -42173,13 +42237,13 @@ var CategoricalChart = /* @__PURE__ */ (0, import_react42.forwardRef)((props, re
   } = props, others = _objectWithoutProperties17(props, _excluded17);
   var attrs = filterProps(others, false);
   if (compact) {
-    return /* @__PURE__ */ React33.createElement(RootSurface, {
+    return /* @__PURE__ */ React34.createElement(RootSurface, {
       otherAttributes: attrs,
       title,
       desc
     }, children);
   }
-  return /* @__PURE__ */ React33.createElement(RechartsWrapper, {
+  return /* @__PURE__ */ React34.createElement(RechartsWrapper, {
     className,
     style,
     width,
@@ -42195,12 +42259,12 @@ var CategoricalChart = /* @__PURE__ */ (0, import_react42.forwardRef)((props, re
     onTouchStart: props.onTouchStart,
     onTouchMove: props.onTouchMove,
     onTouchEnd: props.onTouchEnd
-  }, /* @__PURE__ */ React33.createElement(RootSurface, {
+  }, /* @__PURE__ */ React34.createElement(RootSurface, {
     otherAttributes: attrs,
     title,
     desc,
     ref
-  }, /* @__PURE__ */ React33.createElement(ClipPathProvider, null, children)));
+  }, /* @__PURE__ */ React34.createElement(ClipPathProvider, null, children)));
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/CartesianChart.js
@@ -42248,7 +42312,7 @@ var defaultProps4 = {
   reverseStackOrder: false,
   syncMethod: "index"
 };
-var CartesianChart = /* @__PURE__ */ (0, import_react43.forwardRef)(function CartesianChart2(props, ref) {
+var CartesianChart = /* @__PURE__ */ (0, import_react44.forwardRef)(function CartesianChart2(props, ref) {
   var _categoricalChartProp;
   var rootChartProps = resolveDefaultProps(props.categoricalChartProps, defaultProps4);
   var {
@@ -42272,19 +42336,19 @@ var CartesianChart = /* @__PURE__ */ (0, import_react43.forwardRef)(function Car
     tooltipPayloadSearcher,
     eventEmitter: void 0
   };
-  return /* @__PURE__ */ React34.createElement(RechartsStoreProvider, {
+  return /* @__PURE__ */ React35.createElement(RechartsStoreProvider, {
     preloadedState: {
       options
     },
     reduxStoreName: (_categoricalChartProp = categoricalChartProps.id) !== null && _categoricalChartProp !== void 0 ? _categoricalChartProp : chartName
-  }, /* @__PURE__ */ React34.createElement(ChartDataContextProvider, {
+  }, /* @__PURE__ */ React35.createElement(ChartDataContextProvider, {
     chartData: categoricalChartProps.data
-  }), /* @__PURE__ */ React34.createElement(ReportMainChartProps, {
+  }), /* @__PURE__ */ React35.createElement(ReportMainChartProps, {
     width,
     height,
     layout: rootChartProps.layout,
     margin: rootChartProps.margin
-  }), /* @__PURE__ */ React34.createElement(ReportChartProps, {
+  }), /* @__PURE__ */ React35.createElement(ReportChartProps, {
     accessibilityLayer: rootChartProps.accessibilityLayer,
     barCategoryGap: rootChartProps.barCategoryGap,
     maxBarSize: rootChartProps.maxBarSize,
@@ -42294,7 +42358,7 @@ var CartesianChart = /* @__PURE__ */ (0, import_react43.forwardRef)(function Car
     syncId: rootChartProps.syncId,
     syncMethod: rootChartProps.syncMethod,
     className: rootChartProps.className
-  }), /* @__PURE__ */ React34.createElement(CategoricalChart, _extends22({}, otherCategoricalProps, {
+  }), /* @__PURE__ */ React35.createElement(CategoricalChart, _extends22({}, otherCategoricalProps, {
     width,
     height,
     ref
@@ -42303,8 +42367,8 @@ var CartesianChart = /* @__PURE__ */ (0, import_react43.forwardRef)(function Car
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/LineChart.js
 var allowedTooltipTypes = ["axis"];
-var LineChart = /* @__PURE__ */ (0, import_react44.forwardRef)((props, ref) => {
-  return /* @__PURE__ */ React35.createElement(CartesianChart, {
+var LineChart = /* @__PURE__ */ (0, import_react45.forwardRef)((props, ref) => {
+  return /* @__PURE__ */ React36.createElement(CartesianChart, {
     chartName: "LineChart",
     defaultTooltipEventType: "axis",
     validateTooltipEventTypes: allowedTooltipTypes,
@@ -42315,11 +42379,11 @@ var LineChart = /* @__PURE__ */ (0, import_react44.forwardRef)((props, ref) => {
 });
 
 // node_modules/.deno/recharts@3.0.0/node_modules/recharts/es6/chart/AreaChart.js
-var React36 = __toESM(require_react());
-var import_react45 = __toESM(require_react());
+var React37 = __toESM(require_react());
+var import_react46 = __toESM(require_react());
 var allowedTooltipTypes2 = ["axis"];
-var AreaChart = /* @__PURE__ */ (0, import_react45.forwardRef)((props, ref) => {
-  return /* @__PURE__ */ React36.createElement(CartesianChart, {
+var AreaChart = /* @__PURE__ */ (0, import_react46.forwardRef)((props, ref) => {
+  return /* @__PURE__ */ React37.createElement(CartesianChart, {
     chartName: "AreaChart",
     defaultTooltipEventType: "axis",
     validateTooltipEventTypes: allowedTooltipTypes2,
@@ -42330,7 +42394,7 @@ var AreaChart = /* @__PURE__ */ (0, import_react45.forwardRef)((props, ref) => {
 });
 
 // src/ui/dashboard/components/ui/chart.tsx
-var import_jsx_runtime6 = __toESM(require_jsx_runtime());
+var import_jsx_runtime7 = __toESM(require_jsx_runtime());
 function ChartContainer(props) {
   const style = Object.entries(props.config).reduce((acc, [key, value]) => {
     if (value.color) {
@@ -42341,7 +42405,7 @@ function ChartContainer(props) {
     }
     return acc;
   }, {});
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     "div",
     {
       className: `chart-container ${props.className ?? ""}`.trim(),
@@ -42351,14 +42415,14 @@ function ChartContainer(props) {
   );
 }
 function ChartTooltipContent(props) {
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: "chart-tooltip", children: [
-    props.label ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: "chart-tooltip__label", children: props.label }) : null,
-    props.value ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("strong", { children: props.value }) : null
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "chart-tooltip", children: [
+    props.label ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("span", { className: "chart-tooltip__label", children: props.label }) : null,
+    props.value ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("strong", { children: props.value }) : null
   ] });
 }
 
 // src/ui/dashboard/charts/LiveCharts.tsx
-var import_jsx_runtime7 = __toESM(require_jsx_runtime());
+var import_jsx_runtime8 = __toESM(require_jsx_runtime());
 var chartDefinitions = [
   { key: "latency", kind: "line", colorToken: "var(--chart-latency)" },
   { key: "throughput", kind: "area", colorToken: "var(--chart-throughput)" },
@@ -42375,7 +42439,7 @@ var valueFormatter2 = new Intl.NumberFormat("en-US", {
   useGrouping: true
 });
 function LiveCharts({ charts }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("section", { className: "chart-grid", "aria-label": "Live charts", children: chartDefinitions.map((definition) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("section", { className: "chart-grid", "aria-label": "Live charts", children: chartDefinitions.map((definition) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
     TelemetryChart,
     {
       colorToken: definition.colorToken,
@@ -42398,17 +42462,17 @@ function TelemetryChart(props) {
       label: series.label
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Card, { className: "chart-card", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "chart-card__header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("div", { className: "chart-card__heading", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("h2", { children: series.label }),
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "chart-card__meta", children: series.unit })
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(Card, { className: "chart-card", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "chart-card__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "chart-card__heading", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("h2", { children: series.label }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "chart-card__meta", children: series.unit })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("span", { className: "chart-card__window", children: formatWindow(series.windowMs) })
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("span", { className: "chart-card__window", children: formatWindow(series.windowMs) })
     ] }),
-    data.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("p", { className: "empty-state chart-card__empty", children: series.unavailableReason ?? "No chart data in this window." }) : /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ChartContainer, { config, className: "chart-card__plot", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ResponsiveContainer, { width: "100%", height: "100%", children: kind === "line" ? /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(LineChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(CartesianGrid, { stroke: "var(--color-rule)", vertical: false }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    data.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "empty-state chart-card__empty", children: series.unavailableReason ?? "No chart data in this window." }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ChartContainer, { config, className: "chart-card__plot", children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ResponsiveContainer, { width: "100%", height: "100%", children: kind === "line" ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(LineChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(CartesianGrid, { stroke: "var(--color-rule)", vertical: false }),
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         XAxis,
         {
           axisLine: false,
@@ -42418,7 +42482,7 @@ function TelemetryChart(props) {
           tickLine: false
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         YAxis,
         {
           axisLine: false,
@@ -42428,7 +42492,7 @@ function TelemetryChart(props) {
           width: 52
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Tooltip,
         {
           content: ({ active, label, payload }) => {
@@ -42437,7 +42501,7 @@ function TelemetryChart(props) {
             }
             const point4 = payload[0]?.payload;
             const prefix = point4?.detailLabel ? `${point4.detailLabel} \xB7 ` : "";
-            return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
               ChartTooltipContent,
               {
                 label: `${prefix}${label ?? ""}`,
@@ -42448,7 +42512,7 @@ function TelemetryChart(props) {
           cursor: { stroke: colorToken, strokeDasharray: "4 4" }
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Line,
         {
           dataKey: "value",
@@ -42459,13 +42523,13 @@ function TelemetryChart(props) {
           type: "monotone"
         }
       )
-    ] }) : /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(AreaChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)("linearGradient", { id: `${series.id}-fill`, x1: "0", x2: "0", y1: "0", y2: "1", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("stop", { offset: "0%", stopColor: colorToken, stopOpacity: 0.28 }),
-        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("stop", { offset: "100%", stopColor: colorToken, stopOpacity: 0.04 })
+    ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(AreaChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("linearGradient", { id: `${series.id}-fill`, x1: "0", x2: "0", y1: "0", y2: "1", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("stop", { offset: "0%", stopColor: colorToken, stopOpacity: 0.28 }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("stop", { offset: "100%", stopColor: colorToken, stopOpacity: 0.04 })
       ] }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(CartesianGrid, { stroke: "var(--color-rule)", vertical: false }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(CartesianGrid, { stroke: "var(--color-rule)", vertical: false }),
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         XAxis,
         {
           axisLine: false,
@@ -42475,7 +42539,7 @@ function TelemetryChart(props) {
           tickLine: false
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         YAxis,
         {
           axisLine: false,
@@ -42485,7 +42549,7 @@ function TelemetryChart(props) {
           width: 52
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Tooltip,
         {
           content: ({ active, label, payload }) => {
@@ -42494,7 +42558,7 @@ function TelemetryChart(props) {
             }
             const point4 = payload[0]?.payload;
             const prefix = point4?.detailLabel ? `${point4.detailLabel} \xB7 ` : "";
-            return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
               ChartTooltipContent,
               {
                 label: `${prefix}${label ?? ""}`,
@@ -42505,7 +42569,7 @@ function TelemetryChart(props) {
           cursor: { stroke: colorToken, strokeDasharray: "4 4" }
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Area,
         {
           dataKey: "value",
@@ -42536,7 +42600,7 @@ function formatWindow(windowMs) {
 }
 
 // src/ui/dashboard/App.tsx
-var import_jsx_runtime8 = __toESM(require_jsx_runtime());
+var import_jsx_runtime9 = __toESM(require_jsx_runtime());
 var tabs = [
   { value: "overview", label: "Overview" },
   { value: "metrics", label: "Metrics" },
@@ -42544,12 +42608,12 @@ var tabs = [
   { value: "settings", label: "Settings", disabled: true }
 ];
 function App() {
-  const [projection, setProjection] = (0, import_react46.useState)(() => readInitialProjection());
-  const [activeTab, setActiveTab] = (0, import_react46.useState)("overview");
-  const [paused, setPaused] = (0, import_react46.useState)(false);
-  const [refreshError, setRefreshError] = (0, import_react46.useState)(null);
-  const [clearing, setClearing] = (0, import_react46.useState)(false);
-  (0, import_react46.useEffect)(() => {
+  const [projection, setProjection] = (0, import_react47.useState)(() => readInitialProjection());
+  const [activeTab, setActiveTab] = (0, import_react47.useState)("overview");
+  const [paused, setPaused] = (0, import_react47.useState)(false);
+  const [refreshError, setRefreshError] = (0, import_react47.useState)(null);
+  const [clearing, setClearing] = (0, import_react47.useState)(false);
+  (0, import_react47.useEffect)(() => {
     if (paused) {
       return;
     }
@@ -42558,17 +42622,17 @@ function App() {
     }, 1e3);
     return () => clearInterval(id);
   }, [paused, projection.windowMs]);
-  return /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("main", { className: "workbench", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("header", { className: "workbench__header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "heading", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "eyebrow", children: "Local telemetry dashboard" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("h1", { children: "OTEL Inspector" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "endpoint", children: projection.receiver.endpoint })
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("main", { className: "workbench", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("header", { className: "workbench__header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "heading", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "eyebrow", children: "Local telemetry dashboard" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h1", { children: "OTEL Inspector" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "endpoint", children: projection.receiver.endpoint })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(Button, { type: "button", onClick: () => setPaused((value) => !value), children: paused ? "Resume" : "Pause" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Button, { type: "button", onClick: () => setPaused((value) => !value), children: paused ? "Resume" : "Pause" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
           Button,
           {
             type: "button",
@@ -42587,15 +42651,15 @@ function App() {
         )
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(Tabs, { value: activeTab, onValueChange: setActiveTab, values: [...tabs] }),
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("section", { className: "workbench__body", id: `panel-${activeTab}`, role: "tabpanel", children: [
-      activeTab === "overview" ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_jsx_runtime8.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(OverviewCards, { cards: projection.cards }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(LiveCharts, { charts: projection.charts })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
-      projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
-        refreshError ? /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "warning-item", children: refreshError }) : null,
-        projection.warnings.map((warning2) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "warning-item", children: warning2.message }, warning2.code))
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Tabs, { value: activeTab, onValueChange: setActiveTab, values: [...tabs] }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "workbench__body", id: `panel-${activeTab}`, role: "tabpanel", children: [
+      activeTab === "overview" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_jsx_runtime9.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(OverviewCards, { cards: projection.cards }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(LiveCharts, { charts: projection.charts })
+      ] }) : activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MetricsExplorer, { rows: projection.explorer.rows }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
+      projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
+        refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: refreshError }) : null,
+        projection.warnings.map((warning2) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: warning2.message }, warning2.code))
       ] }) : null
     ] })
   ] });
@@ -42621,9 +42685,9 @@ async function refreshProjection(windowMs, setProjection, setRefreshError) {
 }
 
 // src/ui/dashboard/main.tsx
-var import_jsx_runtime9 = __toESM(require_jsx_runtime());
+var import_jsx_runtime10 = __toESM(require_jsx_runtime());
 (0, import_client.createRoot)(document.getElementById("root")).render(
-  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_react47.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(App, {}) })
+  /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react48.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(App, {}) })
 );
 /*! Bundled license information:
 
