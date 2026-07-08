@@ -85,7 +85,10 @@ export function buildDashboardProjection(
 ): DashboardProjection {
   const observedAtMs = options.observedAtMs ?? summary.observedAtMs;
   const windowMs = options.windowMs ?? 60_000;
-  const points = snapshot.recentPoints.filter((point) => observedAtMs - point.observedAtMs <= windowMs);
+  const points = snapshot.recentPoints.filter((point) => isPointInWindow(point.observedAtMs, observedAtMs, windowMs));
+  const exportsInWindow = snapshot.exports.filter((record) =>
+    isPointInWindow(record.observedAtMs, observedAtMs, windowMs)
+  );
   const requestPoints = points.filter(isHttpRequestCount);
   const latencyPoints = points.filter(isHttpDurationHistogram);
   const errorPoints = requestPoints.filter(isErrorStatus);
@@ -107,7 +110,7 @@ export function buildDashboardProjection(
       latency: latencyChart(latencyPoints, windowMs),
       throughput: throughputChart(requestPoints, windowMs),
       errorRate: errorRateChart(requestPoints, errorPoints, windowMs),
-      ingest: ingestChart(snapshot, summary, windowMs),
+      ingest: ingestChart(exportsInWindow, summary, windowMs),
     },
     explorer: { rows: explorerRows(points) },
     warnings: summary.warnings,
@@ -274,13 +277,17 @@ function errorRateChart(requestPoints: MetricPoint[], errorPoints: MetricPoint[]
   };
 }
 
-function ingestChart(snapshot: TelemetryStoreSnapshot, summary: LiveTelemetrySummary, windowMs: number): ChartSeries {
+function ingestChart(
+  exportsInWindow: TelemetryStoreSnapshot["exports"],
+  summary: LiveTelemetrySummary,
+  windowMs: number,
+): ChartSeries {
   return {
     id: "ingest",
     label: "Ingest",
     unit: "pts/s",
     windowMs,
-    points: snapshot.exports.map((record) => ({
+    points: exportsInWindow.map((record) => ({
       observedAtMs: record.observedAtMs,
       value: record.pointCount,
       seriesKey: `export:${record.observedAtMs}`,
@@ -296,8 +303,7 @@ function ingestChart(snapshot: TelemetryStoreSnapshot, summary: LiveTelemetrySum
 function explorerRows(points: MetricPoint[]): ExplorerRow[] {
   const bySeries = new Map<string, ExplorerRow>();
   for (const point of points) {
-    const identity = explorerIdentity(point);
-    const existing = bySeries.get(identity);
+    const existing = bySeries.get(point.seriesKey);
     if (existing) {
       existing.latest = point.value ?? existing.latest;
       existing.lastObservedAtMs = Math.max(existing.lastObservedAtMs, point.observedAtMs);
@@ -305,7 +311,7 @@ function explorerRows(points: MetricPoint[]): ExplorerRow[] {
       existing.status = statusForPoint(point);
       continue;
     }
-    bySeries.set(identity, {
+    bySeries.set(point.seriesKey, {
       seriesKey: point.seriesKey,
       metricName: point.metric.name,
       metricType: point.metric.type,
@@ -321,6 +327,10 @@ function explorerRows(points: MetricPoint[]): ExplorerRow[] {
   return [...bySeries.values()].sort((left, right) =>
     left.metricName.localeCompare(right.metricName) || left.seriesKey.localeCompare(right.seriesKey)
   );
+}
+
+function isPointInWindow(pointObservedAtMs: number, observedAtMs: number, windowMs: number): boolean {
+  return pointObservedAtMs <= observedAtMs && observedAtMs - pointObservedAtMs <= windowMs;
 }
 
 function chartPoint(
@@ -374,14 +384,4 @@ function isHttpDurationHistogram(point: MetricPoint): boolean {
 function isErrorStatus(point: MetricPoint): boolean {
   const status = point.attributes["http.response.status_code"] ?? point.attributes["http.status_code"];
   return typeof status === "number" && status >= 500;
-}
-
-function explorerIdentity(point: MetricPoint): string {
-  return JSON.stringify({
-    resource: point.resource,
-    scope: point.scope,
-    metricName: point.metric.name,
-    metricType: point.metric.type,
-    unit: point.metric.unit,
-  });
 }

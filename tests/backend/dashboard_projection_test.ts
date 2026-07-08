@@ -65,8 +65,71 @@ Deno.test("buildDashboardProjection creates cards charts and explorer rows from 
     unit: "%",
   });
   assertEquals(projection.charts.throughput.points.length, 2);
-  assertEquals(projection.explorer.rows.length, 2);
+  assertEquals(projection.explorer.rows.length, 3);
+  assertEquals(
+    projection.explorer.rows.map((row) => row.seriesKey).sort(),
+    [
+      "series:http.server.duration:2000",
+      "series:http.server.request.count:1000",
+      "series:http.server.request.count:2000",
+    ].sort(),
+  );
   assertEquals(projection.explorer.rows[0].metricName, "http.server.duration");
+});
+
+Deno.test("buildDashboardProjection keeps only points inside the selected window", () => {
+  const projection = buildDashboardProjection(
+    snapshot(
+      [
+        httpRequestCount(1_499, 1, 200),
+        httpRequestCount(1_500, 2, 200),
+        httpHistogram(1_500, [
+          { upperBound: 50, count: 3 },
+          { upperBound: 100, count: 5 },
+        ]),
+        httpRequestCount(3_001, 4, 500),
+      ],
+      [
+        { observedAtMs: 1_499, bytesReceived: 64, pointCount: 1 },
+        { observedAtMs: 1_500, bytesReceived: 64, pointCount: 2 },
+        { observedAtMs: 3_001, bytesReceived: 64, pointCount: 4 },
+      ],
+    ),
+    summary({
+      p95Ms: 88,
+      requestRate: 2,
+      errorRate: 0.1,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 1_500 },
+  );
+
+  assertEquals(projection.charts.throughput.points.map((point) => point.observedAtMs), [1_500]);
+  assertEquals(projection.charts.ingest.points.map((point) => point.observedAtMs), [1_500]);
+  assertEquals(projection.explorer.rows.map((row) => row.lastObservedAtMs), [1_500, 1_500]);
+});
+
+Deno.test("buildDashboardProjection keeps distinct series keys separate in the explorer", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      explorerPoint("series-a", 2_000, 7),
+      explorerPoint("series-b", 2_000, 11),
+    ]),
+    summary({
+      p95Ms: 88,
+      requestRate: 2,
+      errorRate: 0.1,
+      topServices: ["checkout"],
+    }),
+  );
+
+  assertEquals(projection.explorer.rows.length, 2);
+  assertEquals(
+    projection.explorer.rows.map((row) => row.seriesKey).sort(),
+    ["series-a", "series-b"],
+  );
+  assertEquals(projection.explorer.rows[0].latest, 7);
+  assertEquals(projection.explorer.rows[1].latest, 11);
 });
 
 function summary(overview: LiveTelemetrySummary["overview"]): LiveTelemetrySummary {
@@ -79,14 +142,19 @@ function summary(overview: LiveTelemetrySummary["overview"]): LiveTelemetrySumma
   };
 }
 
-function snapshot(points: MetricPoint[]): TelemetryStoreSnapshot {
+function snapshot(
+  points: MetricPoint[],
+  exports: TelemetryStoreSnapshot["exports"] = points.length > 0
+    ? [{ observedAtMs: 2_000, bytesReceived: 128, pointCount: points.length }]
+    : [],
+): TelemetryStoreSnapshot {
   return {
     totalExports: points.length > 0 ? 1 : 0,
     totalBytes: points.length * 64,
     totalPoints: points.length,
     droppedPoints: 0,
     recentPoints: points,
-    exports: points.length > 0 ? [{ observedAtMs: 2_000, bytesReceived: 128, pointCount: points.length }] : [],
+    exports,
     warnings: points.flatMap((point) => point.warnings),
   };
 }
@@ -121,5 +189,19 @@ function basePoint(name: string, observedAtMs: number): MetricPoint {
     attributes: {},
     derivationStatus: "usable",
     warnings: [],
+  };
+}
+
+function explorerPoint(seriesKey: string, observedAtMs: number, value: number): MetricPoint {
+  return {
+    seriesKey,
+    observedAtMs,
+    resource: { "service.name": "checkout" },
+    scope: { name: "manual" },
+    metric: { name: "http.server.request.count", type: "sum", unit: "1", temporality: "delta", monotonic: true },
+    attributes: { "http.request.method": "GET", "http.route": "/cart" },
+    derivationStatus: "usable",
+    warnings: [],
+    value,
   };
 }
