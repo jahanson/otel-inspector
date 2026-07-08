@@ -1,4 +1,4 @@
-import { assertEquals, assertFalse, assertStringIncludes } from "@std/assert";
+import { assert, assertEquals, assertFalse, assertStringIncludes } from "@std/assert";
 
 Deno.test("dashboard bundle no longer inlines stylesheet text", async () => {
   const bundle = await Deno.readTextFile(new URL("../../src/ui/dist/app.js", import.meta.url));
@@ -39,4 +39,31 @@ Deno.test("dashboard chart styles derive transparency from the local accent", ()
 
   assertStringIncludes(styles, "--chart-accent-transparent: color-mix(in srgb, var(--chart-accent) 0%, transparent);");
   assertFalse(styles.includes("--chart-accent-transparent: rgb(123 147 255 / 0%);"));
+});
+
+Deno.test("overview dashboard defines the LiveCharts component contract", () => {
+  const liveChartsUrl = new URL("../../src/ui/dashboard/charts/LiveCharts.tsx", import.meta.url);
+
+  let exists = true;
+  try {
+    Deno.statSync(liveChartsUrl);
+  } catch {
+    exists = false;
+  }
+
+  assert(exists, "Expected LiveCharts.tsx to exist.");
+
+  const source = Deno.readTextFileSync(liveChartsUrl);
+
+  assertStringIncludes(source, "export function LiveCharts");
+  assertStringIncludes(source, 'aria-label="Live charts"');
+  assertStringIncludes(source, 'charts: DashboardProjection["charts"]');
+});
+
+Deno.test("overview tab renders LiveCharts after OverviewCards", () => {
+  const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+
+  assertStringIncludes(source, 'import { LiveCharts } from "./charts/LiveCharts.tsx";');
+  assertStringIncludes(source, "<OverviewCards cards={projection.cards} />");
+  assertStringIncludes(source, "<LiveCharts charts={projection.charts} />");
 });

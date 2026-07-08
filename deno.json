@@ -20,7 +20,8 @@
     "@webview/webview": "jsr:@webview/webview@0.9.0",
     "react": "npm:react@19.1.0",
     "react/jsx-runtime": "npm:react@19.1.0/jsx-runtime",
-    "react-dom/client": "npm:react-dom@19.1.0/client"
+    "react-dom/client": "npm:react-dom@19.1.0/client",
+    "recharts": "npm:recharts@3.0.0"
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {

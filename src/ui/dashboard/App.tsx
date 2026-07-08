@@ -3,6 +3,7 @@ import { Badge } from "./components/ui/badge.tsx";
 import { Button } from "./components/ui/button.tsx";
 import { Tabs } from "./components/ui/tabs.tsx";
 import { OverviewCards } from "./components/OverviewCards.tsx";
+import { LiveCharts } from "./charts/LiveCharts.tsx";
 import type { DashboardProjection } from "./types.ts";
 
 const tabs = [
@@ -68,7 +69,12 @@ export function App() {
 
       <section className="workbench__body" id={`panel-${activeTab}`} role="tabpanel">
         {activeTab === "overview"
-          ? <OverviewCards cards={projection.cards} />
+          ? (
+            <>
+              <OverviewCards cards={projection.cards} />
+              <LiveCharts charts={projection.charts} />
+            </>
+          )
           : <p className="empty-state">This dashboard tab is not implemented yet.</p>}
 
         {projection.warnings.length > 0 || refreshError
