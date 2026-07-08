@@ -83,3 +83,36 @@ Deno.test("metrics tab renders MetricsExplorer from explorer rows and keeps fall
   assertStringIncludes(source, "<MetricsExplorer rows={projection.explorer.rows} />");
   assertStringIncludes(source, "This dashboard tab is not implemented yet.");
 });
+
+Deno.test("MetricsExplorer source keeps semantic table markup and fallback values", () => {
+  const source = Deno.readTextFileSync(
+    new URL("../../src/ui/dashboard/components/MetricsExplorer.tsx", import.meta.url),
+  );
+
+  assertStringIncludes(source, '<section className="explorer" aria-label="Metrics Explorer">');
+  assertStringIncludes(source, '<div className="table-wrap">');
+  assertStringIncludes(source, '<th scope="col">Metric</th>');
+  assertStringIncludes(source, '<th scope="col">Type</th>');
+  assertStringIncludes(source, '<th scope="col">Unit</th>');
+  assertStringIncludes(source, '<th scope="col">Latest</th>');
+  assertStringIncludes(source, '<th scope="col">Service</th>');
+  assertStringIncludes(source, '<th scope="col">Status</th>');
+  assertStringIncludes(source, '<th scope="col">Last seen</th>');
+  assertStringIncludes(source, 'row.unit ?? "—"');
+  assertStringIncludes(source, 'row.latest === undefined ? "—" : formatNumber(row.latest)');
+  assertStringIncludes(source, 'row.resourceService ?? "—"');
+  assertFalse(source.includes("data-label"));
+  assert(source.includes("<table>"));
+  assert(source.includes("<thead>"));
+});
+
+Deno.test("explorer stylesheet keeps native table semantics on small screens", () => {
+  const styles = Deno.readTextFileSync(new URL("../../src/ui/dashboard/styles.css", import.meta.url));
+
+  assertStringIncludes(styles, ".table-wrap {");
+  assertStringIncludes(styles, "overflow-x: auto;");
+  assertStringIncludes(styles, ".explorer {");
+  assertFalse(styles.includes(".explorer__table thead {"));
+  assertFalse(styles.includes("content: attr(data-label);"));
+  assertFalse(styles.includes(".explorer__table,\n  .explorer__table thead,"));
+});

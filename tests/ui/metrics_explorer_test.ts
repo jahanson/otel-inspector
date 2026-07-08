@@ -40,6 +40,7 @@ Deno.test("filterExplorerRows matches metrics, services, types, and attributes",
 
   assertEquals(filterExplorerRows("checkout", rows), [rows[0]]);
   assertEquals(filterExplorerRows("counter", rows), [rows[0]]);
+  assertEquals(filterExplorerRows("http.server.request.count", rows), [rows[0]]);
   assertEquals(filterExplorerRows("region", rows), [rows[1]]);
   assertEquals(filterExplorerRows("us-central1", rows), [rows[1]]);
 });

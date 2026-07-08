@@ -50,3 +50,44 @@
 ## Issues or concerns
 
 - None.
+
+## Task 7 review fixes
+
+### Review findings addressed
+
+- Preserved native table semantics in `src/ui/dashboard/components/MetricsExplorer.tsx` by removing the mobile `display: block` table fallback and generated `data-label` cells.
+- Kept the explorer table in a horizontally scrollable `.table-wrap` instead of turning the table into a stacked card layout on small screens.
+- Strengthened the UI regression coverage with a direct metric-name filter assertion and source-level contract checks for the seven column headers and em dash placeholders.
+
+### Files changed
+
+- `src/ui/dashboard/components/MetricsExplorer.tsx`
+- `src/ui/dashboard/styles.css`
+- `tests/ui/metrics_explorer_test.ts`
+- `tests/ui/dashboard_bundle_test.ts`
+- `src/ui/dist/app.js`
+- `src/ui/dist/styles.css`
+
+### Tests and checks
+
+- `deno test tests/ui/metrics_explorer_test.ts`
+  - Passed: 2 tests, 0 failed.
+- `deno task ui:build`
+  - Passed.
+- `deno task test:dashboard-bundle`
+  - Passed: 8 tests, 0 failed.
+- `deno task check`
+  - Passed.
+- `deno task ok`
+  - Passed.
+- `rg -n "vw|transition-all" src/ui/dashboard/styles.css`
+  - Returned no matches.
+
+### Commit created
+
+- `fix: preserve explorer table semantics`
+
+### DOX pass result
+
+- Re-read the applicable DOX chain before editing: root `AGENTS.md`, `src/ui/AGENTS.md`, and `tests/AGENTS.md`.
+- No DOX contract changes were needed, so no AGENTS files were updated.

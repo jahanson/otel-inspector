@@ -470,32 +470,27 @@ tbody tr:not(:last-child) {
   outline-color: var(--color-focus);
 }
 
-.explorer__table-wrap {
+.explorer .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-1);
   background: var(--color-panel);
 }
 
-.explorer__table {
+.explorer table {
   font-variant-numeric: tabular-nums;
 }
 
-.explorer__table th,
-.explorer__table td {
+.explorer th,
+.explorer td {
   padding: var(--space-3);
   white-space: nowrap;
 }
 
-.explorer__table th {
+.explorer th {
   color: var(--color-muted);
   font-size: 0.75rem;
   font-weight: 700;
-}
-
-.explorer__table td[data-label="Latest"],
-.explorer__table td[data-label="Last seen"] {
-  font-variant-numeric: tabular-nums;
 }
 
 .explorer__empty {
@@ -507,6 +502,16 @@ tbody tr:not(:last-child) {
   border: 1px solid var(--color-warning-border);
   border-radius: var(--radius-1);
   background: var(--color-warning-surface);
+}
+
+@media (max-width: 1100px) {
+  .overview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -527,64 +532,6 @@ tbody tr:not(:last-child) {
     width: 100%;
   }
 
-  .explorer__table-wrap {
-    overflow: visible;
-  }
-
-  .explorer__table,
-  .explorer__table thead,
-  .explorer__table tbody,
-  .explorer__table tr,
-  .explorer__table th,
-  .explorer__table td {
-    display: block;
-  }
-
-  .explorer__table thead {
-    display: none;
-  }
-
-  .explorer__table tr {
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius-1);
-    padding: var(--space-2) 0;
-  }
-
-  .explorer__table tbody tr + tr {
-    margin-top: var(--space-2);
-  }
-
-  .explorer__table td {
-    white-space: normal;
-    display: grid;
-    grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
-    gap: var(--space-2);
-    align-items: start;
-  }
-
-  .explorer__table td::before {
-    content: attr(data-label);
-    color: var(--color-muted);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-  }
-
-  .explorer__table td + td {
-    margin-top: var(--space-1);
-  }
-}
-
-@media (max-width: 1100px) {
-  .overview-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
   .overview-grid {
     grid-template-columns: 1fr;
   }

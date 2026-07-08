@@ -21131,24 +21131,24 @@ function MetricsExplorer({ rows }) {
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "explorer__table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("table", { className: "explorer__table", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("table", { children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("tr", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Metric" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Type" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Unit" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Latest" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Service" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Status" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { children: "Last seen" })
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Metric" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Type" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Unit" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Latest" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Service" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Status" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("th", { scope: "col", children: "Last seen" })
       ] }) }),
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("tbody", { children: filteredRows.map((row) => /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("tr", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Metric", children: row.metricName }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Type", children: row.metricType }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Unit", children: row.unit ?? "\u2014" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Latest", children: row.latest === void 0 ? "\u2014" : formatNumber(row.latest) }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Service", children: row.resourceService ?? "\u2014" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Status", children: row.status }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { "data-label": "Last seen", children: seenFormatter.format(row.lastObservedAtMs) })
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.metricName }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.metricType }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.unit ?? "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.latest === void 0 ? "\u2014" : formatNumber(row.latest) }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.resourceService ?? "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: row.status }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("td", { children: seenFormatter.format(row.lastObservedAtMs) })
       ] }, row.seriesKey)) })
     ] }) }),
     filteredRows.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "empty-state explorer__empty", children: "No metrics match the current filter." }) : null

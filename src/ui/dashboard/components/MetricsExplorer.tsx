@@ -32,29 +32,29 @@ export function MetricsExplorer({ rows }: MetricsExplorerProps) {
         />
       </label>
 
-      <div className="explorer__table-wrap">
-        <table className="explorer__table">
+      <div className="table-wrap">
+        <table>
           <thead>
             <tr>
-              <th>Metric</th>
-              <th>Type</th>
-              <th>Unit</th>
-              <th>Latest</th>
-              <th>Service</th>
-              <th>Status</th>
-              <th>Last seen</th>
+              <th scope="col">Metric</th>
+              <th scope="col">Type</th>
+              <th scope="col">Unit</th>
+              <th scope="col">Latest</th>
+              <th scope="col">Service</th>
+              <th scope="col">Status</th>
+              <th scope="col">Last seen</th>
             </tr>
           </thead>
           <tbody>
             {filteredRows.map((row) => (
               <tr key={row.seriesKey}>
-                <td data-label="Metric">{row.metricName}</td>
-                <td data-label="Type">{row.metricType}</td>
-                <td data-label="Unit">{row.unit ?? "—"}</td>
-                <td data-label="Latest">{row.latest === undefined ? "—" : formatNumber(row.latest)}</td>
-                <td data-label="Service">{row.resourceService ?? "—"}</td>
-                <td data-label="Status">{row.status}</td>
-                <td data-label="Last seen">{seenFormatter.format(row.lastObservedAtMs)}</td>
+                <td>{row.metricName}</td>
+                <td>{row.metricType}</td>
+                <td>{row.unit ?? "—"}</td>
+                <td>{row.latest === undefined ? "—" : formatNumber(row.latest)}</td>
+                <td>{row.resourceService ?? "—"}</td>
+                <td>{row.status}</td>
+                <td>{seenFormatter.format(row.lastObservedAtMs)}</td>
               </tr>
             ))}
           </tbody>
