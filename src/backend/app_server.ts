@@ -7,9 +7,7 @@ export const APP_SERVER = {
   port: 4319,
 } as const;
 
-const EMPTY_APP_JS = `console.info("OTEL Inspector dashboard asset placeholder");`;
-const EMPTY_STYLES =
-  `html,body{margin:0;min-height:100%;overflow-x:clip;background:#23272a;color:#f2f0eb;font-family:system-ui,sans-serif}`;
+const UI_DIST_DIR = new URL("../ui/dist/", import.meta.url);
 
 export function appUrl(): string {
   return `http://${APP_SERVER.host}:${APP_SERVER.port}/`;
@@ -42,21 +40,11 @@ export function handleAppRequest(request: Request, state: ReceiverState): Respon
   }
 
   if (url.pathname === "/assets/app.js") {
-    return new Response(EMPTY_APP_JS, {
-      headers: {
-        "content-type": "text/javascript; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
+    return assetResponse(new URL("app.js", UI_DIST_DIR), "text/javascript; charset=utf-8");
   }
 
   if (url.pathname === "/assets/styles.css") {
-    return new Response(EMPTY_STYLES, {
-      headers: {
-        "content-type": "text/css; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
+    return assetResponse(new URL("styles.css", UI_DIST_DIR), "text/css; charset=utf-8");
   }
 
   if (url.pathname === "/api/summary") {
@@ -94,4 +82,17 @@ export function startAppServer(state: ReceiverState): Deno.HttpServer<Deno.NetAd
 function parseWindowMs(value: string | null): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 15 * 60_000) : 60_000;
+}
+
+function assetResponse(url: URL, contentType: string): Response {
+  try {
+    return new Response(Deno.readFileSync(url), {
+      headers: {
+        "content-type": contentType,
+        "cache-control": "no-store",
+      },
+    });
+  } catch {
+    return new Response("Asset not built. Run deno task ui:build.", { status: 503 });
+  }
 }

@@ -1,4 +1,5 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { assertEquals, assertFalse, assertStringIncludes } from "@std/assert";
+import { assertSpyCalls, stub } from "jsr:@std/testing@^1.0.2/mock";
 import { handleAppRequest } from "../../src/backend/app_server.ts";
 import { buildReceiverState, currentSummary } from "../../src/backend/receiver.ts";
 import { recordReceiverFailure } from "../../src/backend/live_bus.ts";
@@ -19,19 +20,46 @@ Deno.test("dashboard app server serves dashboard projection endpoint", async () 
   assertEquals(body.cards.latency.state, "unavailable");
 });
 
-Deno.test("dashboard app server serves app shell and static asset placeholders", async () => {
-  const state = buildReceiverState(1_000);
-  const htmlResponse = handleAppRequest(new Request("http://127.0.0.1:4319/"), state);
-  const html = await htmlResponse.text();
-  const script = await handleAppRequest(new Request("http://127.0.0.1:4319/assets/app.js"), state);
-  const css = await handleAppRequest(new Request("http://127.0.0.1:4319/assets/styles.css"), state);
+Deno.test({
+  name: "dashboard app server serves app shell and built asset responses",
+  async fn() {
+    const state = buildReceiverState(1_000);
+    const htmlResponse = handleAppRequest(new Request("http://127.0.0.1:4319/"), state);
+    const html = await htmlResponse.text();
+    const encoder = new TextEncoder();
+    const readStub = stub(Deno, "readFileSync", (path) => {
+      const href = path instanceof URL ? path.href : String(path);
+      if (href.includes("src/ui/dist/app.js")) {
+        return encoder.encode('createRoot(document.getElementById("root"));');
+      }
+      if (href.includes("src/ui/dist/styles.css")) {
+        return encoder.encode(".workbench { display: grid; }");
+      }
+      throw new Deno.errors.NotFound("missing");
+    });
 
-  assertStringIncludes(html, 'id="root"');
-  assertStringIncludes(html, "/assets/app.js");
-  assertEquals(script.headers.get("content-type"), "text/javascript; charset=utf-8");
-  assertEquals(script.headers.get("cache-control"), "no-store");
-  assertEquals(css.headers.get("content-type"), "text/css; charset=utf-8");
-  assertEquals(css.headers.get("cache-control"), "no-store");
+    try {
+      const script = await handleAppRequest(new Request("http://127.0.0.1:4319/assets/app.js"), state);
+      const css = await handleAppRequest(new Request("http://127.0.0.1:4319/assets/styles.css"), state);
+      const scriptText = await script.text();
+      const cssText = await css.text();
+
+      assertStringIncludes(html, 'id="root"');
+      assertStringIncludes(html, "/assets/app.js");
+      assertSpyCalls(readStub, 2);
+      assertStringIncludes(String(readStub.calls[0].args[0]), "src/ui/dist/app.js");
+      assertStringIncludes(String(readStub.calls[1].args[0]), "src/ui/dist/styles.css");
+      assertEquals(script.headers.get("content-type"), "text/javascript; charset=utf-8");
+      assertEquals(script.headers.get("cache-control"), "no-store");
+      assertStringIncludes(scriptText, "createRoot(");
+      assertFalse(scriptText.includes("placeholder"));
+      assertEquals(css.headers.get("content-type"), "text/css; charset=utf-8");
+      assertEquals(css.headers.get("cache-control"), "no-store");
+      assertStringIncludes(cssText, ".workbench");
+    } finally {
+      readStub.restore();
+    }
+  },
 });
 
 Deno.test("dashboard app server guards unsupported dashboard methods", async () => {

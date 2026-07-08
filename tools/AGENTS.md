@@ -6,6 +6,7 @@
 
 ## Ownership
 
+- `build_ui.ts` bundles the local React dashboard into `src/ui/dist` and copies base CSS for app-server serving.
 - `write_fixtures.ts` regenerates local fixture files.
 - `send_metrics_fixture.ts` sends the malformed OTLP fixture to the local receiver.
 - `generate_proto.ts` regenerates backend-only OTLP TypeScript bindings from local proto inputs.
@@ -13,6 +14,7 @@
 ## Local Contracts
 
 - Tool permissions must be explicit in `deno.json`.
+- UI asset builds run through `deno task ui:build` and must emit `src/ui/dist/app.js` plus `src/ui/dist/styles.css`.
 - Proto generation runs through `deno task proto:gen` and must use local files under `tools/proto/`.
 - Proto generation must not use broad `-A` or network permissions.
 - Fixture sender requires `--allow-read=fixtures` and `--allow-net=127.0.0.1:4318`.
@@ -25,6 +27,7 @@
 
 ## Verification
 
+- Run `deno task ui:build` for dashboard build-tool changes.
 - Run `deno task fixtures` for fixture generation changes.
 - Run `deno task proto:gen` for proto input or generator changes.
 - Run `deno task send:metrics-fixture` with the receiver running for sender changes.
