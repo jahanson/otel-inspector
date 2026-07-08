@@ -29,3 +29,16 @@ DONE
 
 - `git diff --check -- docs/plans/04-implementation/04-api-and-event-contracts.md`
 - `deno task ok`
+
+## Task 1 Review Finding Follow-Up
+
+- Updated `docs/plans/04-implementation/04-api-and-event-contracts.md` so the
+  M3 dashboard projection section now describes future implementation work
+  instead of implying `src/backend/dashboard_projection.ts` and the related
+  projection routes already exist.
+
+## Commands And Results
+
+- `git diff --check -- docs/plans/04-implementation/04-api-and-event-contracts.md`
+  passed with no output.
+- `deno task ok` passed with 56 tests.

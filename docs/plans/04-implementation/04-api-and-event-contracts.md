@@ -24,16 +24,17 @@ type LiveTelemetrySummary = {
 ```
 
 This summary is implemented by `src/backend/metric_derivations.ts` and served by
-`src/backend/app_server.ts` at `/api/summary`. M3 UI controls and chart-specific
-projection contracts are planned for later dashboard work; their runtime shape
+`src/backend/app_server.ts` at `/api/summary`. The M3 implementation plan will
+add UI controls and chart-specific projection contracts; their runtime shape
 will be defined when the dashboard projection module and routes are added.
 
 ## M3 Dashboard Projections
 
-M3 adds JSON-safe projections over the substrate for Overview cards, chart
-series, Metrics Explorer rows, pause/resume view state, and clear-session
-behavior. These projections are defined in
-`src/backend/dashboard_projection.ts` and served by `src/backend/app_server.ts`.
+The M3 implementation plan will add JSON-safe projections over the substrate
+for Overview cards, chart series, Metrics Explorer rows, pause/resume view
+state, and clear-session behavior. Expected implementation targets are
+`src/backend/dashboard_projection.ts` and projection routes in
+`src/backend/app_server.ts`.
 
 The UI must consume these projections rather than parsing raw OTLP protobuf
 trees or unbounded store snapshots.
