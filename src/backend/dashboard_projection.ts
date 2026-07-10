@@ -127,7 +127,7 @@ export function buildDashboardProjection(
       ingest: ingestChart(exportsInWindow, windowSummary, windowMs),
     },
     explorer: { rows: explorerRows(points) },
-    redaction: summary.redaction,
+    redaction: windowSummary.redaction,
     warnings: windowSummary.warnings,
   };
 }

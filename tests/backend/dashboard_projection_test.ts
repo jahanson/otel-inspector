@@ -268,6 +268,37 @@ Deno.test("buildDashboardProjection keeps only points inside the selected window
   assertEquals(projection.explorer.rows.map((row) => row.lastObservedAtMs), [1_500, 1_500]);
 });
 
+Deno.test("buildDashboardProjection scopes redaction to the selected window", () => {
+  const outsideWindow = {
+    ...explorerPoint("redacted-series", 1_000, 1),
+    attributes: { authorization: "[REDACTED]" },
+    redaction: { status: "blocked" as const, hiddenAttributeValues: 1, patternsMatched: ["authorization"] },
+  };
+  const sourceSummary = summary({
+    p95Ms: undefined,
+    requestRate: 1,
+    errorRate: undefined,
+    topServices: ["checkout"],
+  });
+  sourceSummary.redaction = {
+    status: "blocked",
+    hiddenAttributeValues: 1,
+    patternsMatched: ["authorization"],
+  };
+
+  const projection = buildDashboardProjection(
+    snapshot([outsideWindow, explorerPoint("clean-series", 2_500, 2)]),
+    sourceSummary,
+    { observedAtMs: 3_000, windowMs: 1_000 },
+  );
+
+  assertEquals(projection.redaction, {
+    status: "passed",
+    hiddenAttributeValues: 0,
+    patternsMatched: [],
+  });
+});
+
 Deno.test("buildDashboardProjection keeps distinct series keys separate in the explorer", () => {
   const projection = buildDashboardProjection(
     snapshot([
