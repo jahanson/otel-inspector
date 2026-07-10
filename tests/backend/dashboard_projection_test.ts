@@ -66,14 +66,8 @@ Deno.test("buildDashboardProjection creates cards charts and explorer rows from 
   });
   assertEquals(projection.charts.throughput.points.length, 2);
   assertEquals(projection.explorer.rows.length, 3);
-  assertEquals(
-    projection.explorer.rows.map((row) => row.seriesKey).sort(),
-    [
-      "series:http.server.duration:2000",
-      "series:http.server.request.count:1000",
-      "series:http.server.request.count:2000",
-    ].sort(),
-  );
+  assertEquals(new Set(projection.explorer.rows.map((row) => row.seriesKey)).size, 3);
+  assertEquals(projection.explorer.rows.every((row) => row.seriesKey.startsWith("series:opaque:")), true);
   assertEquals(projection.explorer.rows[0].metricName, "http.server.duration");
 });
 
@@ -95,6 +89,30 @@ Deno.test("buildDashboardProjection only reports error rate when request points 
     value: undefined,
     unit: "%",
     source: "No HTTP status code attributes in the selected window.",
+  });
+});
+
+Deno.test("buildDashboardProjection computes error rate from status-coded requests only", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      httpRequestCount(2_000, 8, 200),
+      httpRequestCount(2_000, 2, 500),
+      httpRequestCountWithoutStatus(2_000, 90),
+    ]),
+    summary({
+      p95Ms: undefined,
+      requestRate: 100,
+      errorRate: 0.02,
+      topServices: ["checkout"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertObjectMatch(projection.cards.errorRate, {
+    id: "error-rate",
+    state: "degraded",
+    value: 20,
+    unit: "%",
   });
 });
 
@@ -265,12 +283,27 @@ Deno.test("buildDashboardProjection keeps distinct series keys separate in the e
   );
 
   assertEquals(projection.explorer.rows.length, 2);
-  assertEquals(
-    projection.explorer.rows.map((row) => row.seriesKey).sort(),
-    ["series-a", "series-b"],
+  assertEquals(new Set(projection.explorer.rows.map((row) => row.seriesKey)).size, 2);
+  assertEquals(projection.explorer.rows.every((row) => row.seriesKey.startsWith("series:opaque:")), true);
+  assertEquals(projection.explorer.rows.map((row) => row.latest).sort((left, right) => left! - right!), [7, 11]);
+});
+
+Deno.test("buildDashboardProjection exposes opaque series identifiers", () => {
+  const sensitiveSeriesKey = 'series:{"authorization":"Bearer top-secret"}';
+  const point = {
+    ...httpRequestCount(2_000, 3, 200),
+    seriesKey: sensitiveSeriesKey,
+    rawAttributes: { authorization: "Bearer top-secret" },
+    attributes: { authorization: "[REDACTED]" },
+  };
+  const projection = buildDashboardProjection(
+    snapshot([point]),
+    summary({ p95Ms: undefined, requestRate: 3, errorRate: 0, topServices: ["checkout"] }),
   );
-  assertEquals(projection.explorer.rows[0].latest, 7);
-  assertEquals(projection.explorer.rows[1].latest, 11);
+
+  assertEquals(projection.explorer.rows[0].seriesKey.startsWith("series:opaque:"), true);
+  assertEquals(projection.charts.throughput.points[0].seriesKey, projection.explorer.rows[0].seriesKey);
+  assertEquals(JSON.stringify(projection).includes("top-secret"), false);
 });
 
 Deno.test("buildDashboardProjection keeps cards and ingest empty-state within the selected window", () => {
@@ -326,8 +359,8 @@ Deno.test("buildDashboardProjection keeps cards and ingest empty-state within th
 Deno.test("buildDashboardProjection uses the newest active request gauge in the selected window", () => {
   const projection = buildDashboardProjection(
     snapshot([
-      activeRequestsGauge(1_000, 2),
-      activeRequestsGauge(2_000, 7),
+      { ...activeRequestsGauge(1_000, 2), seriesKey: "active-series-a" },
+      { ...activeRequestsGauge(2_000, 7), seriesKey: "active-series-a" },
     ]),
     summary({
       p95Ms: 88,
@@ -343,7 +376,31 @@ Deno.test("buildDashboardProjection uses the newest active request gauge in the 
     state: "healthy",
     value: 7,
     unit: "req",
-    source: "http.server.active_requests",
+    source: "Latest value from each active request series.",
+  });
+});
+
+Deno.test("buildDashboardProjection sums the latest active request gauge from each series", () => {
+  const projection = buildDashboardProjection(
+    snapshot([
+      { ...activeRequestsGauge(1_000, 2), seriesKey: "active-series-a" },
+      { ...activeRequestsGauge(2_000, 7), seriesKey: "active-series-a" },
+      { ...activeRequestsGauge(1_500, 4), seriesKey: "active-series-b" },
+    ]),
+    summary({
+      p95Ms: undefined,
+      requestRate: undefined,
+      errorRate: undefined,
+      topServices: ["checkout", "payments"],
+    }),
+    { observedAtMs: 3_000, windowMs: 60_000 },
+  );
+
+  assertObjectMatch(projection.cards.activeRequests, {
+    id: "active-requests",
+    state: "healthy",
+    value: 11,
+    unit: "req",
   });
 });
 

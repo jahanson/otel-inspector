@@ -1,7 +1,10 @@
+import { createHmac } from "node:crypto";
 import type { LiveTelemetrySummary } from "./contracts.ts";
 import type { MetricPoint, PrimitiveAttributeValue } from "./metric_model.ts";
 import { deriveLiveTelemetrySummary, normalizeDurationUpperBound } from "./metric_derivations.ts";
 import type { TelemetryStoreSnapshot } from "./telemetry_store.ts";
+
+const DASHBOARD_SERIES_KEY = crypto.getRandomValues(new Uint8Array(32));
 
 export type CardState = "healthy" | "empty" | "paused" | "degraded" | "stale" | "unavailable";
 
@@ -112,7 +115,7 @@ export function buildDashboardProjection(
     cards: {
       latency: latencyCard(windowSummary, latencyPoints),
       throughput: throughputCard(windowSummary, requestPoints),
-      errorRate: errorRateCard(windowSummary, requestPoints, statusPoints),
+      errorRate: errorRateCard(requestPoints, statusPoints),
       activeRequests: activeRequestsCard(points),
       ingest: ingestCard(windowSummary),
       dropped: droppedCard(windowSummary),
@@ -189,12 +192,12 @@ function throughputCard(summary: LiveTelemetrySummary, points: MetricPoint[]): D
 }
 
 function errorRateCard(
-  summary: LiveTelemetrySummary,
   points: MetricPoint[],
   statusPoints: MetricPoint[],
 ): DashboardCard {
   const detailTarget = metricDetailTarget(statusPoints);
-  if (summary.overview.errorRate === undefined || statusPoints.length === 0) {
+  const statusTotal = statusPoints.reduce((total, point) => total + (point.value ?? 0), 0);
+  if (statusPoints.length === 0 || statusTotal <= 0) {
     return card(
       "error-rate",
       "error rate",
@@ -205,7 +208,8 @@ function errorRateCard(
       detailTarget,
     );
   }
-  const value = Math.round(summary.overview.errorRate * 10_000) / 100;
+  const errorTotal = statusPoints.filter(isErrorStatus).reduce((total, point) => total + (point.value ?? 0), 0);
+  const value = Math.round((errorTotal / statusTotal) * 10_000) / 100;
   return card(
     "error-rate",
     "error rate",
@@ -218,16 +222,18 @@ function errorRateCard(
 }
 
 function activeRequestsCard(points: MetricPoint[]): DashboardCard {
-  const active = points.reduce<MetricPoint | undefined>((latest, point) => {
+  const latestBySeries = new Map<string, MetricPoint>();
+  for (const point of points) {
     if (!isActiveRequestsGauge(point)) {
-      return latest;
+      continue;
     }
+    const latest = latestBySeries.get(point.seriesKey);
     if (latest === undefined || point.observedAtMs >= latest.observedAtMs) {
-      return point;
+      latestBySeries.set(point.seriesKey, point);
     }
-    return latest;
-  }, undefined);
-  return active?.value === undefined
+  }
+  const active = [...latestBySeries.values()];
+  return active.length === 0
     ? card(
       "active-requests",
       "active requests",
@@ -236,13 +242,20 @@ function activeRequestsCard(points: MetricPoint[]): DashboardCard {
       "req",
       "No active request gauge in the selected window.",
     )
-    : card("active-requests", "active requests", "healthy", active.value, "req", active.metric.name, {
-      metricName: active.metric.name,
-    });
+    : card(
+      "active-requests",
+      "active requests",
+      "healthy",
+      active.reduce((total, point) => total + point.value!, 0),
+      "req",
+      "Latest value from each active request series.",
+      metricDetailTarget(active),
+    );
 }
 
 function isActiveRequestsGauge(point: MetricPoint): boolean {
-  return point.metric.type === "gauge" &&
+  return point.metric.type === "gauge" && point.derivationStatus === "usable" && point.value !== undefined &&
+    Number.isFinite(point.value) && point.value >= 0 &&
     (point.metric.name === "http.server.active_requests" || point.metric.name === "http.server.active_requests_count");
 }
 
@@ -369,7 +382,7 @@ function explorerRows(points: MetricPoint[]): ExplorerRow[] {
       continue;
     }
     bySeries.set(point.seriesKey, {
-      seriesKey: point.seriesKey,
+      seriesKey: opaqueSeriesKey(point.seriesKey),
       metricName: point.metric.name,
       metricType: point.metric.type,
       unit: point.metric.unit,
@@ -401,7 +414,7 @@ function chartPoint(
   return {
     observedAtMs: point.observedAtMs,
     value,
-    seriesKey: point.seriesKey,
+    seriesKey: opaqueSeriesKey(point.seriesKey),
     metricName: point.metric.name,
     aggregation,
     datapointCount,
@@ -414,6 +427,10 @@ function chartPoint(
       : undefined,
     state,
   };
+}
+
+function opaqueSeriesKey(seriesKey: string): string {
+  return `series:opaque:${createHmac("sha256", DASHBOARD_SERIES_KEY).update(seriesKey).digest("hex")}`;
 }
 
 function statusForPoint(point: MetricPoint): CardState {
