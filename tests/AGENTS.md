@@ -7,7 +7,7 @@
 ## Ownership
 
 - `backend/` tests cover receiver, backend app server, dashboard projection behavior, and redaction policy.
-- `ui/` tests cover dashboard HTML and inline script safety.
+- `ui/` tests cover dashboard HTML, inline script safety, chart preparation, freshness derivation, and interaction request state.
 
 ## Local Contracts
 

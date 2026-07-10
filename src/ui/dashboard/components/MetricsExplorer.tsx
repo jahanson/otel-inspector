@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import type { DashboardCard, ExplorerRow } from "../types.ts";
+import type { InspectionRequest } from "../inspection_request.ts";
+import type { ExplorerRow } from "../types.ts";
 
 type MetricsExplorerProps = {
   rows: ExplorerRow[];
-  target?: DashboardCard["detailTarget"];
+  request?: InspectionRequest;
 };
 
 const numberFormatter = new Intl.NumberFormat("en-US", {
@@ -17,30 +18,25 @@ const seenFormatter = new Intl.DateTimeFormat("en-US", {
   second: "2-digit",
 });
 
-export function MetricsExplorer({ rows, target }: MetricsExplorerProps) {
+export function MetricsExplorer({ request, rows }: MetricsExplorerProps) {
   const [query, setQuery] = useState("");
   const [selectedSeriesKey, setSelectedSeriesKey] = useState<string | undefined>(rows[0]?.seriesKey);
   const filteredRows = useMemo(() => filterExplorerRows(query, rows), [query, rows]);
   const selectedRow = filteredRows.find((row) => row.seriesKey === selectedSeriesKey) ?? filteredRows[0];
-  const appliedTarget = useRef<DashboardCard["detailTarget"]>(undefined);
+  const appliedActionId = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    if (!target) {
-      appliedTarget.current = undefined;
+    if (!request || appliedActionId.current === request.actionId) {
       return;
     }
-    if (targetSame(target, appliedTarget.current)) {
-      return;
-    }
-
-    appliedTarget.current = target;
+    appliedActionId.current = request.actionId;
     const targetRow = rows.find((row) =>
-      (target.seriesKey && row.seriesKey === target.seriesKey) ||
-      (target.metricName && row.metricName === target.metricName)
+      (request.target.seriesKey && row.seriesKey === request.target.seriesKey) ||
+      (request.target.metricName && row.metricName === request.target.metricName)
     );
-    setQuery(target.seriesKey ?? target.metricName ?? "");
+    setQuery(request.target.seriesKey ?? request.target.metricName ?? "");
     setSelectedSeriesKey(targetRow?.seriesKey);
-  }, [rows, target]);
+  }, [request?.actionId, request?.target, rows]);
 
   return (
     <section className="explorer" aria-label="Metrics Explorer">
@@ -162,12 +158,4 @@ function formatAttributes(attributes: ExplorerRow["attributes"]): string {
   }
 
   return entries.map(([key, value]) => `${key}=${String(value)}`).join(", ");
-}
-
-function targetSame(
-  left: DashboardCard["detailTarget"],
-  right: DashboardCard["detailTarget"],
-): boolean {
-  if (left === right) return true;
-  return left?.metricName === right?.metricName && left?.seriesKey === right?.seriesKey;
 }

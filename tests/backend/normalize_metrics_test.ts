@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertNotEquals } from "@std/assert";
 import { normalizeMetricsExport } from "../../src/backend/normalize_metrics.ts";
 import { ExportMetricsServiceRequest } from "../../src/backend/otel/proto/opentelemetry/proto/collector/metrics/v1/metrics_service.ts";
 import {
@@ -734,4 +734,33 @@ Deno.test("normalizeMetricsExport redacts sensitive attribute keys", () => {
   assertEquals(result.points[0].redaction?.status, "blocked");
   assertEquals(result.points[0].redaction?.hiddenAttributeValues, 2);
   assertEquals(result.points[0].redaction?.patternsMatched, ["authorization", "password"]);
+});
+
+Deno.test("normalizeMetricsExport redacts sensitive resource values and preserves distinct series identity", () => {
+  const normalize = (serviceName: string) =>
+    normalizeMetricsExport({
+      resourceMetrics: [{
+        resource: {
+          attributes: [stringAttribute("service.name", serviceName)],
+          droppedAttributesCount: 0,
+        },
+        scopeMetrics: [{
+          scope: { name: "manual-fixture", version: "1.0.0", attributes: [], droppedAttributesCount: 0 },
+          schemaUrl: "",
+          metrics: [gaugeMetric("queue.depth", "items", 7)],
+        }],
+        schemaUrl: "",
+      }],
+    }, 2_000);
+
+  const first = normalize("Bearer top-secret");
+  const second = normalize("Bearer another-secret");
+
+  assertEquals(first.points[0].resource["service.name"], "[REDACTED]");
+  assertEquals(first.points[0].redaction, {
+    status: "blocked",
+    hiddenAttributeValues: 1,
+    patternsMatched: ["authorization-value"],
+  });
+  assertNotEquals(first.points[0].seriesKey, second.points[0].seriesKey);
 });

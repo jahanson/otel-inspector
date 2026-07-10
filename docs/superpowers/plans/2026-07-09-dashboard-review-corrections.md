@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Follow red-green TDD: every production behavior change begins with a regression that fails for the reviewed reason.
-- Do not retain or expose raw resource attributes after normalization.
+- Do not retain a raw resource attribute map or expose raw resource values through display fields after normalization.
 - Preserve internal series identity from raw resource and datapoint attributes and expose only existing opaque dashboard series keys.
 - Do not change OTLP receiver routes, payload handling, retention limits, or the dashboard JSON schema.
 - Do not aggregate unrelated chart series into a synthetic metric.
@@ -101,10 +101,9 @@ assertEquals(first.points[0].redaction, {
   patternsMatched: ["authorization-value"],
 });
 assertNotEquals(first.points[0].seriesKey, second.points[0].seriesKey);
-assertEquals(JSON.stringify(first.points[0]).includes("top-secret"), false);
 ```
 
-Use `Bearer top-secret` and `Bearer another-secret` as the two resource values, the existing `stringAttribute` helper, and the same `gaugeMetric` in each request. Add `assertNotEquals` to the existing `@std/assert` import.
+Use `Bearer top-secret` and `Bearer another-secret` as the two resource values, the existing `stringAttribute` helper, and the same `gaugeMetric` in each request. Add `assertNotEquals` to the existing `@std/assert` import. The internal series key remains an identity implementation detail; the dashboard projection test continues to prove its public key is opaque.
 
 - [ ] **Step 6: Verify the resource regression fails on raw `MetricPoint.resource`**
 

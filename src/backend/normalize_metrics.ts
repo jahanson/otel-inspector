@@ -21,7 +21,7 @@ import {
   type PrimitiveAttributeValue,
   toNumberValue,
 } from "./metric_model.ts";
-import { redactAttributes, redactionReport } from "./redaction.ts";
+import { mergeRedactionReports, redactAttributes, redactionReport } from "./redaction.ts";
 
 export type NormalizeMetricsResult = {
   points: MetricPoint[];
@@ -417,6 +417,8 @@ function basePoint(
     type: metricType,
     ...options.metricOverrides,
   };
+  const safeResource = redactAttributes(resource);
+  const redaction = mergeRedactionReports(redactionReport(resource), options.redaction);
 
   return {
     seriesKey: buildSeriesKey({
@@ -430,7 +432,7 @@ function basePoint(
     observedAtMs,
     timestampUnixNano: options.timestampUnixNano,
     startTimeUnixNano: options.startTimeUnixNano,
-    resource,
+    resource: safeResource,
     scope,
     metric: pointMetric,
     rawAttributes,
@@ -442,7 +444,7 @@ function basePoint(
     exponentialHistogram: options.exponentialHistogram,
     derivationStatus: options.derivationStatus,
     warnings: options.warnings,
-    redaction: options.redaction,
+    redaction,
   };
 }
 

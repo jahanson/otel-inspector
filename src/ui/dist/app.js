@@ -21114,27 +21114,23 @@ var seenFormatter = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
   second: "2-digit"
 });
-function MetricsExplorer({ rows, target }) {
+function MetricsExplorer({ request, rows }) {
   const [query, setQuery] = (0, import_react.useState)("");
   const [selectedSeriesKey, setSelectedSeriesKey] = (0, import_react.useState)(rows[0]?.seriesKey);
   const filteredRows = (0, import_react.useMemo)(() => filterExplorerRows(query, rows), [query, rows]);
   const selectedRow = filteredRows.find((row) => row.seriesKey === selectedSeriesKey) ?? filteredRows[0];
-  const appliedTarget = (0, import_react.useRef)(void 0);
+  const appliedActionId = (0, import_react.useRef)(void 0);
   (0, import_react.useEffect)(() => {
-    if (!target) {
-      appliedTarget.current = void 0;
+    if (!request || appliedActionId.current === request.actionId) {
       return;
     }
-    if (targetSame(target, appliedTarget.current)) {
-      return;
-    }
-    appliedTarget.current = target;
+    appliedActionId.current = request.actionId;
     const targetRow = rows.find(
-      (row) => target.seriesKey && row.seriesKey === target.seriesKey || target.metricName && row.metricName === target.metricName
+      (row) => request.target.seriesKey && row.seriesKey === request.target.seriesKey || request.target.metricName && row.metricName === request.target.metricName
     );
-    setQuery(target.seriesKey ?? target.metricName ?? "");
+    setQuery(request.target.seriesKey ?? request.target.metricName ?? "");
     setSelectedSeriesKey(targetRow?.seriesKey);
-  }, [rows, target]);
+  }, [request?.actionId, request?.target, rows]);
   return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("section", { className: "explorer", "aria-label": "Metrics Explorer", children: [
     /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { className: "explorer__filter", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: "Filter metrics" }),
@@ -21226,10 +21222,6 @@ function formatAttributes(attributes) {
     return "\u2014";
   }
   return entries.map(([key, value]) => `${key}=${String(value)}`).join(", ");
-}
-function targetSame(left, right) {
-  if (left === right) return true;
-  return left?.metricName === right?.metricName && left?.seriesKey === right?.seriesKey;
 }
 
 // src/ui/dashboard/components/ui/card.tsx
@@ -42495,6 +42487,31 @@ function ChartTooltipContent(props) {
   ] });
 }
 
+// src/ui/dashboard/charts/chart_data.ts
+var timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit"
+});
+function prepareChartTraces(points) {
+  const grouped = /* @__PURE__ */ new Map();
+  for (const point4 of points) {
+    const trace = grouped.get(point4.seriesKey) ?? [];
+    trace.push(point4);
+    grouped.set(point4.seriesKey, trace);
+  }
+  return [...grouped.entries()].map(([seriesKey, tracePoints]) => {
+    const ordered = [...tracePoints].sort((left, right) => left.observedAtMs - right.observedAtMs);
+    const metadata = ordered.at(-1);
+    const source = [metadata.service, metadata.route].filter(Boolean).join(" / ");
+    return {
+      seriesKey,
+      detailLabel: [metadata.metricName, source].filter(Boolean).join(" \xB7 "),
+      points: ordered.map((point4) => ({ ...point4, timeLabel: timeFormatter.format(point4.observedAtMs) }))
+    };
+  });
+}
+
 // src/ui/dashboard/charts/LiveCharts.tsx
 var import_jsx_runtime8 = __toESM(require_jsx_runtime());
 var chartDefinitions = [
@@ -42503,11 +42520,6 @@ var chartDefinitions = [
   { key: "errorRate", kind: "line", colorToken: "var(--chart-error)" },
   { key: "ingest", kind: "area", colorToken: "var(--chart-ingest)" }
 ];
-var timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "2-digit",
-  second: "2-digit"
-});
 var valueFormatter2 = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   useGrouping: true
@@ -42525,11 +42537,7 @@ function LiveCharts({ charts }) {
 }
 function TelemetryChart(props) {
   const { colorToken, kind, series } = props;
-  const data = series.points.map((point4) => ({
-    detailLabel: buildDetailLabel(point4.service, point4.route),
-    timeLabel: timeFormatter.format(point4.observedAtMs),
-    value: point4.value
-  }));
+  const traces = prepareChartTraces(series.points);
   const config = {
     value: {
       color: colorToken,
@@ -42544,16 +42552,19 @@ function TelemetryChart(props) {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("span", { className: "chart-card__window", children: formatWindow(series.windowMs) })
     ] }),
-    data.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "empty-state chart-card__empty", children: series.unavailableReason ?? "No chart data in this window." }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ChartContainer, { config, className: "chart-card__plot", children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ResponsiveContainer, { width: "100%", height: "100%", children: kind === "line" ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(LineChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
+    traces.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("p", { className: "empty-state chart-card__empty", children: series.unavailableReason ?? "No chart data in this window." }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ChartContainer, { config, className: "chart-card__plot", children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ResponsiveContainer, { width: "100%", height: "100%", children: kind === "line" ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(LineChart, { accessibilityLayer: true, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(CartesianGrid, { stroke: "var(--color-rule)", vertical: false }),
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         XAxis,
         {
           axisLine: false,
-          dataKey: "timeLabel",
+          dataKey: "observedAtMs",
+          domain: ["dataMin", "dataMax"],
           minTickGap: 24,
           tick: { fill: "var(--color-muted)", fontSize: 12 },
-          tickLine: false
+          tickFormatter: formatObservedAt,
+          tickLine: false,
+          type: "number"
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
@@ -42569,35 +42580,37 @@ function TelemetryChart(props) {
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Tooltip,
         {
-          content: ({ active, label, payload }) => {
+          content: ({ active, payload }) => {
             if (!active || !payload?.length) {
               return null;
             }
-            const point4 = payload[0]?.payload;
-            const prefix = point4?.detailLabel ? `${point4.detailLabel} \xB7 ` : "";
-            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: "chart-tooltip-list", children: payload.map((entry) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
               ChartTooltipContent,
               {
-                label: `${prefix}${label ?? ""}`,
-                value: formatTooltipValue(payload[0]?.value)
-              }
-            );
+                label: `${String(entry.name)} \xB7 ${String(entry.payload.timeLabel)}`,
+                value: formatTooltipValue(entry.value)
+              },
+              `${String(entry.payload.seriesKey)}:${String(entry.payload.observedAtMs)}`
+            )) });
           },
           cursor: { stroke: colorToken, strokeDasharray: "4 4" }
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+      traces.map((trace) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Line,
         {
+          data: trace.points,
           dataKey: "value",
           dot: false,
           isAnimationActive: false,
+          name: trace.detailLabel,
           stroke: colorToken,
           strokeWidth: 2,
           type: "monotone"
-        }
-      )
-    ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(AreaChart, { accessibilityLayer: true, data, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
+        },
+        trace.seriesKey
+      ))
+    ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(AreaChart, { accessibilityLayer: true, margin: { top: 8, right: 8, bottom: 0, left: 0 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("linearGradient", { id: `${series.id}-fill`, x1: "0", x2: "0", y1: "0", y2: "1", children: [
         /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("stop", { offset: "0%", stopColor: colorToken, stopOpacity: 0.28 }),
         /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("stop", { offset: "100%", stopColor: colorToken, stopOpacity: 0.04 })
@@ -42607,10 +42620,13 @@ function TelemetryChart(props) {
         XAxis,
         {
           axisLine: false,
-          dataKey: "timeLabel",
+          dataKey: "observedAtMs",
+          domain: ["dataMin", "dataMax"],
           minTickGap: 24,
           tick: { fill: "var(--color-muted)", fontSize: 12 },
-          tickLine: false
+          tickFormatter: formatObservedAt,
+          tickLine: false,
+          type: "number"
         }
       ),
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
@@ -42626,42 +42642,48 @@ function TelemetryChart(props) {
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Tooltip,
         {
-          content: ({ active, label, payload }) => {
+          content: ({ active, payload }) => {
             if (!active || !payload?.length) {
               return null;
             }
-            const point4 = payload[0]?.payload;
-            const prefix = point4?.detailLabel ? `${point4.detailLabel} \xB7 ` : "";
-            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+            return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: "chart-tooltip-list", children: payload.map((entry) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
               ChartTooltipContent,
               {
-                label: `${prefix}${label ?? ""}`,
-                value: formatTooltipValue(payload[0]?.value)
-              }
-            );
+                label: `${String(entry.name)} \xB7 ${String(entry.payload.timeLabel)}`,
+                value: formatTooltipValue(entry.value)
+              },
+              `${String(entry.payload.seriesKey)}:${String(entry.payload.observedAtMs)}`
+            )) });
           },
           cursor: { stroke: colorToken, strokeDasharray: "4 4" }
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+      traces.map((trace) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         Area,
         {
+          data: trace.points,
           dataKey: "value",
-          isAnimationActive: false,
           fill: `url(#${series.id}-fill)`,
+          isAnimationActive: false,
+          name: trace.detailLabel,
           stroke: colorToken,
           strokeWidth: 2,
           type: "monotone"
-        }
-      )
+        },
+        trace.seriesKey
+      ))
     ] }) }) })
   ] });
 }
-function buildDetailLabel(service, route) {
-  return [service, route].filter(Boolean).join(" / ");
-}
 function formatAxisValue(value) {
   return formatTooltipValue(value);
+}
+function formatObservedAt(value) {
+  return new Date(value).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
 }
 function formatTooltipValue(value) {
   if (typeof value !== "number") {
@@ -42671,6 +42693,27 @@ function formatTooltipValue(value) {
 }
 function formatWindow(windowMs) {
   return `${Math.max(1, Math.round(windowMs / 6e4))}m window`;
+}
+
+// src/ui/dashboard/inspection_request.ts
+function nextInspectionRequest(current3, target) {
+  return { actionId: (current3?.actionId ?? 0) + 1, target };
+}
+
+// src/ui/dashboard/projection_freshness.ts
+function markProjectionStale(projection) {
+  return {
+    ...projection,
+    receiver: { ...projection.receiver, live: false },
+    cards: {
+      latency: { ...projection.cards.latency, state: "stale" },
+      throughput: { ...projection.cards.throughput, state: "stale" },
+      errorRate: { ...projection.cards.errorRate, state: "stale" },
+      activeRequests: { ...projection.cards.activeRequests, state: "stale" },
+      ingest: { ...projection.cards.ingest, state: "stale" },
+      dropped: { ...projection.cards.dropped, state: "stale" }
+    }
+  };
 }
 
 // src/ui/dashboard/App.tsx
@@ -42692,15 +42735,17 @@ function App() {
   const [windowMs, setWindowMs] = (0, import_react47.useState)(() => projection.windowMs);
   const [paused, setPaused] = (0, import_react47.useState)(false);
   const [refreshError, setRefreshError] = (0, import_react47.useState)(null);
+  const [refreshFailed, setRefreshFailed] = (0, import_react47.useState)(false);
   const [clearing, setClearing] = (0, import_react47.useState)(false);
   const [lastAction, setLastAction] = (0, import_react47.useState)(null);
-  const [metricsTarget, setMetricsTarget] = (0, import_react47.useState)();
+  const [metricsRequest, setMetricsRequest] = (0, import_react47.useState)();
+  const displayProjection = refreshFailed ? markProjectionStale(projection) : projection;
   (0, import_react47.useEffect)(() => {
     if (paused) {
       return;
     }
     const id = setInterval(() => {
-      void refreshProjection(windowMs, setProjection, setRefreshError);
+      void refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
     }, 1e3);
     return () => clearInterval(id);
   }, [paused, windowMs]);
@@ -42709,17 +42754,17 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "heading", children: [
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "eyebrow", children: "Local telemetry dashboard" }),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h1", { children: "OTEL Inspector" }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "endpoint", children: projection.receiver.endpoint })
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "endpoint", children: displayProjection.receiver.endpoint })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "toolbar", "aria-label": "Dashboard controls", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Badge, { "data-state": paused ? "paused" : projection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Badge, { "data-state": paused ? "paused" : displayProjection.receiver.live ? "healthy" : "stale", children: paused ? "Paused view" : refreshFailed ? "Data stale" : displayProjection.receiver.live ? "Receiver live" : "Receiver idle" }),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
           Button,
           {
             type: "button",
             onClick: () => {
               if (paused) {
-                void refreshProjection(windowMs, setProjection, setRefreshError);
+                void refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
               }
               setPaused((value) => !value);
             },
@@ -42734,7 +42779,7 @@ function App() {
             onClick: () => {
               setWindowMs(option.value);
               if (!paused) {
-                void refreshProjection(option.value, setProjection, setRefreshError);
+                void refreshProjection(option.value, setProjection, setRefreshError, setRefreshFailed);
               }
             },
             type: "button",
@@ -42760,7 +42805,7 @@ function App() {
                 if (!response.ok) {
                   throw new Error(`Clear failed with ${response.status}.`);
                 }
-                await refreshProjection(windowMs, setProjection, setRefreshError);
+                await refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
                 setLastAction(`Session cleared at ${(/* @__PURE__ */ new Date()).toLocaleTimeString()}.`);
               } catch (error) {
                 setRefreshError(error instanceof Error ? error.message : "Clear failed.");
@@ -42779,19 +42824,22 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
           OverviewCards,
           {
-            cards: projection.cards,
+            cards: displayProjection.cards,
             onInspect: (card) => {
-              setMetricsTarget(card.detailTarget);
+              const target = card.detailTarget;
+              if (target) {
+                setMetricsRequest((current3) => nextInspectionRequest(current3, target));
+              }
               setActiveTab("metrics");
             },
-            redaction: projection.redaction
+            redaction: displayProjection.redaction
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(LiveCharts, { charts: projection.charts })
-      ] }) : activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MetricsExplorer, { rows: projection.explorer.rows, target: metricsTarget }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
-      projection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(LiveCharts, { charts: displayProjection.charts })
+      ] }) : activeTab === "metrics" ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MetricsExplorer, { request: metricsRequest, rows: displayProjection.explorer.rows }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "empty-state", children: "This dashboard tab is not implemented yet." }),
+      displayProjection.warnings.length > 0 || refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "warning-list", "aria-live": "polite", children: [
         refreshError ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: refreshError }) : null,
-        projection.warnings.map((warning2) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: warning2.message }, warning2.code))
+        displayProjection.warnings.map((warning2) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "warning-item", children: warning2.message }, warning2.code))
       ] }) : null,
       lastAction ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "last-action", "aria-live": "polite", children: lastAction }) : null
     ] })
@@ -42811,15 +42859,17 @@ function readActionToken() {
   }
   return token;
 }
-async function refreshProjection(windowMs, setProjection, setRefreshError) {
+async function refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed) {
   try {
     const response = await fetch(`/api/dashboard?windowMs=${windowMs}`, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`Dashboard refresh failed with ${response.status}.`);
     }
     setProjection(await response.json());
+    setRefreshFailed(false);
     setRefreshError(null);
   } catch (error) {
+    setRefreshFailed(true);
     setRefreshError(error instanceof Error ? error.message : "Dashboard refresh failed.");
   }
 }

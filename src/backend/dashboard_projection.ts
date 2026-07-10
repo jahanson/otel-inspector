@@ -371,31 +371,27 @@ function buildWindowSnapshot(
 }
 
 function explorerRows(points: MetricPoint[]): ExplorerRow[] {
-  const bySeries = new Map<string, ExplorerRow>();
+  const newestBySeries = new Map<string, MetricPoint>();
   for (const point of points) {
-    const existing = bySeries.get(point.seriesKey);
-    if (existing) {
-      existing.latest = point.value ?? existing.latest;
-      existing.lastObservedAtMs = Math.max(existing.lastObservedAtMs, point.observedAtMs);
-      existing.cardinality += 1;
-      existing.status = statusForPoint(point);
-      continue;
+    const newest = newestBySeries.get(point.seriesKey);
+    if (newest === undefined || point.observedAtMs >= newest.observedAtMs) {
+      newestBySeries.set(point.seriesKey, point);
     }
-    bySeries.set(point.seriesKey, {
-      seriesKey: opaqueSeriesKey(point.seriesKey),
-      metricName: point.metric.name,
-      metricType: point.metric.type,
-      unit: point.metric.unit,
-      latest: point.value,
-      rate: isHttpRequestCount(point) ? point.value : undefined,
-      resourceService: typeof point.resource["service.name"] === "string" ? point.resource["service.name"] : undefined,
-      attributes: point.attributes,
-      cardinality: 1,
-      lastObservedAtMs: point.observedAtMs,
-      status: statusForPoint(point),
-    });
   }
-  return [...bySeries.values()].sort((left, right) =>
+
+  return [...newestBySeries.values()].map((point) => ({
+    seriesKey: opaqueSeriesKey(point.seriesKey),
+    metricName: point.metric.name,
+    metricType: point.metric.type,
+    unit: point.metric.unit,
+    latest: point.value,
+    rate: isHttpRequestCount(point) ? point.value : undefined,
+    resourceService: typeof point.resource["service.name"] === "string" ? point.resource["service.name"] : undefined,
+    attributes: point.attributes,
+    cardinality: 1,
+    lastObservedAtMs: point.observedAtMs,
+    status: statusForPoint(point),
+  })).sort((left, right) =>
     left.metricName.localeCompare(right.metricName) || left.seriesKey.localeCompare(right.seriesKey)
   );
 }

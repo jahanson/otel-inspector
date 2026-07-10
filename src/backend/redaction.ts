@@ -98,6 +98,20 @@ export function redactionReport(
   };
 }
 
+export function mergeRedactionReports(
+  ...reports: Array<RedactionReport | undefined>
+): RedactionReport {
+  const present = reports.filter((report): report is RedactionReport => report !== undefined);
+  const hiddenAttributeValues = present.reduce((total, report) => total + report.hiddenAttributeValues, 0);
+  const patternsMatched = [...new Set(present.flatMap((report) => report.patternsMatched))];
+
+  return {
+    status: hiddenAttributeValues > 0 ? "blocked" : "passed",
+    hiddenAttributeValues,
+    patternsMatched,
+  };
+}
+
 function sensitivePattern(
   key: string,
   value: PrimitiveAttributeValue,

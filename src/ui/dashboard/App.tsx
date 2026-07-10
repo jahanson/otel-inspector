@@ -5,7 +5,9 @@ import { Tabs } from "./components/ui/tabs.tsx";
 import { MetricsExplorer } from "./components/MetricsExplorer.tsx";
 import { OverviewCards } from "./components/OverviewCards.tsx";
 import { LiveCharts } from "./charts/LiveCharts.tsx";
-import type { DashboardCard, DashboardProjection } from "./types.ts";
+import { type InspectionRequest, nextInspectionRequest } from "./inspection_request.ts";
+import type { DashboardProjection } from "./types.ts";
+import { markProjectionStale } from "./projection_freshness.ts";
 
 const tabs = [
   { value: "overview", label: "Overview" },
@@ -26,9 +28,11 @@ export function App() {
   const [windowMs, setWindowMs] = useState(() => projection.windowMs);
   const [paused, setPaused] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [refreshFailed, setRefreshFailed] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
-  const [metricsTarget, setMetricsTarget] = useState<DashboardCard["detailTarget"]>();
+  const [metricsRequest, setMetricsRequest] = useState<InspectionRequest>();
+  const displayProjection = refreshFailed ? markProjectionStale(projection) : projection;
 
   useEffect(() => {
     if (paused) {
@@ -36,7 +40,7 @@ export function App() {
     }
 
     const id = setInterval(() => {
-      void refreshProjection(windowMs, setProjection, setRefreshError);
+      void refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
     }, 1_000);
 
     return () => clearInterval(id);
@@ -48,17 +52,23 @@ export function App() {
         <div className="heading">
           <p className="eyebrow">Local telemetry dashboard</p>
           <h1>OTEL Inspector</h1>
-          <p className="endpoint">{projection.receiver.endpoint}</p>
+          <p className="endpoint">{displayProjection.receiver.endpoint}</p>
         </div>
         <div className="toolbar" aria-label="Dashboard controls">
-          <Badge data-state={paused ? "paused" : projection.receiver.live ? "healthy" : "stale"}>
-            {paused ? "Paused view" : projection.receiver.live ? "Receiver live" : "Receiver idle"}
+          <Badge data-state={paused ? "paused" : displayProjection.receiver.live ? "healthy" : "stale"}>
+            {paused
+              ? "Paused view"
+              : refreshFailed
+              ? "Data stale"
+              : displayProjection.receiver.live
+              ? "Receiver live"
+              : "Receiver idle"}
           </Badge>
           <Button
             type="button"
             onClick={() => {
               if (paused) {
-                void refreshProjection(windowMs, setProjection, setRefreshError);
+                void refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
               }
               setPaused((value) => !value);
             }}
@@ -74,7 +84,7 @@ export function App() {
                 onClick={() => {
                   setWindowMs(option.value);
                   if (!paused) {
-                    void refreshProjection(option.value, setProjection, setRefreshError);
+                    void refreshProjection(option.value, setProjection, setRefreshError, setRefreshFailed);
                   }
                 }}
                 type="button"
@@ -99,7 +109,7 @@ export function App() {
                 if (!response.ok) {
                   throw new Error(`Clear failed with ${response.status}.`);
                 }
-                await refreshProjection(windowMs, setProjection, setRefreshError);
+                await refreshProjection(windowMs, setProjection, setRefreshError, setRefreshFailed);
                 setLastAction(`Session cleared at ${new Date().toLocaleTimeString()}.`);
               } catch (error) {
                 setRefreshError(error instanceof Error ? error.message : "Clear failed.");
@@ -120,26 +130,30 @@ export function App() {
           ? (
             <>
               <OverviewCards
-                cards={projection.cards}
+                cards={displayProjection.cards}
                 onInspect={(card) => {
-                  setMetricsTarget(card.detailTarget);
+                  const target = card.detailTarget;
+                  if (target) {
+                    setMetricsRequest((current) => nextInspectionRequest(current, target));
+                  }
                   setActiveTab("metrics");
                 }}
-                redaction={projection.redaction}
+                redaction={displayProjection.redaction}
               />
-              <LiveCharts charts={projection.charts} />
+              <LiveCharts charts={displayProjection.charts} />
             </>
           )
           : activeTab === "metrics"
-          ? <MetricsExplorer rows={projection.explorer.rows} target={metricsTarget} />
+          ? <MetricsExplorer request={metricsRequest} rows={displayProjection.explorer.rows} />
           : <p className="empty-state">This dashboard tab is not implemented yet.</p>}
 
-        {projection.warnings.length > 0 || refreshError
+        {displayProjection.warnings.length > 0 || refreshError
           ? (
             <div className="warning-list" aria-live="polite">
               {refreshError ? <p className="warning-item">{refreshError}</p> : null}
-              {projection.warnings.map((warning) => <p key={warning.code} className="warning-item">{warning.message}
-              </p>)}
+              {displayProjection.warnings.map((warning) => (
+                <p key={warning.code} className="warning-item">{warning.message}</p>
+              ))}
             </div>
           )
           : null}
@@ -169,6 +183,7 @@ async function refreshProjection(
   windowMs: number,
   setProjection: (projection: DashboardProjection) => void,
   setRefreshError: (message: string | null) => void,
+  setRefreshFailed: (failed: boolean) => void,
 ): Promise<void> {
   try {
     const response = await fetch(`/api/dashboard?windowMs=${windowMs}`, { cache: "no-store" });
@@ -176,8 +191,10 @@ async function refreshProjection(
       throw new Error(`Dashboard refresh failed with ${response.status}.`);
     }
     setProjection(await response.json());
+    setRefreshFailed(false);
     setRefreshError(null);
   } catch (error) {
+    setRefreshFailed(true);
     setRefreshError(error instanceof Error ? error.message : "Dashboard refresh failed.");
   }
 }

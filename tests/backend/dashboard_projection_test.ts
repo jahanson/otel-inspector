@@ -288,6 +288,42 @@ Deno.test("buildDashboardProjection keeps distinct series keys separate in the e
   assertEquals(projection.explorer.rows.map((row) => row.latest).sort((left, right) => left! - right!), [7, 11]);
 });
 
+Deno.test("buildDashboardProjection derives each explorer row from the newest series sample", () => {
+  const seriesKey = "series-a";
+  const middle = {
+    ...explorerPoint(seriesKey, 2_000, 20),
+    resource: { "service.name": "middle-service" },
+    attributes: { "http.route": "/middle" },
+  };
+  const newest = {
+    ...explorerPoint(seriesKey, 3_000, 30),
+    resource: { "service.name": "newest-service" },
+    attributes: { "http.route": "/newest" },
+  };
+  const appendedOlder = {
+    ...explorerPoint(seriesKey, 1_000, 10),
+    resource: { "service.name": "older-service" },
+    attributes: { "http.route": "/older" },
+    derivationStatus: "incomplete" as const,
+  };
+  const projection = buildDashboardProjection(
+    snapshot([middle, newest, appendedOlder]),
+    summary({ p95Ms: undefined, requestRate: 60, errorRate: undefined, topServices: ["newest-service"] }),
+    { observedAtMs: 4_000, windowMs: 60_000 },
+  );
+
+  assertEquals(projection.explorer.rows.length, 1);
+  assertObjectMatch(projection.explorer.rows[0], {
+    latest: 30,
+    rate: 30,
+    resourceService: "newest-service",
+    attributes: { "http.route": "/newest" },
+    cardinality: 1,
+    lastObservedAtMs: 3_000,
+    status: "healthy",
+  });
+});
+
 Deno.test("buildDashboardProjection exposes opaque series identifiers", () => {
   const sensitiveSeriesKey = 'series:{"authorization":"Bearer top-secret"}';
   const point = {

@@ -37,10 +37,11 @@
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
 - Clearing dashboard state requires the process-local dashboard action header and resets retained telemetry and receiver failure counters without stopping the receiver process.
-- Telemetry attributes are redacted before `MetricPoint` storage using pattern-based key matching plus credential-pattern checks in string values; redacted values are replaced with `[REDACTED]`.
-- `MetricPoint` stores both `rawAttributes` (original OTLP attributes) and `attributes` (redacted attributes).
-- Series keys use `rawAttributes` internally for identity to preserve cardinality, but dashboard projections expose only process-keyed opaque series identifiers.
+- Telemetry datapoint and resource attributes are redacted before `MetricPoint` storage using pattern-based key matching plus credential-pattern checks in string values; redacted values are replaced with `[REDACTED]`.
+- `MetricPoint` stores both `rawAttributes` (original OTLP datapoint attributes) and `attributes` (redacted datapoint attributes), while `resource` stores only redacted resource attributes.
+- Series keys use raw datapoint and resource attributes internally for identity to preserve cardinality, but dashboard projections expose only process-keyed opaque series identifiers.
 - Redaction reports track hidden attribute value counts and matched key or value patterns, aggregated in `LiveTelemetrySummary.redaction`.
+- Dashboard explorer rows represent one distinct series, use that series' newest retained sample for sample-derived fields, and report cardinality `1`.
 
 ## Work Guidance
 

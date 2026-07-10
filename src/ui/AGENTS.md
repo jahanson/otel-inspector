@@ -18,6 +18,9 @@
 - `dashboard/types.ts` must mirror the JSON projection contract without importing backend files.
 - Escape inline JSON for script safety, including `<`, U+2028, and U+2029.
 - Keep the first viewport dashboard-dense on desktop while preserving responsive fallback.
+- Render each opaque telemetry series as a separate chart trace and keep its projected source metadata available to tooltips.
+- Failed dashboard refreshes keep last-known values visible but mark receiver and card state stale until a refresh succeeds.
+- Give every explicit Inspect source action a new request identity so repeated equal targets are reapplied.
 
 ## Work Guidance
 

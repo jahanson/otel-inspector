@@ -60,13 +60,25 @@ Deno.test("overview dashboard defines the LiveCharts component contract", () => 
   assertStringIncludes(source, 'charts: DashboardProjection["charts"]');
 });
 
+Deno.test("LiveCharts renders one graphical path per prepared telemetry series", () => {
+  const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/charts/LiveCharts.tsx", import.meta.url));
+
+  assertStringIncludes(source, 'import { prepareChartTraces } from "./chart_data.ts";');
+  assertStringIncludes(source, "const traces = prepareChartTraces(series.points);");
+  assertStringIncludes(source, "traces.map((trace) =>");
+  assertStringIncludes(source, "key={trace.seriesKey}");
+  assertStringIncludes(source, "data={trace.points}");
+  assertStringIncludes(source, "name={trace.detailLabel}");
+  assertFalse(source.includes("series.points.map((point) =>"));
+});
+
 Deno.test("overview tab renders LiveCharts after OverviewCards", () => {
   const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
 
   assertStringIncludes(source, 'import { LiveCharts } from "./charts/LiveCharts.tsx";');
   const overviewBranchStart = source.indexOf('activeTab === "overview"');
   const overviewCardsIndex = source.indexOf("<OverviewCards", overviewBranchStart);
-  const liveChartsIndex = source.indexOf("<LiveCharts charts={projection.charts} />", overviewBranchStart);
+  const liveChartsIndex = source.indexOf("<LiveCharts charts={displayProjection.charts} />", overviewBranchStart);
 
   assert(overviewBranchStart !== -1, "Expected the overview branch to exist.");
   assert(overviewCardsIndex !== -1, "Expected OverviewCards in the overview branch.");
@@ -78,7 +90,7 @@ Deno.test("metrics tab renders MetricsExplorer from explorer rows and keeps fall
   const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
 
   assertStringIncludes(source, 'import { MetricsExplorer } from "./components/MetricsExplorer.tsx";');
-  assertStringIncludes(source, "projection.explorer.rows");
+  assertStringIncludes(source, "displayProjection.explorer.rows");
   assertStringIncludes(source, 'activeTab === "metrics"');
   assertStringIncludes(source, "setActiveTab");
   assertStringIncludes(source, "This dashboard tab is not implemented yet.");
@@ -96,6 +108,20 @@ Deno.test("dashboard app exposes time window controls and guarded clear action",
   assertStringIncludes(source, 'confirm("Clear retained telemetry for this dashboard session?")');
   assertStringIncludes(source, "setLastAction");
   assertStringIncludes(source, "Session cleared");
+});
+
+Deno.test("dashboard app marks retained projection stale only after refresh failures", () => {
+  const source = Deno.readTextFileSync(new URL("../../src/ui/dashboard/App.tsx", import.meta.url));
+
+  assertStringIncludes(source, 'import { markProjectionStale } from "./projection_freshness.ts";');
+  assertStringIncludes(source, "const [refreshFailed, setRefreshFailed] = useState(false);");
+  assertStringIncludes(
+    source,
+    "const displayProjection = refreshFailed ? markProjectionStale(projection) : projection;",
+  );
+  assertStringIncludes(source, "setRefreshFailed(false);");
+  assertEquals(source.split("setRefreshFailed(true);").length - 1, 1);
+  assert(source.indexOf("setRefreshFailed(true);") > source.indexOf("async function refreshProjection"));
 });
 
 Deno.test("dashboard tabs do not point controls at missing inactive panels", () => {
@@ -148,20 +174,26 @@ Deno.test("overview cards expose metric source navigation", () => {
   assertStringIncludes(overviewSource, "onInspect");
   assertStringIncludes(overviewSource, "card.detailTarget");
   assertStringIncludes(overviewSource, "Inspect source");
-  assertStringIncludes(appSource, "setMetricsTarget(card.detailTarget)");
-  assertStringIncludes(appSource, "target={metricsTarget}");
-  assertStringIncludes(explorerSource, 'target?: DashboardCard["detailTarget"]');
-  assertStringIncludes(explorerSource, "target.metricName");
+  assertStringIncludes(appSource, "nextInspectionRequest");
+  assertStringIncludes(appSource, "setMetricsRequest((current) =>");
+  assertStringIncludes(appSource, "request={metricsRequest}");
+  assertStringIncludes(explorerSource, "request?: InspectionRequest");
+  assertStringIncludes(explorerSource, "request.target.metricName");
   assertStringIncludes(typesSource, "detailTarget");
 });
 
-Deno.test("MetricsExplorer applies inspect target only when it changes", () => {
+Deno.test("MetricsExplorer reapplies inspect targets by action identity", () => {
   const source = Deno.readTextFileSync(
     new URL("../../src/ui/dashboard/components/MetricsExplorer.tsx", import.meta.url),
   );
 
-  assertStringIncludes(source, "const appliedTarget = useRef");
-  assertStringIncludes(source, "targetSame(target, appliedTarget.current)");
+  assertStringIncludes(source, "request?.actionId");
+  assertStringIncludes(source, "request.target.metricName");
+  assertStringIncludes(source, "const appliedActionId = useRef<number | undefined>(undefined);");
+  assertStringIncludes(source, "appliedActionId.current === request.actionId");
+  assertStringIncludes(source, "appliedActionId.current = request.actionId");
+  assertFalse(source.includes("const appliedTarget = useRef"));
+  assertFalse(source.includes("targetSame("));
 });
 
 Deno.test("MetricsExplorer source keeps semantic table markup and fallback values", () => {
