@@ -141,12 +141,14 @@ function point(
   seriesKey = `series:${name}`,
   warnings: MetricWarning[] = [],
 ): MetricPoint {
+  const rawAttributes: Record<string, string | number | boolean> = {};
   return {
     seriesKey,
     observedAtMs,
     resource: { "service.name": "checkout" },
     scope: {},
     metric: { name, type: "gauge" },
+    rawAttributes,
     attributes: {},
     value,
     derivationStatus: "usable",

@@ -1,77 +1,57 @@
-# Task 3 Report: Normalize Exponential Histogram Datapoints And Close Docs
+# Task 3 Report: Serve Dashboard Projection Endpoints And Assets
 
-## What I implemented
+## What you implemented
 
-- Added two Task 3 normalization tests to
-  `tests/backend/normalize_metrics_test.ts` on top of the existing Task 2
-  generated-binding coverage.
-- Extended `src/backend/metric_model.ts` with:
-  - `ExponentialHistogramBuckets`
-  - `ExponentialHistogramValue`
-  - `MetricPoint.exponentialHistogram?`
-- Extended `src/backend/normalize_metrics.ts` to:
-  - import generated exponential histogram types;
-  - add the `"exponentialHistogram"` branch in `normalizeMetric()`;
-  - normalize exponential histogram datapoints into typed retained records;
-  - mark safe retained records as `unsupported` with typed
-    `exponentialHistogram` metadata;
-  - mark inconsistent or unsafe records as `incomplete` without retained
-    exponential bucket metadata.
-- Updated docs/evidence:
-  - `docs/plans/02-runtime-architecture/02-telemetry-normalization-store.md`
-  - `docs/plans/04-implementation/05-test-plan.md`
-  - `docs/plans/05-linear-issues/OI-006.md`
-  - `docs/plans/06-evidence/acceptance-matrix.md`
-- Appended the Task 2 unblock resolution note to
-  `.superpowers/sdd/task-2-report.md`.
+- Added `GET /api/dashboard?windowMs=60000` to serve dashboard projections from
+  `buildDashboardProjection(state.store.snapshot(), currentSummary(state), { windowMs })`.
+- Added `POST /api/dashboard/clear` to clear retained telemetry and receiver
+  failure counters through the explicit `clearReceiverState()` boundary.
+- Added placeholder asset routes:
+  - `GET /assets/app.js`
+  - `GET /assets/styles.css`
+- Added `src/ui/app_shell.ts` with `buildAppShell(initialProjection)` that:
+  - mounts `#root`
+  - links `/assets/styles.css`
+  - bootstraps `globalThis.__OTEL_INITIAL_PROJECTION__`
+  - loads `/assets/app.js`
+- Added focused dashboard route coverage in
+  `tests/backend/app_server_dashboard_test.ts`.
+- Updated `tests/ui/app_html_test.ts` to validate the new app shell contract and
+  inline JSON escaping.
+- Updated DOX contracts in:
+  - `src/backend/AGENTS.md`
+  - `src/ui/AGENTS.md`
 
-## What I tested and exact results
-
-1. `deno test .\tests\backend\normalize_metrics_test.ts`
-   - RED: failed during type-checking with:
-     - `TS2366` at `src/backend/normalize_metrics.ts:55:4`
-     - `TS2339` for missing `MetricPoint.exponentialHistogram` in the new
-       tests
-   - GREEN: passed with `ok | 11 passed | 0 failed`
-
-2. `deno task receiver:test`
-   - Passed with `ok | 14 passed | 0 failed`
-
-3. `deno test .\tests\backend\metric_model_test.ts .\tests\backend\normalize_metrics_test.ts .\tests\backend\telemetry_store_test.ts .\tests\backend\metric_derivations_test.ts .\tests\backend\live_bus_substrate_test.ts .\tests\backend\live_bus_cadence_test.ts`
-   - Passed with `ok | 37 passed | 0 failed`
-
-4. `deno task ok`
-   - Passed.
-   - `deno fmt --check`: `Checked 36 files`
-   - `deno lint`: `Checked 24 files`
-   - Full suite: `ok | 54 passed | 0 failed`
-
-5. Diff inspection
-   - `git status --short`: scoped dirty files only
-   - `git diff --stat`: proto/codegen, model, normalizer, tests, docs, and
-     report updates only
-
-## TDD Evidence
+## TDD evidence
 
 ### RED
 
 Command:
 
 ```powershell
-deno test .\tests\backend\normalize_metrics_test.ts
+deno test tests\backend\app_server_dashboard_test.ts
 ```
 
 Output:
 
 ```text
-TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
-at src/backend/normalize_metrics.ts:55:4
+running 3 tests from ./tests/backend/app_server_dashboard_test.ts
+dashboard app server serves dashboard projection endpoint ... FAILED
+dashboard app server serves app shell and static asset placeholders ... FAILED
+dashboard clear endpoint resets store through explicit boundary ... FAILED
 
-TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'MetricPoint'.
-at tests/backend/normalize_metrics_test.ts:133:33
+ERRORS
 
-TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'MetricPoint'.
-at tests/backend/normalize_metrics_test.ts:191:33
+dashboard app server serves dashboard projection endpoint
+error: SyntaxError: Unexpected token 'N', "Not found" is not valid JSON
+
+dashboard app server serves app shell and static asset placeholders
+error: AssertionError: Expected actual HTML to contain: "id=\"root\"".
+
+dashboard clear endpoint resets store through explicit boundary
+error: AssertionError: Values are not equal.
+-   405
++   200
 ```
 
 ### GREEN
@@ -79,64 +59,156 @@ at tests/backend/normalize_metrics_test.ts:191:33
 Command:
 
 ```powershell
-deno test .\tests\backend\normalize_metrics_test.ts
+deno test tests\backend\app_server_dashboard_test.ts tests\backend\app_server_test.ts tests\ui\app_html_test.ts
 ```
 
 Output:
 
 ```text
-ok | 11 passed | 0 failed
+ok | 6 passed | 0 failed
+```
+
+## Verification commands and results
+
+1. Focused route and shell tests
+
+```powershell
+deno test tests\backend\app_server_dashboard_test.ts tests\backend\app_server_test.ts tests\ui\app_html_test.ts
+```
+
+Result:
+
+```text
+ok | 6 passed | 0 failed
+```
+
+2. Typecheck gate
+
+```powershell
+deno task check
+```
+
+Result:
+
+```text
+Task check deno check src/main.ts src/backend/receiver_worker.ts tests/**/*.ts tools/**/*.ts
+Check src/main.ts
+Check src/backend/receiver_worker.ts
+Check tests/backend/app_server_dashboard_test.ts
+Check tests/backend/app_server_test.ts
+Check tests/backend/dashboard_projection_test.ts
+Check tests/backend/live_bus_cadence_test.ts
+Check tests/backend/live_bus_substrate_test.ts
+Check tests/backend/metric_derivations_test.ts
+Check tests/backend/metric_model_test.ts
+Check tests/backend/normalize_metrics_test.ts
+Check tests/backend/receiver_contract_test.ts
+Check tests/backend/telemetry_store_test.ts
+Check tests/ui/app_html_test.ts
+Check tools/generate_proto.ts
+Check tools/send_metrics_fixture.ts
+Check tools/write_fixtures.ts
+```
+
+3. Full requested quality gate
+
+```powershell
+deno task ok
+```
+
+Result:
+
+```text
+Task ok deno task fmt:check && deno task lint && deno task check && deno task test
+Task fmt:check deno fmt --check
+Checked 40 files
+Task lint deno lint
+Checked 28 files
+Task check deno check src/main.ts src/backend/receiver_worker.ts tests/**/*.ts tools/**/*.ts
+Task test deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests
+ok | 65 passed | 0 failed
+```
+
+4. Diff hygiene
+
+```powershell
+git diff --check
+```
+
+Result:
+
+```text
+[no output]
 ```
 
 ## Files changed
 
-- `.superpowers/sdd/task-2-report.md`
 - `.superpowers/sdd/task-3-report.md`
-- `docs/plans/02-runtime-architecture/02-telemetry-normalization-store.md`
-- `docs/plans/04-implementation/05-test-plan.md`
-- `docs/plans/05-linear-issues/OI-006.md`
-- `docs/plans/06-evidence/acceptance-matrix.md`
-- `src/backend/metric_model.ts`
-- `src/backend/normalize_metrics.ts`
-- `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
-- `tests/backend/normalize_metrics_test.ts`
-- `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`
+- `src/backend/AGENTS.md`
+- `src/backend/app_server.ts`
+- `src/backend/live_bus.ts`
+- `src/backend/receiver.ts`
+- `src/ui/AGENTS.md`
+- `src/ui/app_shell.ts`
+- `tests/backend/app_server_dashboard_test.ts`
+- `tests/ui/app_html_test.ts`
+
+## Commit created
+
+- Created with the requested commit message: `feat: serve dashboard projection endpoints`
 
 ## Self-review findings
 
-- The Task 2 generated bindings were left intact and consumed as-is; generated
-  protobuf output was not hand-edited.
-- The new normalization path is isolated to metric-model/normalizer/test/doc
-  surfaces in the approved write scope.
-- Incomplete exponential histograms do not retain unsafe bucket metadata and
-  still surface a typed `exponential_histogram` metric record plus warning.
+- `handleAppRequest()` keeps `buildDashboardProjection()` as the only server
+  projection boundary and does not leak OTLP decode details into the UI shell.
+- `clearReceiverState()` resets store, warning, start time, and failure counters
+  without touching receiver server lifecycle.
+- The shell is intentionally placeholder-only: `#root`, escaped inline bootstrap,
+  and asset handoff for later React/shadcn tasks.
+- No payload inspector tree, raw payload persistence, proxy-forwarding, traces,
+  logs, or session history work was added.
 
-## Any concerns
+## DOX pass result
 
-- The success fixture was corrected so `count` now equals positive bucket
-  totals plus negative bucket totals plus `zeroCount`, and
-  `buildExponentialHistogramValue()` now follows OTLP total-count semantics.
-
-## Review-fix closeout
-
-- Files changed:
+- Read and followed:
+  - `AGENTS.md`
+  - `src/AGENTS.md`
   - `src/backend/AGENTS.md`
-  - `docs/plans/06-evidence/acceptance-matrix.md`
+  - `src/ui/AGENTS.md`
+  - `tests/AGENTS.md`
+- Updated nearest owning docs where the contracts changed:
+  - `src/backend/AGENTS.md`
+  - `src/ui/AGENTS.md`
+- Root and test DOX docs were left unchanged because the child index and
+  test-scope rules still accurately described the affected paths.
+
+## Any issues or concerns
+
+- No functional concerns after `deno task ok`.
+- I initially edited `src/ui/AGENTS.md` in the main checkout instead of the
+  linked worktree, then restored that repo copy and applied the intended change
+  in the worktree before staging. No unintended root-repo changes remain from
+  this task.
+
+## Review follow-up
+
+- Review findings addressed:
+  - strengthened `POST /api/dashboard/clear` coverage with seeded telemetry,
+    a receiver failure, and post-clear emptiness checks for summary and
+    projection warnings
+  - added method guards for `GET /api/dashboard/clear` and
+    `POST /api/dashboard`
+  - asserted `cache-control: no-store` on successful `/api/dashboard/clear`,
+    `/assets/app.js`, and `/assets/styles.css` responses
+  - updated backend DOX verification to name
+    `tests/backend/app_server_dashboard_test.ts`
+- Files changed:
   - `.superpowers/sdd/task-3-report.md`
-- Verification:
-  - `deno fmt --check src/backend/AGENTS.md docs/plans/06-evidence/acceptance-matrix.md .superpowers/sdd/task-3-report.md` returned `No target files found.`
-  - `git diff --check`
-
-## Final-review fix
-
-- Corrected exponential histogram `Buckets.bucket_counts` from `fixed64` to
-  `uint64` in the local proto and plan snippet to match OTLP wire encoding.
-- Regenerated protobuf bindings with `deno task proto:gen`; generated
-  exponential bucket reads/writes now use `uint64`.
-- Added a wire-level regression that decodes a hand-encoded OTLP exponential
-  histogram payload with packed uint64 bucket counts before normalization.
-- RED: `deno test .\tests\backend\normalize_metrics_test.ts` failed in
-  `ExponentialHistogramDataPoint_Buckets` while the generated decoder still
-  tried to read packed uint64 values as `fixed64`.
-- GREEN: `deno test .\tests\backend\normalize_metrics_test.ts` passed with
-  `12 passed | 0 failed`.
+  - `src/backend/AGENTS.md`
+  - `tests/backend/app_server_dashboard_test.ts`
+- Tests run:
+  - `deno test tests/backend/app_server_dashboard_test.ts tests/backend/app_server_test.ts tests/ui/app_html_test.ts` -> `ok | 7 passed | 0 failed`
+  - `deno task check` -> passed
+  - `deno task ok` -> passed, ending with `ok | 66 passed | 0 failed`
+- Commit created: yes
+- DOX pass result: read the root, source, backend, and test AGENTS chain for the touched paths; updated the backend Verification section to reflect the dashboard app-server contract test; no other DOX files required edits.

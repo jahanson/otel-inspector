@@ -1,103 +1,198 @@
-# Task 2 Report: Add Exponential Histogram Proto Surface
+# Task 2 Report: Add Dashboard Projection Contracts
 
-## What I implemented
+## Status
 
-- Added `ExponentialHistogram exponential_histogram = 10;` to `Metric.data` in `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`.
-- Added minimal local `ExponentialHistogram` and `ExponentialHistogramDataPoint` messages, including nested `Buckets`, without exemplars.
-- Regenerated `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts` via `deno task proto:gen`.
-- Added a generated-binding test in `tests/backend/normalize_metrics_test.ts` that:
-  - imports `ExponentialHistogramDataPoint`;
-  - constructs a metric with `data.oneofKind === "exponentialHistogram"`;
-  - asserts the generated oneof arm and bucket count typing exist.
+DONE
 
-## What I tested and exact results
+## Scope Completed
 
-1. `deno test tests/backend/normalize_metrics_test.ts`
-   - RED result: failed during type checking exactly because the generated surface did not exist yet.
+- Created `src/backend/dashboard_projection.ts` with the Task 2 projection
+  contract types and `buildDashboardProjection(...)`.
+- Created `tests/backend/dashboard_projection_test.ts` from the brief and
+  completed the required red-green cycle.
+- Updated `docs/plans/04-implementation/04-api-and-event-contracts.md` with the
+  concise `DashboardProjection` contract note from the brief.
 
-2. `deno task proto:gen`
-   - Result: passed.
-   - Output:
+## TDD Record
 
-   ```text
-   Generated OTLP protobuf bindings in src/backend/otel/proto
-   ```
+1. Added `tests/backend/dashboard_projection_test.ts`.
+2. Ran `deno test tests/backend/dashboard_projection_test.ts`.
+3. Confirmed RED: the test failed because
+   `src/backend/dashboard_projection.ts` did not exist.
+4. Added `src/backend/dashboard_projection.ts`.
+5. Re-ran `deno test tests/backend/dashboard_projection_test.ts`.
+6. Fixed explorer-row grouping so the focused contract test passed as expected.
+7. Re-ran `deno test tests/backend/dashboard_projection_test.ts` and confirmed
+   `ok | 2 passed | 0 failed`.
 
-3. `rg -n "exponentialHistogram|ExponentialHistogramDataPoint" src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
-   - Result: passed.
-   - Confirmed generated exports and the `Metric.data` exponential histogram oneof arm exist.
+## Verification
 
-4. `deno test tests/backend/normalize_metrics_test.ts`
-   - Post-codegen result: still fails, but now for a different reason:
-   - `src/backend/normalize_metrics.ts` no longer type-checks because `normalizeMetric()` is no longer exhaustive after `Metric.data` gained the new `"exponentialHistogram"` arm.
-   - Exact failing error:
+- `deno task check` passed.
+- `deno task ok` initially failed on `deno fmt --check` for the two new files.
+- Ran
+  `deno fmt src/backend/dashboard_projection.ts tests/backend/dashboard_projection_test.ts docs/plans/04-implementation/04-api-and-event-contracts.md`.
+- Re-ran `deno task ok` and it passed with `58 passed | 0 failed`.
+- `git diff --cached --check` passed with no output.
 
-   ```text
-   TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
-   at src/backend/normalize_metrics.ts:55:4
-   ```
+## Commit Created
 
-## TDD Evidence
+- `7cd315f` `feat: add dashboard projection contracts`
 
-### RED
+## Self-Review
 
-Command:
+- Reviewed the staged diff and final commit summary.
+- Confirmed the task stayed within the three task-owned files plus the required
+  report artifact.
+- Confirmed the worktree was clean after commit.
 
-```powershell
-deno test tests/backend/normalize_metrics_test.ts
-```
+## DOX Pass
 
-Output:
+- Re-read the applicable DOX chain for `src/`, `src/backend/`, `tests/`, and
+  `docs/`.
+- Left AGENTS files unchanged because this task added a new backend projection
+  module and tests without changing ownership boundaries, durable workflow
+  rules, or Child DOX indexes.
 
-```text
-TS2305 [ERROR]: Module ".../metrics.ts" has no exported member 'ExponentialHistogramDataPoint'.
-TS2322 [ERROR]: Type '"exponentialHistogram"' is not assignable to type '"gauge" | "sum" | "histogram" | "summary" | undefined'.
-TS2367 [ERROR]: This comparison appears to be unintentional because the types '"gauge" | "sum" | "histogram" | "summary" | undefined' and '"exponentialHistogram"' have no overlap.
-TS2339 [ERROR]: Property 'exponentialHistogram' does not exist on type 'never'.
-```
+## Concerns
 
-### GREEN
+- None.
 
-Command:
+## Task 2 Review Follow-up
 
-```powershell
-deno test tests/backend/normalize_metrics_test.ts
-```
+### Review Findings Addressed
 
-Output:
+- Tightened the dashboard window filter so points must be at or before the
+  projection timestamp and inside the selected lookback window.
+- Filtered ingest chart exports through the same time window before mapping
+  them to chart points.
+- Keyed explorer rows directly by `point.seriesKey` so distinct series stay
+  distinct even when their metric metadata matches.
+- Added regression coverage for the window boundary, future-dated data, and
+  multiple series keys that share metric metadata.
 
-```text
-TS2366 [ERROR]: Function lacks ending return statement and return type does not include 'undefined'.
-at src/backend/normalize_metrics.ts:55:4
-```
+### Files Changed
 
-Status:
-
-- The generated-binding test itself is now satisfied by the regenerated proto surface.
-- The full focused test command is blocked by an out-of-scope compile failure in `src/backend/normalize_metrics.ts`.
-
-## Files changed
-
-- `tools/proto/opentelemetry/proto/metrics/v1/metrics.proto`
-- `src/backend/otel/proto/opentelemetry/proto/metrics/v1/metrics.ts`
-- `tests/backend/normalize_metrics_test.ts`
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
 - `.superpowers/sdd/task-2-report.md`
 
-## Self-review findings
+### Tests Run
 
-- The proto and generated bindings are scoped correctly to metrics-only MVP work.
-- I did not hand-edit generated files; the generated TypeScript came only from `deno task proto:gen`.
-- I did not add exponential histogram normalization behavior.
-- I did not update any AGENTS.md files because this task did not change durable contracts or ownership docs.
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 4 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - initial run failed on `deno fmt --check` for the updated test
+  file; after `deno fmt src/backend/dashboard_projection.ts
+  tests/backend/dashboard_projection_test.ts`, reran cleanly with 60 passed, 0
+  failed.
 
-## Any concerns
+### Commit Created
 
-- The user-approved write scope does not include `src/backend/normalize_metrics.ts`, but the new generated `Metric.data` union now requires an exhaustiveness update there before `deno test tests/backend/normalize_metrics_test.ts` can pass.
-- Because of that scope boundary, I did not make the follow-on source change or create a commit.
+- `fix: tighten dashboard projection windowing`
 
-## Resolution note
+### DOX Pass
 
-- Task 3 picked up the blocked handoff, added the missing `normalizeMetric()`
-  exponential histogram branch plus typed retention handling, and the coupled
-  checkpoint now passes focused normalization tests, receiver/substrate tests,
-  and `deno task ok`.
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the change was scoped to behavior and
+  tests inside the existing backend/test ownership boundaries.
+
+## Task 2 Re-Review Follow-up
+
+### Re-review Finding Addressed
+
+- Aligned dashboard projection cards and ingest empty-state metadata with the
+  selected window by deriving a window-local telemetry summary from the
+  filtered points and exports instead of reusing the caller summary wholesale.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+- `.superpowers/sdd/task-2-report.md`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 5 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 61 passed, 0 failed.
+
+### Commit Created
+
+- `fix: align dashboard projection cards with window`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the work stayed inside the existing
+  backend projection and test ownership boundaries.
+
+## Task 2 Final Re-Review Follow-up
+
+### Re-review Finding Addressed
+
+- Passed the window-local telemetry summary into `ingestChart(...)` so the
+  ingest chart empty state now follows the selected window instead of the
+  broader caller summary.
+
+### Dropped-Card Resolution
+
+- Kept `cards.dropped` unchanged as the bounded-store/lifetime retention
+  counter derived from `deriveLiveTelemetrySummary()` and `snapshot.droppedPoints`.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 5 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 61 passed, 0 failed.
+
+### Commit Created
+
+- `5962df5` `fix: align ingest chart empty state with window`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the fix stayed inside the existing
+  backend projection and test ownership boundaries.
+
+## Task 2 Active-Request Freshness Re-Review
+
+### Re-review Finding Addressed
+
+- Updated `activeRequestsCard()` to choose the newest matching active-request
+  gauge inside the selected window by comparing `observedAtMs`, so later
+  in-window gauges now win over earlier insertion-order points.
+
+### Files Changed
+
+- `src/backend/dashboard_projection.ts`
+- `tests/backend/dashboard_projection_test.ts`
+- `.superpowers/sdd/task-2-report.md`
+
+### Tests Run
+
+- `deno test tests/backend/dashboard_projection_test.ts` - pass, 6 passed, 0
+  failed.
+- `deno task check` - pass.
+- `deno task ok` - pass, 62 passed, 0 failed.
+
+### Commit Created
+
+- `2c77805` `fix: use latest active requests gauge`
+
+### DOX Pass
+
+- Re-read the applicable DOX chain for the repository root, `src/`,
+  `src/backend/`, and `tests/` before editing.
+- No AGENTS files needed updates because the fix stayed inside the existing
+  backend projection and test ownership boundaries.

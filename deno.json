@@ -3,19 +3,44 @@
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
     "lint": "deno lint",
-    "check": "deno check src/main.ts src/backend/receiver_worker.ts tests/**/*.ts tools/**/*.ts",
+    "ui:build": "deno run --allow-read=src/ui/dashboard,tools/build_ui.ts,node_modules --allow-write=src/ui/dist --allow-run=node_modules/.deno/@esbuild+win32-x64@0.25.8/node_modules/@esbuild/win32-x64/esbuild.exe,node_modules/.deno/@esbuild+win32-arm64@0.25.8/node_modules/@esbuild/win32-arm64/esbuild.exe,node_modules/.deno/@esbuild+darwin-x64@0.25.8/node_modules/@esbuild/darwin-x64/bin/esbuild,node_modules/.deno/@esbuild+darwin-arm64@0.25.8/node_modules/@esbuild/darwin-arm64/bin/esbuild,node_modules/.deno/@esbuild+linux-x64@0.25.8/node_modules/@esbuild/linux-x64/bin/esbuild,node_modules/.deno/@esbuild+linux-arm64@0.25.8/node_modules/@esbuild/linux-arm64/bin/esbuild,node_modules/.deno/@esbuild+linux-arm@0.25.8/node_modules/@esbuild/linux-arm/bin/esbuild tools/build_ui.ts",
+    "check": "deno check src/main.ts src/backend/receiver_worker.ts src/ui/dashboard/main.tsx tests/**/*.ts tools/**/*.ts",
     "proto:gen": "deno run --allow-env=PATH,LOCALAPPDATA,HOME,USERPROFILE --allow-read --allow-write --allow-run tools/generate_proto.ts",
     "receiver:test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests/backend/receiver_contract_test.ts",
-    "test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 tests",
+    "test": "deno test --allow-read=fixtures --allow-net=127.0.0.1:4318 --ignore=tests/ui/dashboard_bundle_test.ts tests",
+    "test:dashboard-bundle": "deno test --allow-read=src/ui/dashboard,src/ui/dist,deno.json,tools/build_ui.ts tests/ui/dashboard_bundle_test.ts",
     "fixtures": "deno run --allow-write=fixtures tools/write_fixtures.ts",
     "send:metrics-fixture": "deno run --allow-read=fixtures --allow-net=127.0.0.1:4318 tools/send_metrics_fixture.ts",
     "dev": "deno run --allow-env=PLUGIN_URL,DENO_DIR,LOCALAPPDATA,USERPROFILE,HOME,XDG_CACHE_HOME --allow-read --allow-write --allow-net=127.0.0.1:4318,127.0.0.1:4319,github.com,release-assets.githubusercontent.com --allow-ffi --unstable-ffi --unstable-worker-options src/main.ts",
-    "ok": "deno task fmt:check && deno task lint && deno task check && deno task test"
+    "ok": "deno task ui:build && deno task fmt:check && deno task lint && deno task check && deno task test && deno task test:dashboard-bundle"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.15",
     "@protobuf-ts/runtime": "npm:@protobuf-ts/runtime@2.11.1",
-    "@webview/webview": "jsr:@webview/webview@0.9.0"
+    "@webview/webview": "jsr:@webview/webview@0.9.0",
+    "react": "npm:react@19.1.0",
+    "react/jsx-runtime": "npm:react@19.1.0/jsx-runtime",
+    "react-dom/client": "npm:react-dom@19.1.0/client",
+    "recharts": "npm:recharts@3.0.0"
+  },
+  "nodeModulesDir": "auto",
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment",
+    "types": [
+      "deno.ns",
+      "npm:@types/react@19.1.8",
+      "npm:@types/react-dom@19.1.8"
+    ],
+    "lib": [
+      "deno.ns",
+      "deno.unstable",
+      "deno.worker",
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ]
   },
   "fmt": {
     "lineWidth": 120,
@@ -24,13 +49,15 @@
     "singleQuote": false,
     "proseWrap": "preserve",
     "exclude": [
+      "src/ui/dist",
       "**/*.md",
       "**/.*/**/*.md"
     ]
   },
   "lint": {
     "exclude": [
-      "src/backend/otel/proto"
+      "src/backend/otel/proto",
+      "src/ui/dist"
     ],
     "rules": {
       "tags": [

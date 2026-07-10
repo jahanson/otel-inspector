@@ -14,6 +14,7 @@ export function deriveLiveTelemetrySummary(
     requestPoints.filter(isErrorStatus),
   );
   const requestWindowSeconds = retainedWindowSeconds(requestPoints, observedAtMs);
+  const redaction = aggregateRedaction(snapshot.recentPoints);
 
   return {
     observedAtMs,
@@ -34,6 +35,7 @@ export function deriveLiveTelemetrySummary(
       p95Ms: percentileFromHistograms(snapshot.recentPoints.filter(isHttpDurationHistogram), 0.95),
       topServices: topServices(snapshot.recentPoints),
     },
+    redaction,
     warnings: snapshot.warnings,
   };
 }
@@ -115,7 +117,7 @@ function percentileFromHistograms(points: MetricPoint[], quantile: number): numb
   return undefined;
 }
 
-function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number | undefined {
+export function normalizeDurationUpperBound(upperBound: number, unit: string | undefined): number | undefined {
   if (!Number.isFinite(upperBound)) {
     return upperBound;
   }
@@ -148,4 +150,27 @@ function topServices(points: MetricPoint[]): string[] {
 
 function roundRate(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function aggregateRedaction(points: MetricPoint[]): import("./contracts.ts").RedactionReport {
+  let hiddenAttributeValues = 0;
+  const patternsMatched: string[] = [];
+
+  for (const point of points) {
+    if (!point.redaction) {
+      continue;
+    }
+    hiddenAttributeValues += point.redaction.hiddenAttributeValues;
+    for (const pattern of point.redaction.patternsMatched) {
+      if (!patternsMatched.includes(pattern)) {
+        patternsMatched.push(pattern);
+      }
+    }
+  }
+
+  return {
+    status: hiddenAttributeValues > 0 ? "blocked" : "passed",
+    hiddenAttributeValues,
+    patternsMatched,
+  };
 }

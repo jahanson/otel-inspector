@@ -4,12 +4,13 @@ import { decodeMetricsExportRequest, encodeMetricsExportResponse } from "./otel/
 import {
   buildLiveTelemetrySummary,
   buildReceiverState,
+  clearReceiverState,
   ReceiverState,
   recordReceiverExport,
   recordReceiverFailure,
 } from "./live_bus.ts";
 
-export { buildReceiverState, RECEIVER_CONTRACT, receiverEndpoint };
+export { buildReceiverState, clearReceiverState, RECEIVER_CONTRACT, receiverEndpoint };
 export type { ReceiverState };
 
 type SafeFailureBody = {

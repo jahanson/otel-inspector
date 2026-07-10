@@ -8,18 +8,22 @@
 
 - `contracts.ts` defines receiver/public telemetry types.
 - `metric_model.ts` owns normalized metric point contracts and stable series keys.
+- `redaction.ts` owns sensitive attribute pattern matching and value redaction.
 - `normalize_metrics.ts` owns decoded OTLP metrics to normalized point conversion.
 - `telemetry_store.ts` owns bounded in-memory point/export retention and eviction accounting.
 - `metric_derivations.ts` owns dashboard-ready summary derivations from retained points.
+- `dashboard_projection.ts` owns dashboard card, chart, and explorer projection from the selected window.
 - `receiver.ts` owns OTLP HTTP request validation and safe failure responses.
 - `live_bus.ts` owns receiver state, substrate ingestion, and live summary cadence.
-- `app_server.ts` serves the dashboard shell and summary API on the dashboard port.
+- `app_server.ts` serves the dashboard shell, built dashboard assets from `src/ui/dist`, summary API, dashboard projection API, and local clear action on the dashboard port.
 - `receiver_worker.ts` keeps Deno HTTP servers off the synchronous native webview thread.
 
 ## Local Contracts
 
 - Receiver listens on `127.0.0.1:4318` and accepts only `POST /v1/metrics` with `application/x-protobuf`.
 - Dashboard app server listens on `127.0.0.1:4319`.
+- Dashboard routes expose `GET /api/summary`, `GET /api/dashboard`, token-gated `POST /api/dashboard/clear`, `GET /assets/app.js`, and `GET /assets/styles.css`.
+- Asset routes return `503` with a build hint when `src/ui/dist` assets are unavailable.
 - Payload size limit is `4 MiB`; enforce it before buffering beyond the cap.
 - Empty metrics protobuf bodies are decode failures, not successful empty exports.
 - Decode failures are failures, not successful exports.
@@ -29,8 +33,15 @@
 - Exponential histogram datapoints with the OTLP no-recorded-value flag keep attributes and timestamps only; ignore count, sum, and bucket metadata and retain the point as `derivationStatus: "incomplete"`.
 - HTTP request-rate derivations use retained-window delta sums only when they are monotonic, non-negative request counters.
 - HTTP latency p95 derivations return values only for known millisecond or second units and finite percentile buckets; open-ended `+Inf` percentile buckets stay unavailable.
+- Dashboard error rate uses only status-coded request counters, and active requests aggregate the latest usable gauge value from each retained series.
 - Successful exports count only after protobuf decode and substrate normalization/storage both succeed.
 - Safe failures must not echo request bodies, raw attributes, credentials, or raw decoder errors.
+- Clearing dashboard state requires the process-local dashboard action header and resets retained telemetry and receiver failure counters without stopping the receiver process.
+- Telemetry datapoint and resource attributes are redacted before `MetricPoint` storage using pattern-based key matching plus credential-pattern checks in string values; redacted values are replaced with `[REDACTED]`.
+- `MetricPoint` stores both `rawAttributes` (original OTLP datapoint attributes) and `attributes` (redacted datapoint attributes), while `resource` stores only redacted resource attributes.
+- Series keys use raw datapoint and resource attributes internally for identity to preserve cardinality, but dashboard projections expose only process-keyed opaque series identifiers.
+- Redaction reports track hidden attribute value counts and matched key or value patterns, aggregated in `LiveTelemetrySummary.redaction`.
+- Dashboard explorer rows represent one distinct series, use that series' newest retained sample for sample-derived fields, and report cardinality `1`.
 
 ## Work Guidance
 
@@ -40,6 +51,8 @@
 ## Verification
 
 - Run focused substrate tests for `tests/backend/metric_model_test.ts`, `tests/backend/normalize_metrics_test.ts`, `tests/backend/telemetry_store_test.ts`, `tests/backend/metric_derivations_test.ts`, `tests/backend/live_bus_substrate_test.ts`, and `tests/backend/live_bus_cadence_test.ts`.
+- Run `deno test tests/backend/redaction_test.ts tests/backend/dashboard_projection_test.ts` for safe-display redaction and dashboard projection changes.
+- Run `deno test tests/backend/app_server_dashboard_test.ts tests/backend/app_server_test.ts tests/ui/app_html_test.ts` for dashboard JSON/static routes and shell contract changes.
 - Run `deno test tests/backend/receiver_contract_test.ts` for receiver changes.
 - Run `deno task ok` before closeout.
 

@@ -26,7 +26,7 @@ Deno.test("buildSeriesKey is deterministic regardless of object insertion order"
     metricName: "http.server.duration",
     metricType: "histogram",
     unit: "ms",
-    attributes: { route: "/cart", method: "GET" },
+    rawAttributes: { route: "/cart", method: "GET" },
   });
   const second = buildSeriesKey({
     resource: { region: "us", "service.name": "checkout" },
@@ -34,7 +34,7 @@ Deno.test("buildSeriesKey is deterministic regardless of object insertion order"
     metricName: "http.server.duration",
     metricType: "histogram",
     unit: "ms",
-    attributes: { method: "GET", route: "/cart" },
+    rawAttributes: { method: "GET", route: "/cart" },
   });
 
   assertEquals(first, second);
@@ -47,14 +47,14 @@ Deno.test("buildSeriesKey skips explicit undefined optional fields", () => {
     scope: { name: "otel.http" },
     metricName: "http.server.duration",
     metricType: "histogram",
-    attributes: {},
+    rawAttributes: {},
   });
   const explicitUndefined = buildSeriesKey({
     resource: { "service.name": "checkout" },
     scope: { name: "otel.http", version: undefined },
     metricName: "http.server.duration",
     metricType: "histogram",
-    attributes: {},
+    rawAttributes: {},
   });
 
   assertEquals(absent, explicitUndefined);

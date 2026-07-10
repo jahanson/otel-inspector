@@ -21,6 +21,7 @@ import {
   type PrimitiveAttributeValue,
   toNumberValue,
 } from "./metric_model.ts";
+import { mergeRedactionReports, redactAttributes, redactionReport } from "./redaction.ts";
 
 export type NormalizeMetricsResult = {
   points: MetricPoint[];
@@ -93,7 +94,9 @@ function numberPoint(
   metricType: "gauge" | "sum",
   metricOverrides: { temporality?: "delta" | "cumulative" | "unspecified"; monotonic?: boolean } = {},
 ): MetricPoint {
-  const attributes = attributesFromKeyValues(dataPoint.attributes);
+  const rawAttributes = attributesFromKeyValues(dataPoint.attributes);
+  const attributes = redactAttributes(rawAttributes);
+  const redaction = redactionReport(rawAttributes);
   const value = dataPoint.value.oneofKind === "asDouble"
     ? toNumberValue(dataPoint.value.asDouble)
     : dataPoint.value.oneofKind === "asInt"
@@ -104,13 +107,14 @@ function numberPoint(
     : [];
   const status = value === undefined ? "incomplete" : "usable";
 
-  return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, metricType, {
+  return basePoint(metric, scopeMetrics, resource, observedAtMs, rawAttributes, attributes, metricType, {
     timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
     startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
     value,
     metricOverrides,
     derivationStatus: status,
     warnings,
+    redaction,
   });
 }
 
@@ -122,7 +126,9 @@ function histogramPoints(
   histogram: Histogram,
 ): MetricPoint[] {
   return histogram.dataPoints.map((dataPoint) => {
-    const attributes = attributesFromKeyValues(dataPoint.attributes);
+    const rawAttributes = attributesFromKeyValues(dataPoint.attributes);
+    const attributes = redactAttributes(rawAttributes);
+    const redaction = redactionReport(rawAttributes);
     const count = toNumberValue(dataPoint.count);
     const bucketCounts = dataPoint.bucketCounts.map((bucketCount) => toNumberValue(bucketCount));
     const usableBuckets = count !== undefined &&
@@ -131,7 +137,7 @@ function histogramPoints(
       ? []
       : [{ code: "histogram-incomplete", message: "Histogram datapoint cannot produce safe percentile estimates." }];
 
-    return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, "histogram", {
+    return basePoint(metric, scopeMetrics, resource, observedAtMs, rawAttributes, attributes, "histogram", {
       timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
       startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
       count,
@@ -145,6 +151,7 @@ function histogramPoints(
       metricOverrides: { temporality: temporalityName(histogram.aggregationTemporality) },
       derivationStatus: usableBuckets && count !== undefined ? "usable" : "incomplete",
       warnings,
+      redaction,
     });
   });
 }
@@ -169,10 +176,12 @@ function exponentialHistogramPoint(
   dataPoint: ExponentialHistogramDataPoint,
   exponentialHistogram: ExponentialHistogram,
 ): MetricPoint {
-  const attributes = attributesFromKeyValues(dataPoint.attributes);
+  const rawAttributes = attributesFromKeyValues(dataPoint.attributes);
+  const attributes = redactAttributes(rawAttributes);
+  const redaction = redactionReport(rawAttributes);
 
   if (hasNoRecordedValue(dataPoint.flags)) {
-    return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, "exponential_histogram", {
+    return basePoint(metric, scopeMetrics, resource, observedAtMs, rawAttributes, attributes, "exponential_histogram", {
       timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
       startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
       metricOverrides: { temporality: temporalityName(exponentialHistogram.aggregationTemporality) },
@@ -181,6 +190,7 @@ function exponentialHistogramPoint(
         code: "metric-no-recorded-value",
         message: "Exponential histogram datapoint has no recorded value.",
       }],
+      redaction,
     });
   }
 
@@ -200,7 +210,7 @@ function exponentialHistogramPoint(
       message: "Exponential histogram is retained but not yet used for derivations.",
     };
 
-  return basePoint(metric, scopeMetrics, resource, observedAtMs, attributes, "exponential_histogram", {
+  return basePoint(metric, scopeMetrics, resource, observedAtMs, rawAttributes, attributes, "exponential_histogram", {
     timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
     startTimeUnixNano: dataPoint.startTimeUnixNano === 0n ? undefined : dataPoint.startTimeUnixNano.toString(),
     count,
@@ -209,6 +219,7 @@ function exponentialHistogramPoint(
     metricOverrides: { temporality: temporalityName(exponentialHistogram.aggregationTemporality) },
     derivationStatus: incomplete ? "incomplete" : "unsupported",
     warnings: [warning],
+    redaction,
   });
 }
 
@@ -327,9 +338,13 @@ function unsupportedPoint(
     code: "metric-unsupported",
     message: "Metric type is retained but not yet used for derivations.",
   };
-  return basePoint(metric, scopeMetrics, resource, observedAtMs, {}, metricType, {
+  const rawAttributes: Record<string, PrimitiveAttributeValue> = {};
+  const attributes = redactAttributes(rawAttributes);
+  const redaction = redactionReport(rawAttributes);
+  return basePoint(metric, scopeMetrics, resource, observedAtMs, rawAttributes, attributes, metricType, {
     derivationStatus: "unsupported",
     warnings: [warning],
+    redaction,
   });
 }
 
@@ -344,13 +359,17 @@ function unsupportedSummaryPoint(
     code: "metric-unsupported",
     message: "Metric type is retained but not yet used for derivations.",
   };
+  const rawAttributes = attributesFromKeyValues(dataPoint.attributes);
+  const attributes = redactAttributes(rawAttributes);
+  const redaction = redactionReport(rawAttributes);
 
   return basePoint(
     metric,
     scopeMetrics,
     resource,
     observedAtMs,
-    attributesFromKeyValues(dataPoint.attributes),
+    rawAttributes,
+    attributes,
     "summary",
     {
       timestampUnixNano: dataPoint.timeUnixNano === 0n ? undefined : dataPoint.timeUnixNano.toString(),
@@ -359,6 +378,7 @@ function unsupportedSummaryPoint(
       sum: Number.isFinite(dataPoint.sum) ? dataPoint.sum : undefined,
       derivationStatus: "unsupported",
       warnings: [warning],
+      redaction,
     },
   );
 }
@@ -368,6 +388,7 @@ function basePoint(
   scopeMetrics: ScopeMetrics,
   resource: Record<string, PrimitiveAttributeValue>,
   observedAtMs: number,
+  rawAttributes: Record<string, PrimitiveAttributeValue>,
   attributes: Record<string, PrimitiveAttributeValue>,
   metricType: MetricType,
   options: {
@@ -381,6 +402,7 @@ function basePoint(
     metricOverrides?: { temporality?: "delta" | "cumulative" | "unspecified"; monotonic?: boolean };
     derivationStatus: "usable" | "unsupported" | "incomplete";
     warnings: MetricWarning[];
+    redaction?: import("./redaction.ts").RedactionReport;
   },
 ): MetricPoint {
   const scope = {
@@ -395,6 +417,8 @@ function basePoint(
     type: metricType,
     ...options.metricOverrides,
   };
+  const safeResource = redactAttributes(resource);
+  const redaction = mergeRedactionReports(redactionReport(resource), options.redaction);
 
   return {
     seriesKey: buildSeriesKey({
@@ -403,14 +427,15 @@ function basePoint(
       metricName: metric.name,
       metricType,
       unit,
-      attributes,
+      rawAttributes,
     }),
     observedAtMs,
     timestampUnixNano: options.timestampUnixNano,
     startTimeUnixNano: options.startTimeUnixNano,
-    resource,
+    resource: safeResource,
     scope,
     metric: pointMetric,
+    rawAttributes,
     attributes,
     value: options.value,
     count: options.count,
@@ -419,6 +444,7 @@ function basePoint(
     exponentialHistogram: options.exponentialHistogram,
     derivationStatus: options.derivationStatus,
     warnings: options.warnings,
+    redaction,
   };
 }
 

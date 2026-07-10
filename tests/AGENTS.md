@@ -6,8 +6,8 @@
 
 ## Ownership
 
-- `backend/` tests cover receiver and backend app server behavior.
-- `ui/` tests cover dashboard HTML and inline script safety.
+- `backend/` tests cover receiver, backend app server, dashboard projection behavior, and redaction policy.
+- `ui/` tests cover dashboard HTML, inline script safety, chart preparation, freshness derivation, and interaction request state.
 
 ## Local Contracts
 
@@ -23,8 +23,10 @@
 ## Verification
 
 - Run `deno task ok` before closeout.
+- `deno task test` keeps the suite-level read scope to `fixtures` and skips `tests/ui/dashboard_bundle_test.ts`.
+- Run `deno task test:dashboard-bundle` for the dashboard bundle regression; that task grants the local `src/ui/dashboard`, `src/ui/dist`, `deno.json`, and `tools/build_ui.ts` reads needed by `tests/ui/dashboard_bundle_test.ts`.
 
 ## Child DOX Index
 
-- `backend/` — receiver and backend server tests.
+- `backend/` — receiver, backend app server, and dashboard projection tests.
 - `ui/` — dashboard shell tests.

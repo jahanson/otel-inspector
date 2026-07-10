@@ -1,4 +1,5 @@
 import type { AnyValue, KeyValue } from "./otel/proto/opentelemetry/proto/common/v1/common.ts";
+import type { RedactionReport } from "./redaction.ts";
 
 export type PrimitiveAttributeValue = string | number | boolean;
 
@@ -49,6 +50,7 @@ export type MetricPoint = {
     temporality?: AggregationTemporalityName;
     monotonic?: boolean;
   };
+  rawAttributes: Record<string, PrimitiveAttributeValue>;
   attributes: Record<string, PrimitiveAttributeValue>;
   value?: number;
   count?: number;
@@ -57,6 +59,7 @@ export type MetricPoint = {
   exponentialHistogram?: ExponentialHistogramValue;
   derivationStatus: DerivationStatus;
   warnings: MetricWarning[];
+  redaction?: RedactionReport;
 };
 
 export type SeriesKeyInput = {
@@ -65,7 +68,7 @@ export type SeriesKeyInput = {
   metricName: string;
   metricType: MetricType;
   unit?: string;
-  attributes: Record<string, PrimitiveAttributeValue>;
+  rawAttributes: Record<string, PrimitiveAttributeValue>;
 };
 
 export function attributesFromKeyValues(keyValues: KeyValue[]): Record<string, PrimitiveAttributeValue> {
@@ -89,7 +92,7 @@ export function buildSeriesKey(input: SeriesKeyInput): string {
       metricName: input.metricName,
       metricType: input.metricType,
       unit: input.unit ?? "",
-      attributes: input.attributes,
+      rawAttributes: input.rawAttributes,
     })
   }`;
 }
